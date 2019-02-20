@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        ID-Control
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        Designstudie zur Implementierung eines ID-Karten Kontrollsystems
+    </ui:define>
+
+    <ui:define name="implementation">
+        <h:form>
+
+            <h:panelGrid id="display" columns="2" cellpadding="5">
+
+                <p:outputLabel for="scan" value="Scanner: " />
+                <p:button id="scan" outcome="scan" type="button" value="Scannen" class="secondary" update="display"/>
+
+                <h:outputLabel for="demo" value="Barcodescannersimulator: " />
+                <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
+                     <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
+
+                <p:outputLabel for="barcodeview" value="Barcodeübersicht: " />
+                <p:button id="barcodeview" outcome="barcodeview" type="button" value="Barcodeübersicht" class="secondary"/>
+
+            </h:panelGrid>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        Barcodeübersicht
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">         
+            /*demo*/
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 25px 10px;
+                /* with the exported variables from Nova and Luna Themes*/
+                border-bottom-color: var(--input-border-color, #A8A8A8);
+            }
+
+            .logo {
+                width: 5%;
+            }
+            .detail {
+                width: 85%;
+                padding-left: 25px;
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="description">
+        Übersicht über gespeicherte Personen mit dazugehörigem Barcode.
+    </ui:define>
+
+    <ui:define name="implementation">
+
+        <h:form id="form">
+            <p:dataView var="person" 
+                        value="#{persondataGridView.persons}" 
+                        rows="12" paginator="true" 
+                        rowsPerPageTemplate="6,12,16"
+                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                        gridIcon="pi pi-th-large" 
+                        listIcon="pi pi-bars">
+
+                <p:dataViewGridItem>
+                    <p:panel header="#{person.mglnr}" style="text-align:center">
+                        <h:panelGrid columns="1" style="width:100%">
+                            <p:barcode value="#{person.mglnr}" type="qr"/>
+
+                            <h:outputText value="#{person.fullname}" />
+
+                            <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
+                                <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
+                                <f:setPropertyActionListener value="#{person}" target="#{persondataGridView.selectedPerson}" />
+                            </p:commandLink>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:dataViewGridItem>
+
+                <p:dataViewListItem>
+                    <h:panelGrid columns="4" style="width:100%" columnClasses="logo,detail">
+                        <p:barcode value="#{person.mglnr}" type="qr"/>
+
+                        <p:outputPanel>
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <h:outputText value="Mitgliedsnummer:" />
+                                <h:outputText value="#{person.mglnr}" style="font-weight: bold"/>
+
+                                <h:outputText value="Name:" />
+                                <h:outputText value="#{person.fullname}" style="font-weight: bold"/>
+                            </h:panelGrid>
+                        </p:outputPanel>
+
+                        <p:barcode value="#{person.fullurl}" type="qr"/>
+
+                        <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
+                            <!--h:outputText value="Info" /-->
+                            <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
+                            <f:setPropertyActionListener value="#{person}" target="#{persondataGridView.selectedPerson}" />
+                        </p:commandLink>
+                    </h:panelGrid>
+                </p:dataViewListItem>
+            </p:dataView>
+
+            <p:dialog header="Personeninfo" widgetVar="personDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                <p:outputPanel id="personDetail" style="text-align:center;">
+                    <p:panelGrid  columns="2" rendered="#{not empty persondataGridView.selectedPerson}" columnClasses="label,value">
+                        <f:facet name="header">
+                            <!--p:graphicImage name=""/--> 
+                            <p:barcode value="#{persondataGridView.selectedPerson.fullurl}" type="qr"/>
+                        </f:facet>
+
+                        <h:outputText value="Mitliednummer:" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.mglnr}" />
+
+                        <h:outputText value="Name" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.fullname}" />
+
+                        <h:outputText value="Geburtsdatum" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.birthdate}" />
+
+                        <h:outputText value="Austrittsdatum" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.exitdate}" />
+
+                        <h:outputText value="Wassergeldstatus" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.state}" />
+
+                        <h:outputText value="Offene Posten" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.openposts}" />
+
+                        <h:outputText value="Offene Wassergeldrechnung" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.openwaterbill}" />
+
+
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

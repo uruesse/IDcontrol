@@ -1,10 +1,20 @@
+/*
+ * Copyright 2019 ulrich.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.ruesse.idc.control;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
@@ -46,7 +56,15 @@ import org.primefaces.event.CaptureEvent;
 @ViewScoped
 //@RequestScoped
 public class ControlBean implements Serializable {
-    
+
+    static final Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
+
+    /**
+     * 
+     */
+    public ControlBean() {
+        LOGGER.setLevel(Level.FINEST);
+    }
 
     private String filename;
     PersonService ps = new PersonService();
@@ -55,39 +73,49 @@ public class ControlBean implements Serializable {
     private String mnr;
     private static String decodermessage;
 
+    /**
+     * 
+     * @return 
+     */
     public String getParam() {
         FacesContext context = FacesContext.getCurrentInstance();
         Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
         String projectId = paramMap.get("mnr");
-        System.out.println("In getParam " + projectId);
+        LOGGER.finest("In getParam " + projectId);
         showMessage();
         return projectId;
     }
 
-    //@PostConstruct
-    //public void init() {
-    //    setMglnr("0920000 7");
-    //}
+    /**
+     * 
+     * @return 
+     */
     public String getMnr() {
-        System.out.println("In getMnr " + mnr);
+        LOGGER.finest("In getMnr " + mnr);
         return mnr;
     }
 
+    /**
+     * 
+     * @param strmnr 
+     */
     public void setMnr(String strmnr) {
-        System.out.println("In setMnr " + strmnr);
+        LOGGER.finest("In setMnr " + strmnr);
         this.mnr = strmnr;
     }
-
-    /* public void Action() {
-        System.out.println("In Action " + this.mnr);
-        infox();
-    }
-     */
+    
+/**
+ * 
+ */
     public void showMessage() {
-        System.out.println("In showMessage " + this.mnr);
+        LOGGER.finest("In showMessage " + this.mnr);
         showPersonStatus(ps.findPerson(this.mnr));
     }
 
+    /**
+     *
+     * @param person
+     */
     public void showPersonStatus(Person person) {
         DateFormat df;
         df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMANY);
@@ -95,12 +123,14 @@ public class ControlBean implements Serializable {
         NumberFormat nf;
         nf = DecimalFormat.getCurrencyInstance(Locale.GERMANY);
 
+        LOGGER.finest("In showMessage " + this.mnr);
+
         MaskFormatter mf = null;
         try {
             mf = new MaskFormatter("******* * *****");
             mf.setValueContainsLiteralCharacters(false);
         } catch (ParseException ex) {
-            Logger.getLogger(ControlBean.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         FacesMessage.Severity sev;
@@ -122,14 +152,14 @@ public class ControlBean implements Serializable {
             try {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Mitgliedsnummer.  ", mf.valueToString(person.getMglnr())));
             } catch (ParseException ex) {
-                Logger.getLogger(ControlBean.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             Date now = new Date();
             long yearInMillis = 365 * 24 * 60 * 60 * 1000;
             long age = (now.getTime() - person.getBirthdate().getTime()) / 365 / 24 / 60 / 60 / 1000;
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Alter: ", String.valueOf(age)));
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Offener Posten: ", " " + nf.format((double)person.getOpenposts() / 100)));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Offener Posten: ", " " + nf.format((double) person.getOpenposts() / 100)));
 
             switch (person.getState()) {
                 case "Mitarbeiter":
@@ -137,7 +167,7 @@ public class ControlBean implements Serializable {
                     break;
                 case "aktives Mitglied":
                     if (person.openwaterbill > 0) {
-                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Wassergeld: ", person.getState() + " offener Betrag: " + nf.format((double)person.getOpenwaterbill() / 100)));
+                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Wassergeld: ", person.getState() + " offener Betrag: " + nf.format((double) person.getOpenwaterbill() / 100)));
                     } else {
                         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Wassergeld: ", person.getState() + ", Betrag ausgeglichen"));
                     }
@@ -146,11 +176,14 @@ public class ControlBean implements Serializable {
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wassergeld: ", person.getState()));
             }
         }
-
-        System.out.println(
-                "In showMessage " + this.mnr);
     }
 
+    /**
+     * 
+     * @param qrCodeimage
+     * @return
+     * @throws IOException 
+     */
     private static String decodeQRCode(File qrCodeimage) throws IOException {
         BufferedImage bufferedImage = ImageIO.read(qrCodeimage);
         LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
@@ -160,21 +193,33 @@ public class ControlBean implements Serializable {
             Result result = new MultiFormatReader().decode(bitmap);
             return result.getText();
         } catch (NotFoundException e) {
-            System.out.println("There is no QR code in the image");
+            LOGGER.info("There is no QR code in the image");
             return null;
         }
     }
 
+    /**
+     * 
+     * @return 
+     */
     private String getRandomImageName() {
         int i = (int) (Math.random() * 10000000);
 
         return String.valueOf(i);
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * 
+     * @param captureEvent 
+     */
     public void oncapture(CaptureEvent captureEvent) {
         filename = getRandomImageName();
         byte[] data = captureEvent.getData();
@@ -197,16 +242,16 @@ public class ControlBean implements Serializable {
         try {
             String decodedText = decodeQRCode(imageFile);
             if (decodedText == null) {
-                System.out.println("Kein QR-Code im eingescannten Bild gefunden");
+                LOGGER.finest("Kein QR-Code im eingescannten Bild gefunden");
                 decodermessage = "Kein QR-Code im eingescannten Bild gefunden";
             } else {
-                System.out.println("Decoded text = " + decodedText);
+                LOGGER.finest("Decoded text = " + decodedText);
                 decodermessage = decodedText;
                 mnr = decodedText;
             }
         } catch (IOException e) {
             decodermessage = "Konnte QR Code nicht entschlüsseln, IOException :: " + e.getMessage();
-            System.out.println(decodermessage);
+            LOGGER.info(decodermessage);
         }
 
         showPersonStatus(ps.findPerson(decodermessage));

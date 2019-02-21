@@ -43,10 +43,4 @@ public class ApplicationControlBean implements Serializable {
         System.out.println("In setIsDemo ApplicationControlBean");
         this.isDemo = isDemo;
     }
-
-    public String ToggleIsDemo() {
-        System.out.println("In toggleIsDemo ApplicationControlBean");
-        this.isDemo = !this.isDemo;
-        return "";
-    }
 }

@@ -1,7 +1,17 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2019 Ulrich Rüße <ulrich@ruesse.net>.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package net.ruesse.idc.test;
 
@@ -16,20 +26,33 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ApplicationScoped;
 
-
 /**
  *
- * @author ulrich
+ * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @ApplicationScoped
 @ManagedBean
 public class PersonService implements Serializable {
+    private final static Logger LOGGER = Logger.getLogger(PersonService.class.getName());
+
+    /**
+     * 
+     */
+    public PersonService() {
+        LOGGER.setLevel(Level.INFO);
+    }
 
     private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private static List<Person> personlist = null;
 
+    /**
+     *
+     * @return
+     */
     public List<Person> createPersons() {
-        if (personlist != null) return personlist;
+        if (personlist != null) {
+            return personlist;
+        }
 
         personlist = new ArrayList<>();
 
@@ -41,19 +64,30 @@ public class PersonService implements Serializable {
             personlist.add(new Person("1122333700005", "Duck", "Trick", dateFormat.parse("01.09.2010"), null, "aktives Mitglied", 0, 0));
             personlist.add(new Person("1122333700006", "Duck", "Track", dateFormat.parse("01.09.2010"), null, "Mitarbeiter", 0, 0));
             personlist.add(new Person("1122333700007", "Gans", "Gustav", dateFormat.parse("01.09.2010"), dateFormat.parse("31.12.2018"), "aktives Mitglied", 0, 0));
-            System.out.println("Liste aufgebaut" + personlist.toString());
+            LOGGER.fine("Liste aufgebaut" + personlist.toString());
         } catch (ParseException ex) {
-            Logger.getLogger(PersonService.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return personlist;
     }
 
+    /**
+     *
+     * @param string
+     * @param delimiter
+     * @return
+     */
     public static String substringAfter(String string, String delimiter) {
         int pos = string.indexOf(delimiter);
 
         return pos >= 0 ? string.substring(pos + delimiter.length()) : "";
     }
 
+    /**
+     *
+     * @param scantext
+     * @return
+     */
     public Person findPerson(String scantext) {
         Person p;
         String mnr;
@@ -61,20 +95,22 @@ public class PersonService implements Serializable {
 
         if (scantext != null) {
             mnr = scantext.replaceAll(" ", "");
-            System.out.println("in Find Person 1 mnr: " + mnr);
+            LOGGER.log(Level.FINE, "1 mnr: {0}", mnr);
 
             if (mnr.length() != 13) {
                 mnr = substringAfter(scantext, "=");
             }
-            System.out.println("in Find Person 2 mnr: " + mnr);
-            
-            if (personlist == null) createPersons();
+            LOGGER.log(Level.FINE, "2 mnr: {0}", mnr);
 
-            if (personlist !=null && mnr.length() == 13) {
+            if (personlist == null) {
+                createPersons();
+            }
+
+            if (personlist != null && mnr.length() == 13) {
                 for (Person pr : personlist) {
                     if (pr.getMglnr().equals(mnr)) {
-                        p=pr;
-                    }   
+                        p = pr;
+                    }
                 }
 
             }

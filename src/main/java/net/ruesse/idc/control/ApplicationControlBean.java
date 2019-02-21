@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 ulrich.
+ * Copyright 2019 Ulrich Rüße <ulrich@ruesse.net>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,36 @@
 package net.ruesse.idc.control;
 
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 
 /**
  *
- * @author ulrich
+ * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @ApplicationScoped
 @ManagedBean
 public class ApplicationControlBean implements Serializable {
 
+    private static final Logger LOGGER = Logger.getLogger(ApplicationControlBean.class.getName());
+
     private boolean isDemo;
 
     public ApplicationControlBean() {
-        System.out.println("Im Konstruktor ApplicationControlBean");
+        LOGGER.setLevel(Level.INFO);
+        LOGGER.fine("aufgerufen");
         isDemo = true;
     }
 
     public boolean isIsDemo() {
-        System.out.println("In isIsDemo ApplicationControlBean");
+        LOGGER.log(Level.FINE, "isDemo={0}", isDemo);
         return isDemo;
     }
 
     public void setIsDemo(boolean isDemo) {
-        System.out.println("In setIsDemo ApplicationControlBean");
+        LOGGER.log(Level.FINE,"isDemo={0}", isDemo);
         this.isDemo = isDemo;
     }
 }

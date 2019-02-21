@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 ulrich.
+ * Copyright 2019 Ulrich Rüße <ulrich@ruesse.net>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,20 +50,20 @@ import org.primefaces.event.CaptureEvent;
 
 /**
  *
- * @author ulrich
+ * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @ManagedBean
 @ViewScoped
 //@RequestScoped
 public class ControlBean implements Serializable {
 
-    static final Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
 
     /**
-     * 
+     *
      */
     public ControlBean() {
-        LOGGER.setLevel(Level.FINEST);
+        LOGGER.setLevel(Level.INFO);
     }
 
     private String filename;
@@ -74,41 +74,41 @@ public class ControlBean implements Serializable {
     private static String decodermessage;
 
     /**
-     * 
-     * @return 
+     *
+     * @return projectId
      */
     public String getParam() {
         FacesContext context = FacesContext.getCurrentInstance();
         Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
         String projectId = paramMap.get("mnr");
-        LOGGER.finest("In getParam " + projectId);
+        LOGGER.log(Level.FINE, "projectId={0}", projectId);
         showMessage();
         return projectId;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getMnr() {
-        LOGGER.finest("In getMnr " + mnr);
+        LOGGER.log(Level.FINE, "mnr={0}", mnr);
         return mnr;
     }
 
     /**
-     * 
-     * @param strmnr 
+     *
+     * @param strmnr
      */
     public void setMnr(String strmnr) {
-        LOGGER.finest("In setMnr " + strmnr);
+        LOGGER.log(Level.FINE, "strmnr={0}", strmnr);
         this.mnr = strmnr;
     }
-    
-/**
- * 
- */
+
+    /**
+     *
+     */
     public void showMessage() {
-        LOGGER.finest("In showMessage " + this.mnr);
+        LOGGER.log(Level.FINE, "mnr={0}", this.mnr);
         showPersonStatus(ps.findPerson(this.mnr));
     }
 
@@ -123,7 +123,7 @@ public class ControlBean implements Serializable {
         NumberFormat nf;
         nf = DecimalFormat.getCurrencyInstance(Locale.GERMANY);
 
-        LOGGER.finest("In showMessage " + this.mnr);
+        LOGGER.log(Level.FINE, "mnr={0}", this.mnr);
 
         MaskFormatter mf = null;
         try {
@@ -179,10 +179,10 @@ public class ControlBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param qrCodeimage
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     private static String decodeQRCode(File qrCodeimage) throws IOException {
         BufferedImage bufferedImage = ImageIO.read(qrCodeimage);
@@ -193,14 +193,14 @@ public class ControlBean implements Serializable {
             Result result = new MultiFormatReader().decode(bitmap);
             return result.getText();
         } catch (NotFoundException e) {
-            LOGGER.info("There is no QR code in the image");
+            LOGGER.fine("There is no QR code in the image");
             return null;
         }
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     private String getRandomImageName() {
         int i = (int) (Math.random() * 10000000);
@@ -209,16 +209,16 @@ public class ControlBean implements Serializable {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getFilename() {
         return filename;
     }
 
     /**
-     * 
-     * @param captureEvent 
+     *
+     * @param captureEvent
      */
     public void oncapture(CaptureEvent captureEvent) {
         filename = getRandomImageName();
@@ -242,16 +242,16 @@ public class ControlBean implements Serializable {
         try {
             String decodedText = decodeQRCode(imageFile);
             if (decodedText == null) {
-                LOGGER.finest("Kein QR-Code im eingescannten Bild gefunden");
+                LOGGER.fine("Kein QR-Code im eingescannten Bild gefunden");
                 decodermessage = "Kein QR-Code im eingescannten Bild gefunden";
             } else {
-                LOGGER.finest("Decoded text = " + decodedText);
+                LOGGER.log(Level.FINE, "Decoded text = {0}", decodedText);
                 decodermessage = decodedText;
                 mnr = decodedText;
             }
         } catch (IOException e) {
             decodermessage = "Konnte QR Code nicht entschlüsseln, IOException :: " + e.getMessage();
-            LOGGER.info(decodermessage);
+            LOGGER.fine(decodermessage);
         }
 
         showPersonStatus(ps.findPerson(decodermessage));

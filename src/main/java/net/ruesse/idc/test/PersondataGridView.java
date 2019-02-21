@@ -1,12 +1,24 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2019 Ulrich Rüße <ulrich@ruesse.net>.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package net.ruesse.idc.test;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -14,11 +26,13 @@ import javax.faces.bean.ViewScoped;
 
 /**
  *
- * @author ulrich
+ * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @ManagedBean
 @ViewScoped
 public class PersondataGridView implements Serializable {
+
+    private final static Logger LOGGER = Logger.getLogger(PersondataGridView.class.getName());
 
     private List<Person> persons;
 
@@ -27,28 +41,54 @@ public class PersondataGridView implements Serializable {
     @ManagedProperty("#{personService}")
     private PersonService service;
 
+    /**
+     * 
+     */
+    public PersondataGridView() {
+        LOGGER.setLevel(Level.INFO);
+    }
+
+    /**
+     * 
+     */
     @PostConstruct
     public void init() {
         persons = service.createPersons();
     }
 
+    /**
+     * 
+     * @return 
+     */
     public List<Person> getPersons() {
-        System.out.println("Get Persons: " + persons.toString());
+        LOGGER.log(Level.FINE, "Persons: {0}", persons.toString());
         return persons;
     }
 
+    /**
+     * 
+     * @param service 
+     */
     public void setService(PersonService service) {
         this.service = service;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public Person getSelectedPerson() {
-        System.out.println("In Get selected Person");
+        LOGGER.fine("aufgerufen");
         if (selectedPerson != null) {
-            System.out.println("Get selected Person: " + selectedPerson.mglnr);
+            LOGGER.log(Level.FINE, "Mitgliedsnummer: {0}", selectedPerson.mglnr);
         }
         return selectedPerson;
     }
 
+    /**
+     * 
+     * @param selectedPerson 
+     */
     public void setSelectedPerson(Person selectedPerson) {
         this.selectedPerson = selectedPerson;
     }

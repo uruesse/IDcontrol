@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 public class IdcBundle {
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("net/ruesse/idc/ressources/Bundle");
+    private static final ResourceBundle bundle = ResourceBundle.getBundle("net/ruesse/idc/ressources/message");
     
     public static String getValue (String strVar) {
         return bundle.getString(strVar

@@ -21,7 +21,7 @@
         </resource-bundle>
 
         <resource-bundle>
-            <base-name>net.ruesse.idc.ressources.Bundle</base-name>
+            <base-name>net.ruesse.idc.ressources.message</base-name>
             <var>msg</var>
         </resource-bundle>
 

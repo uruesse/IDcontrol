@@ -21,12 +21,11 @@ import java.util.ResourceBundle;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-public class IdcBundle {
-    private static final ResourceBundle bundle = ResourceBundle.getBundle("net/ruesse/idc/ressources/message");
+public class MsgBundle {
+    private static final ResourceBundle MSG = ResourceBundle.getBundle("net/ruesse/idc/ressources/message");
     
-    public static String getValue (String strVar) {
-        return bundle.getString(strVar
-        );
+    public static String getMessage (String strVar) {
+        return MSG.getString(strVar);
     }
     
 }

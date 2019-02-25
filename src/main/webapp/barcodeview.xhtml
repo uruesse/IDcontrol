@@ -6,7 +6,7 @@
                 template="/WEB-INF/smalltemplate.xhtml">
 
     <ui:define name="title">
-        Barcodeübersicht
+        #{msg['barcodeview.head']}
     </ui:define>
 
     <ui:define name="head">
@@ -30,7 +30,7 @@
     </ui:define>
 
     <ui:define name="description">
-        Übersicht über gespeicherte Personen mit dazugehörigem Barcode.
+        #{msg['barcodeview.headdescription']}
     </ui:define>
 
     <ui:define name="implementation">
@@ -65,10 +65,10 @@
 
                         <p:outputPanel>
                             <h:panelGrid columns="2" cellpadding="5">
-                                <h:outputText value="Mitgliedsnummer:" />
+                                <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
                                 <h:outputText value="#{person.mglnr}" style="font-weight: bold"/>
 
-                                <h:outputText value="Name:" />
+                                <h:outputText value="#{msg['barcodeview.name']}:" />
                                 <h:outputText value="#{person.fullname}" style="font-weight: bold"/>
                             </h:panelGrid>
                         </p:outputPanel>
@@ -76,7 +76,6 @@
                         <p:barcode value="#{person.fullurl}" type="qr"/>
 
                         <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
-                            <!--h:outputText value="Info" /-->
                             <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
                             <f:setPropertyActionListener value="#{person}" target="#{persondataGridView.selectedPerson}" />
                         </p:commandLink>
@@ -84,7 +83,7 @@
                 </p:dataViewListItem>
             </p:dataView>
 
-            <p:dialog header="Personeninfo" widgetVar="personDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+            <p:dialog header="#{msg['barcodeview.personeninfo']}" widgetVar="personDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
                 <p:outputPanel id="personDetail" style="text-align:center;">
                     <p:panelGrid  columns="2" rendered="#{not empty persondataGridView.selectedPerson}" columnClasses="label,value">
                         <f:facet name="header">
@@ -92,28 +91,26 @@
                             <p:barcode value="#{persondataGridView.selectedPerson.fullurl}" type="qr"/>
                         </f:facet>
 
-                        <h:outputText value="Mitliednummer:" />
+                        <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.mglnr}" />
 
-                        <h:outputText value="Name" />
+                        <h:outputText value="#{msg['barcodeview.name']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.fullname}" />
 
-                        <h:outputText value="Geburtsdatum" />
+                        <h:outputText value="#{msg['barcodeview.geburtstdatum']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.birthdate}" />
 
-                        <h:outputText value="Austrittsdatum" />
+                        <h:outputText value="#{msg['barcodeview.austrittsdatum']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.exitdate}" />
 
-                        <h:outputText value="Wassergeldstatus" />
+                        <h:outputText value="#{msg['barcodeview.wassergeldstatus']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.state}" />
 
-                        <h:outputText value="Offene Posten" />
+                        <h:outputText value="#{msg['barcodeview.offeneposten']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.openposts}" />
 
-                        <h:outputText value="Offene Wassergeldrechnung" />
+                        <h:outputText value="#{msg['barcodeview.offenewassergeldrechnung']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.openwaterbill}" />
-
-
 
                     </p:panelGrid>
                 </p:outputPanel>

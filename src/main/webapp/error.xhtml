@@ -8,20 +8,20 @@
     <ui:define name="content">
         <div class="layout-error">
             <div class="layout-error-message-box">
-                <span class="layout-error-name">Fehlerhafte Ausführung</span>
-                <span class="layout-error-info">Bitte die Logeinträge kontrollieren.</span>
-                <p:button outcome="/index" type="button" value="Zurück zur Homepage" class="secondary"/>
+                <span class="layout-error-name">#{msg['error.head']}</span>
+                <span class="layout-error-info">#{msg['error.headdescription']}</span>
+                <p:button outcome="/index" type="button" value="#{msg['button.backtohome']}" class="secondary"/>
             </div>
 
             <div class="layout-error-detail">
                 <h:panelGrid id="display" >
-                    <h:outputText value="Fehlercode: #{errorHandler.statusCode}"></h:outputText>
-                    <h:outputText value="Fehlerbeschreibung: #{errorHandler.message}"></h:outputText>
-                    <h:outputText value="Angefragte URI : #{errorHandler.requestURI}"></h:outputText>
+                    <h:outputText value="#{msg['error.code']}: #{errorHandler.statusCode}"></h:outputText>
+                    <h:outputText value="#{msg['error.description']}: #{errorHandler.message}"></h:outputText>
+                    <h:outputText value="#{msg['error.uri']}: #{errorHandler.requestURI}"></h:outputText>
                     <br />
-                    <h:outputText value="Exception Type: #{errorHandler.exceptionType}"></h:outputText>
+                    <h:outputText value="#{msg['error.exceptiontype']}: #{errorHandler.exceptionType}"></h:outputText>
                     <br />
-                    <h:outputText value="Exception Class: #{errorHandler.exception}"></h:outputText>
+                    <h:outputText value="#{msg['error.exceptionclass']}: #{errorHandler.exception}"></h:outputText>
                 </h:panelGrid>
             </div>
         </div>

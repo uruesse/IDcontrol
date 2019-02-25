@@ -6,31 +6,30 @@
                 template="/WEB-INF/smalltemplate.xhtml">
 
     <ui:define name="title">
-        Scan
+        #{msg['scan.head']}
     </ui:define>
 
     <ui:define name="head">
-        <script type="text/javascript" src="./Webcam.js"></script>
         <f:metadata>
             <f:viewParam name="mnr" value="#{controlBean.mnr}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="description">
-        Scannen der Ausweise
+        #{msg['scan.headdescription']}
     </ui:define>
 
     <ui:define name="implementation">
 
         <h:form>
-            <p:messages id="messages" escape="false" showDetail="true" closable="true">
+            <p:messages id="messages" escape="false" showDetail="true" closable="false">
                 <p:autoUpdate />
             </p:messages>
             <h:panelGrid id="display" columns="3" cellpadding="5">
 
-                <p:outputLabel for="Mitgliednummer" value="Mitgliedsnummer: " />
-                <p:inputMask id="Mitgliednummer" value="#{controlBean.mnr}" mask="9999999 9 99999"/>
-                <p:commandButton value="Senden" id="send" action="#{controlBean.showMessage}" update="display"/>
+                <p:outputLabel for="mitgliednummer" value="#{msg['scan.mitgliedsnummer']}:" />
+                <p:inputMask id="mitgliednummer" value="#{controlBean.mnr}" mask="#{msg['scan.mnr_mask']}"/>
+                <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.showMessage}" update="display"/>
             </h:panelGrid>
         </h:form>
 
@@ -38,7 +37,7 @@
             <p:separator />
             <h:panelGrid columns="3" cellpadding="5">
                 <p:photoCam widgetVar="pc" listener="#{controlBean.oncapture}" update="photo" />
-                <p:commandButton type="button" value="Scannen" onclick="PF('pc').capture()"/>
+                <p:commandButton type="button" value="#{msg['button.scan']}" onclick="PF('pc').capture()"/>
                 <p:outputPanel id="photo">
                     <p:graphicImage name="files/images/photocam/#{controlBean.filename}.jpeg" rendered="#{not empty controlBean.filename}"/>
                 </p:outputPanel>

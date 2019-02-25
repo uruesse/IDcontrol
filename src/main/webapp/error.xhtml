@@ -9,8 +9,20 @@
         <div class="layout-error">
             <div class="layout-error-message-box">
                 <span class="layout-error-name">Fehlerhafte Ausführung</span>
-                <span class="layout-error-info">Bitte die Logeinträge kontrollieren..</span>
+                <span class="layout-error-info">Bitte die Logeinträge kontrollieren.</span>
                 <p:button outcome="/index" type="button" value="Zurück zur Homepage" class="secondary"/>
+            </div>
+
+            <div class="layout-error-detail">
+                <h:panelGrid id="display" >
+                    <h:outputText value="Fehlercode: #{errorHandler.statusCode}"></h:outputText>
+                    <h:outputText value="Fehlerbeschreibung: #{errorHandler.message}"></h:outputText>
+                    <h:outputText value="Angefragte URI : #{errorHandler.requestURI}"></h:outputText>
+                    <br />
+                    <h:outputText value="Exception Type: #{errorHandler.exceptionType}"></h:outputText>
+                    <br />
+                    <h:outputText value="Exception Class: #{errorHandler.exception}"></h:outputText>
+                </h:panelGrid>
             </div>
         </div>
     </ui:define>

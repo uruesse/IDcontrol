@@ -44,6 +44,7 @@ import javax.faces.context.FacesContext;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.text.MaskFormatter;
+import net.ruesse.idc.ressources.IdcBundle;
 import net.ruesse.idc.test.Person;
 import net.ruesse.idc.test.PersonService;
 import org.primefaces.event.CaptureEvent;
@@ -127,7 +128,7 @@ public class ControlBean implements Serializable {
 
         MaskFormatter mf = null;
         try {
-            mf = new MaskFormatter("******* * *****");
+            mf = new MaskFormatter(IdcBundle.getValue("control.mnr_mask"));
             mf.setValueContainsLiteralCharacters(false);
         } catch (ParseException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

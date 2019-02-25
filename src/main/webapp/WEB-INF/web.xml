@@ -8,6 +8,17 @@
         <param-name>primefaces.THEME</param-name>
         <param-value>nova-light</param-value>
     </context-param>
+    <context-param>
+        <description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2
+        </description>
+        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.application.CONFIG_FILES</param-name>
+        <param-value>/WEB-INF/faces-config.xml</param-value>
+    </context-param>
+    
     <error-page>
         <error-code>404</error-code>
         <location>/faces/error.xhtml</location>
@@ -17,10 +28,10 @@
         <location>/faces/error.xhtml</location>
     </error-page>
     <error-page>
-        <exception-type>java.lang.Exception</exception-type>
+        <exception-type>java.lang.Throwable</exception-type>
         <location>/faces/error.xhtml</location>
     </error-page>
-
+    
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -30,6 +41,14 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+    <listener>
+        <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
+    </listener>
     <session-config>
         <session-timeout>
             30

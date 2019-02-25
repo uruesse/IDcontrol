@@ -801,6 +801,9 @@ body {
           color: #b27800; }
         .layout-wrapper .layout-fullcontent .layout-error .layout-error-message-box .ui-button:hover {
           background-color: #e1bc6e; }
+    .layout-wrapper .layout-fullcontent .layout-error .layout-error-detail {
+      padding: 8px;
+      font-size: 16px; }
   .layout-wrapper .layout-fullcontent .content-submenu {
     background-color: #2b3236; }
     .layout-wrapper .layout-fullcontent .content-submenu > div {

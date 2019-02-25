@@ -22,16 +22,21 @@
 
             <h:panelGrid id="display" columns="2" cellpadding="5">
 
-                <p:outputLabel for="scan" value="Scanner: " />
+                <p:outputLabel for="scan" value="#{msg['scanner']}" />
                 <p:button id="scan" outcome="scan" type="button" value="Scannen" class="secondary" update="display"/>
 
                 <h:outputLabel for="demo" value="Barcodescannersimulator: " />
                 <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
-                     <p:ajax event="change" global="false" />
+                    <p:ajax event="change" global="false" />
                 </p:selectBooleanCheckbox>
 
                 <p:outputLabel for="barcodeview" value="Barcodeübersicht: " />
                 <p:button id="barcodeview" outcome="barcodeview" type="button" value="Barcodeübersicht" class="secondary"/>
+
+                <p:outputLabel for="errorgen" value="Fehlerprovokation: " />
+                <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
+                    <p:menuitem value="Error 404" url="xx" />
+                </p:splitButton>  
 
             </h:panelGrid>
         </h:form>

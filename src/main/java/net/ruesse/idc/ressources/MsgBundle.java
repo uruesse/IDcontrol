@@ -22,10 +22,18 @@ import java.util.ResourceBundle;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 public class MsgBundle {
+
     private static final ResourceBundle MSG = ResourceBundle.getBundle("net/ruesse/idc/ressources/message");
-    
-    public static String getMessage (String strVar) {
-        return MSG.getString(strVar);
+
+    public static String getMessage(String strVar) {
+        String retString;
+
+        try {
+            retString = MSG.getString(strVar);
+        } catch (java.util.MissingResourceException e) {
+            retString = "#{"+strVar+"}";
+        }
+        return retString;
     }
-    
+
 }

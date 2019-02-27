@@ -67,12 +67,15 @@ public class ControlBean implements Serializable {
         LOGGER.setLevel(Level.INFO);
     }
 
-    private String filename;
     PersonService ps = new PersonService();
 
     //@ManagedProperty("#(param.mnr)")
     private String mnr;
     private static String decodermessage;
+
+    private enum accesstype {
+        access, doubt, deny, error
+    }
 
     /**
      *
@@ -115,6 +118,41 @@ public class ControlBean implements Serializable {
 
     /**
      *
+     * @param atype
+     * @param summary
+     * @param detail
+     */
+    private void showAccessMessage(accesstype atype, String summary, String detail) {
+        FacesMessage.Severity sev;
+
+        switch (atype) {
+            case access:
+                sev = FacesMessage.SEVERITY_INFO;
+                break;
+            case doubt:
+                sev = FacesMessage.SEVERITY_WARN;
+                break;
+            case deny:
+                sev = FacesMessage.SEVERITY_ERROR;
+                break;
+            case error:
+            default:
+                sev = FacesMessage.SEVERITY_FATAL;
+        }
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, summary, detail));
+    }
+
+    private void showAccessMessage(accesstype atype, String summary, String detail, Object param) {
+        showAccessMessage(atype, summary, java.text.MessageFormat.format(detail, param));
+    }
+
+    private void showAccessMessage(accesstype atype, String summary, String detail, Object[] params) {
+        showAccessMessage(atype, summary, java.text.MessageFormat.format(detail, params));
+    }
+
+    /**
+     *
      * @param person
      */
     public void showPersonStatus(Person person) {
@@ -134,24 +172,28 @@ public class ControlBean implements Serializable {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        FacesMessage.Severity sev;
+        accesstype atype;
         if (person == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Konnte QR-Code nicht einlesen", decodermessage));
+            if (this.mnr == null || this.mnr.isEmpty()) {
+                showAccessMessage(accesstype.error, getMessage("control.qrcodeerror"), getMessage("control.einlesefehler"));
+            } else {
+                showAccessMessage(accesstype.error, getMessage("control.mitgliednichtgefunden"), getMessage("control.gescannterwert"), this.mnr);
+            }
         } else {
-            sev = FacesMessage.SEVERITY_INFO;
+            atype = accesstype.access;
             if (person.getOpenposts() > 0) {
-                sev = FacesMessage.SEVERITY_WARN;
+                atype = accesstype.doubt;
             }
             if (person.getExitdate() != null) {
                 if (person.getExitdate().compareTo(new Date()) < 0) {
-                    sev = FacesMessage.SEVERITY_ERROR;
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Mitglied ist ausgetreten am:  ", df.format(person.getExitdate())));
+                    atype = accesstype.deny;
+                    showAccessMessage(atype, getMessage("control.mitgliedausgetreten"), df.format(person.getExitdate()));
                 }
             }
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Beitragsinformation für " + person.getFullname(), ""));
+            showAccessMessage(atype, getMessage("control.beitragsinformationfuer") + person.getFullname(), "");
             try {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Mitgliedsnummer.  ", mf.valueToString(person.getMglnr())));
+                showAccessMessage(atype, getMessage("control.mitgliedsnummer"), mf.valueToString(person.getMglnr()));
             } catch (ParseException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
@@ -159,25 +201,32 @@ public class ControlBean implements Serializable {
             long yearInMillis = 365 * 24 * 60 * 60 * 1000;
             long age = (now.getTime() - person.getBirthdate().getTime()) / 365 / 24 / 60 / 60 / 1000;
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Alter: ", String.valueOf(age)));
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, "Offener Posten: ", " " + nf.format((double) person.getOpenposts() / 100)));
+            showAccessMessage(atype, getMessage("control.alter"), String.valueOf(age));
+            showAccessMessage(atype, getMessage("control.offenerposten"), nf.format((double) person.getOpenposts() / 100));
 
             switch (person.getState()) {
                 case "Mitarbeiter":
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Wassergeld: ", person.getState()));
+                    showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), person.getState());
                     break;
                 case "aktives Mitglied":
                     if (person.openwaterbill > 0) {
-                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Wassergeld: ", person.getState() + " offener Betrag: " + nf.format((double) person.getOpenwaterbill() / 100)));
+                        showAccessMessage(accesstype.doubt, getMessage("control.wasseregeld"), getMessage("control.offenerbetrag"), new Object[]{person.getState(), nf.format((double) person.getOpenwaterbill() / 100)});
                     } else {
-                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Wassergeld: ", person.getState() + ", Betrag ausgeglichen"));
+                        showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), getMessage("control.betragausgeglichen"), person.getState());
                     }
                     break;
                 default:
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wassergeld: ", person.getState()));
+                    showAccessMessage(accesstype.deny, getMessage("control.wasseregeld"), person.getState());
             }
         }
     }
+
+    /*
+    **
+    ** Nachfolgender code = Softwarescanner
+    **
+     */
+    private String filename;
 
     /**
      *
@@ -244,14 +293,14 @@ public class ControlBean implements Serializable {
             String decodedText = decodeQRCode(imageFile);
             if (decodedText == null) {
                 LOGGER.fine("Kein QR-Code im eingescannten Bild gefunden");
-                decodermessage = "Kein QR-Code im eingescannten Bild gefunden";
+                decodermessage = getMessage("control.qrcodenotfound");
             } else {
                 LOGGER.log(Level.FINE, "Decoded text = {0}", decodedText);
                 decodermessage = decodedText;
                 mnr = decodedText;
             }
         } catch (IOException e) {
-            decodermessage = "Konnte QR Code nicht entschlüsseln, IOException :: " + e.getMessage();
+            decodermessage = "Konnte QR Code nicht entschlüsseln, IOException: " + e.getMessage();
             LOGGER.fine(decodermessage);
         }
 

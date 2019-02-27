@@ -73,7 +73,7 @@
                             </h:panelGrid>
                         </p:outputPanel>
 
-                        <p:barcode value="#{person.fullurl}" type="qr"/>
+                        <p:barcode value="#{person.mglnr}" type="pdf417"/>
 
                         <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
                             <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
@@ -87,8 +87,7 @@
                 <p:outputPanel id="personDetail" style="text-align:center;">
                     <p:panelGrid  columns="2" rendered="#{not empty persondataGridView.selectedPerson}" columnClasses="label,value">
                         <f:facet name="header">
-                            <!--p:graphicImage name=""/--> 
-                            <p:barcode value="#{persondataGridView.selectedPerson.fullurl}" type="qr"/>
+                            <p:barcode value="#{persondataGridView.selectedPerson.mglnr}" type="qr"/>
                         </f:facet>
 
                         <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
@@ -112,6 +111,8 @@
                         <h:outputText value="#{msg['barcodeview.offenewassergeldrechnung']}:" />
                         <h:outputText value="#{persondataGridView.selectedPerson.openwaterbill}" />
 
+                        <h:outputText value="#{msg['barcodeview.url']}:" />
+                        <h:outputText value="#{persondataGridView.selectedPerson.fullurl}" />
                     </p:panelGrid>
                 </p:outputPanel>
             </p:dialog>

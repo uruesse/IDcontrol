@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static net.ruesse.idc.ressources.MsgBundle.getMessage;
 
 /**
  *
@@ -78,8 +79,7 @@ public class Person implements Serializable {
     }
 
     public String getFullurl() {
-        //return "http://mirakulix.ruesse.net:8080/IDControl/faces/index.xhtml?mnr=" + mglnr;
-        return "https://dlrgrs.eorga.de/IDControl/faces/index.xhtml?mnr=" + mglnr;
+        return java.text.MessageFormat.format(getMessage("title.fullurl"), mglnr);
     }
 
     public Date getBirthdate() {

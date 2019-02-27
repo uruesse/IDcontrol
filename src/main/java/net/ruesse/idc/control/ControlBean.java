@@ -67,7 +67,6 @@ public class ControlBean implements Serializable {
         LOGGER.setLevel(Level.INFO);
     }
 
-    private String filename;
     PersonService ps = new PersonService();
 
     //@ManagedProperty("#(param.mnr)")
@@ -175,7 +174,11 @@ public class ControlBean implements Serializable {
 
         accesstype atype;
         if (person == null) {
-            showAccessMessage(accesstype.error, getMessage("control.qrcodeerror"), decodermessage);
+            if (this.mnr == null || this.mnr.isEmpty()) {
+                showAccessMessage(accesstype.error, getMessage("control.qrcodeerror"), getMessage("control.einlesefehler"));
+            } else {
+                showAccessMessage(accesstype.error, getMessage("control.mitgliednichtgefunden"), getMessage("control.gescannterwert"), this.mnr);
+            }
         } else {
             atype = accesstype.access;
             if (person.getOpenposts() > 0) {
@@ -184,13 +187,13 @@ public class ControlBean implements Serializable {
             if (person.getExitdate() != null) {
                 if (person.getExitdate().compareTo(new Date()) < 0) {
                     atype = accesstype.deny;
-                    showAccessMessage(atype, getMessage("control.mitgliedausgetreten"),  df.format(person.getExitdate()));
+                    showAccessMessage(atype, getMessage("control.mitgliedausgetreten"), df.format(person.getExitdate()));
                 }
             }
 
             showAccessMessage(atype, getMessage("control.beitragsinformationfuer") + person.getFullname(), "");
             try {
-                showAccessMessage(atype, getMessage("control.mitgliedsnummer"),  mf.valueToString(person.getMglnr()));
+                showAccessMessage(atype, getMessage("control.mitgliedsnummer"), mf.valueToString(person.getMglnr()));
             } catch (ParseException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
@@ -209,7 +212,7 @@ public class ControlBean implements Serializable {
                     if (person.openwaterbill > 0) {
                         showAccessMessage(accesstype.doubt, getMessage("control.wasseregeld"), getMessage("control.offenerbetrag"), new Object[]{person.getState(), nf.format((double) person.getOpenwaterbill() / 100)});
                     } else {
-                        showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), getMessage("control.betragausgeglichen"), person.getState() );
+                        showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), getMessage("control.betragausgeglichen"), person.getState());
                     }
                     break;
                 default:
@@ -217,6 +220,13 @@ public class ControlBean implements Serializable {
             }
         }
     }
+
+    /*
+    **
+    ** Nachfolgender code = Softwarescanner
+    **
+     */
+    private String filename;
 
     /**
      *

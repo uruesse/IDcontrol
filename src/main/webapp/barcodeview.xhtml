@@ -73,7 +73,7 @@
                             </h:panelGrid>
                         </p:outputPanel>
 
-                        <p:barcode value="#{person.fullurl}" type="qr"/>
+                        <p:barcode value="#{person.mglnr}" type="pdf417"/>
 
                         <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
                             <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />

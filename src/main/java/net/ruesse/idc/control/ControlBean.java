@@ -31,6 +31,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -43,10 +44,14 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.swing.text.MaskFormatter;
+import net.ruesse.idc.database.persistence.Person;
+import net.ruesse.idc.database.persistence.service.PersonService;
 import static net.ruesse.idc.ressources.MsgBundle.getMessage;
-import net.ruesse.idc.test.Person;
-import net.ruesse.idc.test.PersonService;
 import org.primefaces.event.CaptureEvent;
 
 /**
@@ -59,6 +64,8 @@ import org.primefaces.event.CaptureEvent;
 public class ControlBean implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
+    private static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
+    private static EntityManagerFactory factory;
 
     /**
      *
@@ -113,7 +120,21 @@ public class ControlBean implements Serializable {
      */
     public void showMessage() {
         LOGGER.log(Level.FINE, "mnr={0}", this.mnr);
-        showPersonStatus(ps.findPerson(this.mnr));
+        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        EntityManager em = factory.createEntityManager();
+        // Read the existing entries and write to console
+        Query q = em.createNamedQuery("Person.findByMglnr");
+        //Query q = em.createQuery("SELECT p FROM Person p WHERE p.mglnr = :mglnr");
+        String scantext = this.mnr;
+        scantext = scantext.replaceAll(" ", "");
+        q.setParameter("mglnr", Long.parseLong(scantext));
+        List<Person> personList = q.getResultList();
+        for (Person person : personList) {
+            showPersonStatus(person);
+            //System.out.println(person.getNachname());
+        }
+
+        //showPersonStatus(ps.findPerson(this.mnr));
     }
 
     /**
@@ -143,10 +164,33 @@ public class ControlBean implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(sev, summary, detail));
     }
 
+    /**
+     *
+     * @param atype
+     * @param summary
+     */
+    private void showAccessMessage(accesstype atype, String summary) {
+        showAccessMessage(atype, summary, "");
+    }
+
+    /**
+     *
+     * @param atype
+     * @param summary
+     * @param detail
+     * @param param
+     */
     private void showAccessMessage(accesstype atype, String summary, String detail, Object param) {
         showAccessMessage(atype, summary, java.text.MessageFormat.format(detail, param));
     }
 
+    /**
+     *
+     * @param atype
+     * @param summary
+     * @param detail
+     * @param params
+     */
     private void showAccessMessage(accesstype atype, String summary, String detail, Object[] params) {
         showAccessMessage(atype, summary, java.text.MessageFormat.format(detail, params));
     }
@@ -172,7 +216,7 @@ public class ControlBean implements Serializable {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        accesstype atype;
+        accesstype atype = accesstype.access;
         if (person == null) {
             if (this.mnr == null || this.mnr.isEmpty()) {
                 showAccessMessage(accesstype.error, getMessage("control.qrcodeerror"), getMessage("control.einlesefehler"));
@@ -181,43 +225,43 @@ public class ControlBean implements Serializable {
             }
         } else {
             atype = accesstype.access;
+
             if (person.getOpenposts() > 0) {
                 atype = accesstype.doubt;
             }
-            if (person.getExitdate() != null) {
-                if (person.getExitdate().compareTo(new Date()) < 0) {
+
+            if (person.getAustritt() != null) {
+                if (person.getAustritt().compareTo(new Date()) < 0) {
                     atype = accesstype.deny;
-                    showAccessMessage(atype, getMessage("control.mitgliedausgetreten"), df.format(person.getExitdate()));
+                    showAccessMessage(atype, getMessage("control.mitgliedausgetreten"), df.format(person.getAustritt()));
                 }
             }
 
             showAccessMessage(atype, getMessage("control.beitragsinformationfuer") + person.getFullname(), "");
-            try {
-                showAccessMessage(atype, getMessage("control.mitgliedsnummer"), mf.valueToString(person.getMglnr()));
-            } catch (ParseException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
-            Date now = new Date();
-            long yearInMillis = 365 * 24 * 60 * 60 * 1000;
-            long age = (now.getTime() - person.getBirthdate().getTime()) / 365 / 24 / 60 / 60 / 1000;
 
-            showAccessMessage(atype, getMessage("control.alter"), String.valueOf(age));
-            showAccessMessage(atype, getMessage("control.offenerposten"), nf.format((double) person.getOpenposts() / 100));
+            showAccessMessage(atype, getMessage("control.mitgliedsnummer"), person.getStrMglnr());
 
-            switch (person.getState()) {
-                case "Mitarbeiter":
-                    showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), person.getState());
-                    break;
-                case "aktives Mitglied":
-                    if (person.openwaterbill > 0) {
-                        showAccessMessage(accesstype.doubt, getMessage("control.wasseregeld"), getMessage("control.offenerbetrag"), new Object[]{person.getState(), nf.format((double) person.getOpenwaterbill() / 100)});
-                    } else {
-                        showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), getMessage("control.betragausgeglichen"), person.getState());
-                    }
-                    break;
-                default:
-                    showAccessMessage(accesstype.deny, getMessage("control.wasseregeld"), person.getState());
-            }
+        }
+        Date now = new Date();
+        long yearInMillis = 365 * 24 * 60 * 60 * 1000;
+        long age = (now.getTime() - person.getGeburtsdatum().getTime()) / 365 / 24 / 60 / 60 / 1000;
+
+        showAccessMessage(atype, getMessage("control.alter"), String.valueOf(age));
+        showAccessMessage(atype, getMessage("control.offenerposten"), nf.format((double) person.getOpenposts() / 100));
+
+        switch (person.getState()) {
+            case "Mitarbeiter":
+                showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), person.getState());
+                break;
+            case "aktives Mitglied":
+                if (person.getOpenwaterbill() > 0) {
+                    showAccessMessage(accesstype.doubt, getMessage("control.wasseregeld"), getMessage("control.offenerbetrag"), new Object[]{person.getState(), nf.format((double) person.getOpenwaterbill() / 100)});
+                } else {
+                    showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), getMessage("control.betragausgeglichen"), person.getState());
+                }
+                break;
+            default:
+                showAccessMessage(accesstype.deny, getMessage("control.wasseregeld"), person.getState());
         }
     }
 

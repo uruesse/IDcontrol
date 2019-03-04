@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.ruesse.idc.test;
+package net.ruesse.idc.control;
 
 import java.io.Serializable;
 import java.util.List;
@@ -23,6 +23,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import net.ruesse.idc.database.persistence.Person;
+import net.ruesse.idc.database.persistence.service.PersonService;
 
 /**
  *
@@ -30,9 +32,9 @@ import javax.faces.bean.ViewScoped;
  */
 @ManagedBean
 @ViewScoped
-public class PersondataGridView implements Serializable {
+public class PersonGridView implements Serializable {
 
-    private final static Logger LOGGER = Logger.getLogger(PersondataGridView.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(PersonGridView.class.getName());
 
     private List<Person> persons;
 
@@ -40,20 +42,21 @@ public class PersondataGridView implements Serializable {
 
     @ManagedProperty("#{personService}")
     private PersonService service;
-
-    /**
-     * 
-     */
-    public PersondataGridView() {
-        LOGGER.setLevel(Level.INFO);
-    }
-
-    /**
+    
+        /**
      * 
      */
     @PostConstruct
     public void init() {
         persons = service.createPersons();
+    }
+
+
+    /**
+     * 
+     */
+    public PersonGridView() {
+        LOGGER.setLevel(Level.INFO);
     }
 
     /**
@@ -80,7 +83,7 @@ public class PersondataGridView implements Serializable {
     public Person getSelectedPerson() {
         LOGGER.fine("aufgerufen");
         if (selectedPerson != null) {
-            LOGGER.log(Level.FINE, "Mitgliedsnummer: {0}", selectedPerson.mglnr);
+            LOGGER.log(Level.FINE, "Mitgliedsnummer: {0}", selectedPerson.getMglnr());
         }
         return selectedPerson;
     }

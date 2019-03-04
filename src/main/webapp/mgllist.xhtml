@@ -37,23 +37,23 @@
 
         <h:form id="form">
             <p:dataView var="person" 
-                        value="#{persondataGridView.persons}" 
+                        value="#{personGridView.persons}" 
                         rows="12" paginator="true" 
-                        rowsPerPageTemplate="6,12,16"
+                        rowsPerPageTemplate="10,20,50,100"
                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                         gridIcon="pi pi-th-large" 
                         listIcon="pi pi-bars">
 
                 <p:dataViewGridItem>
-                    <p:panel header="#{person.mglnr}" style="text-align:center">
+                    <p:panel header="#{person.strMglnr}" style="text-align:center">
                         <h:panelGrid columns="1" style="width:100%">
-                            <p:barcode value="#{person.mglnr}" type="qr"/>
+                            <p:barcode value="#{person.strMglnr}" type="qr"/>
 
                             <h:outputText value="#{person.fullname}" />
 
                             <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
                                 <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
-                                <f:setPropertyActionListener value="#{person}" target="#{persondataGridView.selectedPerson}" />
+                                <f:setPropertyActionListener value="#{person}" target="#{personGridView.selectedPerson}" />
                             </p:commandLink>
                         </h:panelGrid>
                     </p:panel>
@@ -61,23 +61,31 @@
 
                 <p:dataViewListItem>
                     <h:panelGrid columns="4" style="width:100%" columnClasses="logo,detail">
-                        <p:barcode value="#{person.mglnr}" type="qr"/>
+                        <p:barcode value="#{person.strMglnr}" type="qr"/>
 
                         <p:outputPanel>
                             <h:panelGrid columns="2" cellpadding="5">
                                 <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
-                                <h:outputText value="#{person.mglnr}" style="font-weight: bold"/>
+                                <h:outputText value="#{person.strMglnr}, #{person.hauptkategorie}" style="font-weight: bold"/>
 
                                 <h:outputText value="#{msg['barcodeview.name']}:" />
                                 <h:outputText value="#{person.fullname}" style="font-weight: bold"/>
+
+                                <h:outputText value="Anschrift" />
+                                <h:outputText value="#{person.strasse}, #{person.plz} #{person.ort}, #{person.land}" style="font-weight: bold"/>
+
+                                <h:outputText value="#{msg['barcodeview.geburtstdatum']}:" />
+                                <h:outputText value="#{person.geburtsdatum}">
+                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                </h:outputText>
                             </h:panelGrid>
                         </p:outputPanel>
 
-                        <p:barcode value="#{person.mglnr}" type="pdf417"/>
+                        <p:barcode value="#{person.strMglnr}" type="pdf417"/>
 
                         <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
                             <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
-                            <f:setPropertyActionListener value="#{person}" target="#{persondataGridView.selectedPerson}" />
+                            <f:setPropertyActionListener value="#{person}" target="#{personGridView.selectedPerson}" />
                         </p:commandLink>
                     </h:panelGrid>
                 </p:dataViewListItem>
@@ -85,34 +93,33 @@
 
             <p:dialog header="#{msg['barcodeview.personeninfo']}" widgetVar="personDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
                 <p:outputPanel id="personDetail" style="text-align:center;">
-                    <p:panelGrid  columns="2" rendered="#{not empty persondataGridView.selectedPerson}" columnClasses="label,value">
+                    <p:panelGrid  columns="2" rendered="#{not empty personGridView.selectedPerson}" columnClasses="label,value">
                         <f:facet name="header">
-                            <p:barcode value="#{persondataGridView.selectedPerson.mglnr}" type="qr"/>
+                            <p:barcode value="#{personGridView.selectedPerson.strMglnr}" type="qr"/>
                         </f:facet>
 
                         <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.mglnr}" />
+                        <h:outputText value="#{personGridView.selectedPerson.strMglnr}" />
 
                         <h:outputText value="#{msg['barcodeview.name']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.fullname}" />
+                        <h:outputText value="#{personGridView.selectedPerson.fullname}" />
+                        
+                        <h:outputText value="Hauptkategorie" />
+                        <h:outputText value="#{personGridView.selectedPerson.hauptkategorie}" />
 
                         <h:outputText value="#{msg['barcodeview.geburtstdatum']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.birthdate}" />
+                        <h:outputText value="#{personGridView.selectedPerson.geburtsdatum}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
 
                         <h:outputText value="#{msg['barcodeview.austrittsdatum']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.exitdate}" />
+                        <h:outputText value="#{personGridView.selectedPerson.austritt}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
 
-                        <h:outputText value="#{msg['barcodeview.wassergeldstatus']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.state}" />
+                        <h:outputText value="Zahlmodus" />
+                        <h:outputText value="#{personGridView.selectedPerson.zahlungsmodus}" />
 
-                        <h:outputText value="#{msg['barcodeview.offeneposten']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.openposts}" />
-
-                        <h:outputText value="#{msg['barcodeview.offenewassergeldrechnung']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.openwaterbill}" />
-
-                        <h:outputText value="#{msg['barcodeview.url']}:" />
-                        <h:outputText value="#{persondataGridView.selectedPerson.fullurl}" />
                     </p:panelGrid>
                 </p:outputPanel>
             </p:dialog>

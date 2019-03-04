@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="net.ruesse.IDControl.PU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>net.ruesse.idc.database.persistence.Person</class>
+    <class>net.ruesse.idc.database.persistence.Bankverbindung</class>
+    <class>net.ruesse.idc.database.persistence.Rechnung</class>
+    <class>net.ruesse.idc.database.persistence.Beitrag</class>
+    <class>net.ruesse.idc.database.persistence.Contact</class>
+    <class>net.ruesse.idc.database.persistence.Cv</class>
+    <class>net.ruesse.idc.database.persistence.Address</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IDControl"/>
+      <property name="javax.persistence.jdbc.user" value="dlrg"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.password" value="dlrg"/>
+    </properties>
+  </persistence-unit>
+</persistence>

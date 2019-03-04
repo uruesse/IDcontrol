@@ -31,7 +31,7 @@
                 </p:selectBooleanCheckbox>
 
                 <p:outputLabel for="barcodeview" value="#{msg['control.barcodeoverview']}:" />
-                <p:button id="barcodeview" outcome="barcodeview" type="button" value="#{msg['control.barcodeoverview']}" class="secondary"/>
+                <p:button id="barcodeview" outcome="mgllist" type="button" value="#{msg['control.barcodeoverview']}" class="secondary"/>
 
                 <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
                 <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >

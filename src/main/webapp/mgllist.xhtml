@@ -39,18 +39,21 @@
             <p:dataView var="person" 
                         value="#{personGridView.persons}" 
                         rows="12" paginator="true" 
-                        rowsPerPageTemplate="10,20,50,100"
+                        rowsPerPageTemplate="10,20,50,100,1000"
                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                         gridIcon="pi pi-th-large" 
                         listIcon="pi pi-bars">
 
                 <p:dataViewGridItem>
-                    <p:panel header="#{person.strMglnr}" style="text-align:center">
-                        <h:panelGrid columns="1" style="width:100%">
-                            <p:barcode value="#{person.strMglnr}" type="qr"/>
-
-                            <h:outputText value="#{person.fullname}" />
-
+                    <p:panel header="#{person.vorname} #{person.nachname}" style="text-align:center">
+                        <h:panelGrid columns="2" style="width:100%">
+                            <p:outputPanel>
+                                <p:barcode value="#{person.strMglnr}" type="qr"/>
+                                <br />
+                                <h:outputText value="#{person.mglnr}">
+                                    <f:convertNumber pattern="0000000000000" />
+                                </h:outputText>
+                            </p:outputPanel>
                             <p:commandLink update=":form:personDetail" oncomplete="PF('personDialog').show()" title="View Detail">
                                 <h:outputText styleClass="ui-icon pi pi-search" style="margin:0 auto;" />
                                 <f:setPropertyActionListener value="#{person}" target="#{personGridView.selectedPerson}" />
@@ -66,13 +69,10 @@
                         <p:outputPanel>
                             <h:panelGrid columns="2" cellpadding="5">
                                 <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
-                                <h:outputText value="#{person.strMglnr}, #{person.hauptkategorie}" style="font-weight: bold"/>
+                                <h:outputText value="#{person.strMglnr}, #{person.hauptkategorie}" style="font-weight: bold" />
 
                                 <h:outputText value="#{msg['barcodeview.name']}:" />
-                                <h:outputText value="#{person.fullname}" style="font-weight: bold"/>
-
-                                <h:outputText value="Anschrift" />
-                                <h:outputText value="#{person.strasse}, #{person.plz} #{person.ort}, #{person.land}" style="font-weight: bold"/>
+                                <h:outputText value="#{person.vorname}  #{person.nachname}" style="font-weight: bold"/>
 
                                 <h:outputText value="#{msg['barcodeview.geburtstdatum']}:" />
                                 <h:outputText value="#{person.geburtsdatum}">
@@ -95,15 +95,15 @@
                 <p:outputPanel id="personDetail" style="text-align:center;">
                     <p:panelGrid  columns="2" rendered="#{not empty personGridView.selectedPerson}" columnClasses="label,value">
                         <f:facet name="header">
-                            <p:barcode value="#{personGridView.selectedPerson.strMglnr}" type="qr"/>
+                            <p:barcode value="#{personGridView.strMglnrOfSelectedPerson}" type="qr"/>
                         </f:facet>
 
                         <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
-                        <h:outputText value="#{personGridView.selectedPerson.strMglnr}" />
+                        <h:outputText value="#{personGridView.strMglnrOfSelectedPerson}" />
 
                         <h:outputText value="#{msg['barcodeview.name']}:" />
-                        <h:outputText value="#{personGridView.selectedPerson.fullname}" />
-                        
+                        <h:outputText value="#{personGridView.selectedPerson.vorname} #{personGridView.selectedPerson.nachname}" />
+
                         <h:outputText value="Hauptkategorie" />
                         <h:outputText value="#{personGridView.selectedPerson.hauptkategorie}" />
 

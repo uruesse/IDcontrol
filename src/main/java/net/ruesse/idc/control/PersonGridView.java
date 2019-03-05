@@ -42,26 +42,29 @@ public class PersonGridView implements Serializable {
 
     @ManagedProperty("#{personService}")
     private PersonService service;
-    
-        /**
-     * 
+
+    /**
+     *
      */
     @PostConstruct
     public void init() {
         persons = service.createPersons();
     }
 
+    public String getStrMglnrOfSelectedPerson() {
+        return String.format("%013d", selectedPerson.getMglnr());
+    }
 
     /**
-     * 
+     *
      */
     public PersonGridView() {
         LOGGER.setLevel(Level.INFO);
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public List<Person> getPersons() {
         LOGGER.log(Level.FINE, "Persons: {0}", persons.toString());
@@ -69,16 +72,16 @@ public class PersonGridView implements Serializable {
     }
 
     /**
-     * 
-     * @param service 
+     *
+     * @param service
      */
     public void setService(PersonService service) {
         this.service = service;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public Person getSelectedPerson() {
         LOGGER.fine("aufgerufen");
@@ -89,11 +92,10 @@ public class PersonGridView implements Serializable {
     }
 
     /**
-     * 
-     * @param selectedPerson 
+     *
+     * @param selectedPerson
      */
     public void setSelectedPerson(Person selectedPerson) {
         this.selectedPerson = selectedPerson;
     }
-
 }

@@ -6,16 +6,7 @@ INSERT INTO PERSON (
     TITEL, 
     NACHNAME,
     VORNAME,
-    STRASSE,
-    PLZ,
-    ORT,
-    LAND,
     HAUPTKATEGORIE,
-    TELEFON_1,
-    TELEFON_2,
-    MOBIL,
-    TELEFAX,
-    EMAIL,
     GEBURTSDATUM,
     BEMERKUNG,
     STATUS, 
@@ -32,16 +23,7 @@ INSERT INTO PERSON (
         TITEL, 
         NACHNAME,
         VORNAME,
-        STRASSE,
-        PLZ,
-        ORT,
-        LAND ,
         HAUPTKATEGORIE,
-        TELEFON_1,
-        TELEFON_2,
-        MOBIL,
-        TELEFAX,
-        EMAIL,
         GEBURTSDATUM,
         BEMERKUNG ,
         STATUS,
@@ -176,3 +158,13 @@ INSERT INTO RECHNUNG (
         RECHNUNGSSUMME 
     FROM PERSON_STAGE 
     WHERE RECHNUNGSNUMMER IS NOT NULL;
+
+INSERT INTO OPENPOST (
+    MGLNR, 
+    SUMMEVORJAHR,
+    SUMMEAKTJAHR) 
+    SELECT DISTINCT 
+        MITGLIEDSNUMMER_SEWOBE, 
+        0,
+        0 
+    FROM DLRG.PERSON_STAGE;

@@ -16,19 +16,23 @@
 package net.ruesse.idc.database.persistence;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -46,16 +50,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Person.findByTitel", query = "SELECT p FROM Person p WHERE p.titel = :titel")
     , @NamedQuery(name = "Person.findByNachname", query = "SELECT p FROM Person p WHERE p.nachname = :nachname")
     , @NamedQuery(name = "Person.findByVorname", query = "SELECT p FROM Person p WHERE p.vorname = :vorname")
-    , @NamedQuery(name = "Person.findByStrasse", query = "SELECT p FROM Person p WHERE p.strasse = :strasse")
-    , @NamedQuery(name = "Person.findByPlz", query = "SELECT p FROM Person p WHERE p.plz = :plz")
-    , @NamedQuery(name = "Person.findByOrt", query = "SELECT p FROM Person p WHERE p.ort = :ort")
-    , @NamedQuery(name = "Person.findByLand", query = "SELECT p FROM Person p WHERE p.land = :land")
     , @NamedQuery(name = "Person.findByHauptkategorie", query = "SELECT p FROM Person p WHERE p.hauptkategorie = :hauptkategorie")
-    , @NamedQuery(name = "Person.findByTelefon1", query = "SELECT p FROM Person p WHERE p.telefon1 = :telefon1")
-    , @NamedQuery(name = "Person.findByTelefon2", query = "SELECT p FROM Person p WHERE p.telefon2 = :telefon2")
-    , @NamedQuery(name = "Person.findByMobil", query = "SELECT p FROM Person p WHERE p.mobil = :mobil")
-    , @NamedQuery(name = "Person.findByTelefax", query = "SELECT p FROM Person p WHERE p.telefax = :telefax")
-    , @NamedQuery(name = "Person.findByEmail", query = "SELECT p FROM Person p WHERE p.email = :email")
     , @NamedQuery(name = "Person.findByGeburtsdatum", query = "SELECT p FROM Person p WHERE p.geburtsdatum = :geburtsdatum")
     , @NamedQuery(name = "Person.findByBemerkung", query = "SELECT p FROM Person p WHERE p.bemerkung = :bemerkung")
     , @NamedQuery(name = "Person.findByStatus", query = "SELECT p FROM Person p WHERE p.status = :status")
@@ -90,35 +85,7 @@ public class Person implements Serializable {
     private String vorname;
     @Size(max = 128)
     @Column(length = 128)
-    private String strasse;
-    @Size(max = 16)
-    @Column(length = 16)
-    private String plz;
-    @Size(max = 128)
-    @Column(length = 128)
-    private String ort;
-    @Size(max = 128)
-    @Column(length = 128)
-    private String land;
-    @Size(max = 128)
-    @Column(length = 128)
     private String hauptkategorie;
-    @Size(max = 128)
-    @Column(name = "TELEFON_1", length = 128)
-    private String telefon1;
-    @Size(max = 128)
-    @Column(name = "TELEFON_2", length = 128)
-    private String telefon2;
-    @Size(max = 128)
-    @Column(length = 128)
-    private String mobil;
-    @Size(max = 128)
-    @Column(length = 128)
-    private String telefax;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Ungültige E-Mail")//if the field contains email address consider using this annotation to enforce field validation
-    @Size(max = 128)
-    @Column(length = 128)
-    private String email;
     @Temporal(TemporalType.DATE)
     private Date geburtsdatum;
     @Size(max = 128)
@@ -140,6 +107,20 @@ public class Person implements Serializable {
     @Size(max = 128)
     @Column(length = 128)
     private String zahlungsmodus;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Bankverbindung> bankverbindungCollection;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Contact> contactCollection;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Cv> cvCollection;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Openpost> openpostCollection;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Rechnung> rechnungCollection;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Address> addressCollection;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Beitrag> beitragCollection;
 
     public Person() {
     }
@@ -204,84 +185,12 @@ public class Person implements Serializable {
         this.vorname = vorname;
     }
 
-    public String getStrasse() {
-        return strasse;
-    }
-
-    public void setStrasse(String strasse) {
-        this.strasse = strasse;
-    }
-
-    public String getPlz() {
-        return plz;
-    }
-
-    public void setPlz(String plz) {
-        this.plz = plz;
-    }
-
-    public String getOrt() {
-        return ort;
-    }
-
-    public void setOrt(String ort) {
-        this.ort = ort;
-    }
-
-    public String getLand() {
-        return land;
-    }
-
-    public void setLand(String land) {
-        this.land = land;
-    }
-
     public String getHauptkategorie() {
         return hauptkategorie;
     }
 
     public void setHauptkategorie(String hauptkategorie) {
         this.hauptkategorie = hauptkategorie;
-    }
-
-    public String getTelefon1() {
-        return telefon1;
-    }
-
-    public void setTelefon1(String telefon1) {
-        this.telefon1 = telefon1;
-    }
-
-    public String getTelefon2() {
-        return telefon2;
-    }
-
-    public void setTelefon2(String telefon2) {
-        this.telefon2 = telefon2;
-    }
-
-    public String getMobil() {
-        return mobil;
-    }
-
-    public void setMobil(String mobil) {
-        this.mobil = mobil;
-    }
-
-    public String getTelefax() {
-        return telefax;
-    }
-
-    public void setTelefax(String telefax) {
-        this.telefax = telefax;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public Date getGeburtsdatum() {
@@ -348,6 +257,69 @@ public class Person implements Serializable {
         this.zahlungsmodus = zahlungsmodus;
     }
 
+    @XmlTransient
+    public Collection<Bankverbindung> getBankverbindungCollection() {
+        return bankverbindungCollection;
+    }
+
+    public void setBankverbindungCollection(Collection<Bankverbindung> bankverbindungCollection) {
+        this.bankverbindungCollection = bankverbindungCollection;
+    }
+
+    @XmlTransient
+    public Collection<Contact> getContactCollection() {
+        return contactCollection;
+    }
+
+    public void setContactCollection(Collection<Contact> contactCollection) {
+        this.contactCollection = contactCollection;
+    }
+
+    @XmlTransient
+    public Collection<Cv> getCvCollection() {
+        return cvCollection;
+    }
+
+    public void setCvCollection(Collection<Cv> cvCollection) {
+        this.cvCollection = cvCollection;
+    }
+
+    @XmlTransient
+    public Collection<Openpost> getOpenpostCollection() {
+        return openpostCollection;
+    }
+
+    public void setOpenpostCollection(Collection<Openpost> openpostCollection) {
+        this.openpostCollection = openpostCollection;
+    }
+
+    @XmlTransient
+    public Collection<Rechnung> getRechnungCollection() {
+        return rechnungCollection;
+    }
+
+    public void setRechnungCollection(Collection<Rechnung> rechnungCollection) {
+        this.rechnungCollection = rechnungCollection;
+    }
+
+    @XmlTransient
+    public Collection<Address> getAddressCollection() {
+        return addressCollection;
+    }
+
+    public void setAddressCollection(Collection<Address> addressCollection) {
+        this.addressCollection = addressCollection;
+    }
+
+    @XmlTransient
+    public Collection<Beitrag> getBeitragCollection() {
+        return beitragCollection;
+    }
+
+    public void setBeitragCollection(Collection<Beitrag> beitragCollection) {
+        this.beitragCollection = beitragCollection;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -373,24 +345,7 @@ public class Person implements Serializable {
         return "net.ruesse.idc.database.persistence.Person[ mglnr=" + mglnr + " ]";
     }
 
-    public String getFullname() {
-        return this.getVorname() + " " + this.getNachname();
-    }
-
     public String getStrMglnr() {
-        return String.format("%013d", this.getMglnr());
+        return String.format("%013d", mglnr);
     }
-
-    public int getOpenwaterbill() {
-        return 0;
-    }
-
-    public int getOpenposts() {
-        return 0;
-    }
-
-    public String getState() {
-        return this.getStatus();
-    }
-
 }

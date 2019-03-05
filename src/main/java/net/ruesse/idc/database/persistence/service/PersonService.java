@@ -45,7 +45,7 @@ public class PersonService implements Serializable {
      *
      */
     public PersonService() {
-        LOGGER.setLevel(Level.INFO);
+        LOGGER.setLevel(Level.FINE);
     }
 
     private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
@@ -66,10 +66,22 @@ public class PersonService implements Serializable {
     public List<Person> createPersons() {
         factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
         EntityManager em = factory.createEntityManager();
-        // Read the existing entries and write to console
+
+        LOGGER.log(Level.FINE, "Starte Query auf Personen");
         Query q = em.createNamedQuery("Person.findAll");
         personlist = q.getResultList();
+        /*
+         pl.foreach((p) -> {
+            LOGGER.log(Level.FINE, "mnr: {0}", p.getMglnr());
+            personlist.add(new PersonExt(p));
+        })
 
+        LOGGER.log(Level.FINE, "VorForEach");
+        for (Person p : pl) {
+            LOGGER.log(Level.FINE, "mnr: {0}", p.getMglnr());
+            personlist.add(new PersonExt(p));
+        }
+         */
         return personlist;
     }
 
@@ -102,7 +114,6 @@ public class PersonService implements Serializable {
                         p = pr;
                     }
                 }
-
             }
         }
         return p;

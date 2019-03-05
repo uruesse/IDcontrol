@@ -38,7 +38,7 @@ public class ApplicationControlBean implements Serializable {
     public ApplicationControlBean() {
         LOGGER.setLevel(Level.INFO);
         LOGGER.fine("aufgerufen");
-        isDemo = true;
+        isDemo = false;
     }
 
     public boolean isIsDemo() {

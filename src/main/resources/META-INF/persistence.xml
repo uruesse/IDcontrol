@@ -9,6 +9,7 @@
     <class>net.ruesse.idc.database.persistence.Contact</class>
     <class>net.ruesse.idc.database.persistence.Cv</class>
     <class>net.ruesse.idc.database.persistence.Address</class>
+    <class>net.ruesse.idc.database.persistence.Openpost</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IDControl"/>

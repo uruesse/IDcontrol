@@ -18,7 +18,6 @@ package net.ruesse.idc.database.persistence;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -119,6 +118,8 @@ public class Person implements Serializable {
     private Collection<Rechnung> rechnungCollection;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Address> addressCollection;
+    @OneToMany(mappedBy = "mglnr")
+    private Collection<Offenerechnungen> offenerechnungenCollection;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Beitrag> beitragCollection;
 
@@ -312,6 +313,15 @@ public class Person implements Serializable {
     }
 
     @XmlTransient
+    public Collection<Offenerechnungen> getOffenerechnungenCollection() {
+        return offenerechnungenCollection;
+    }
+
+    public void setOffenerechnungenCollection(Collection<Offenerechnungen> offenerechnungenCollection) {
+        this.offenerechnungenCollection = offenerechnungenCollection;
+    }
+
+    @XmlTransient
     public Collection<Beitrag> getBeitragCollection() {
         return beitragCollection;
     }
@@ -344,7 +354,6 @@ public class Person implements Serializable {
     public String toString() {
         return "net.ruesse.idc.database.persistence.Person[ mglnr=" + mglnr + " ]";
     }
-
     public String getStrMglnr() {
         return String.format("%013d", mglnr);
     }

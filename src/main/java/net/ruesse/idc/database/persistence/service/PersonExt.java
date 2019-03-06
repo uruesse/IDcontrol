@@ -22,7 +22,9 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import net.ruesse.idc.control.ControlBean;
+import net.ruesse.idc.database.persistence.Beitrag;
 import net.ruesse.idc.database.persistence.Cv;
+import net.ruesse.idc.database.persistence.Offenerechnungen;
 import net.ruesse.idc.database.persistence.Openpost;
 import net.ruesse.idc.database.persistence.Person;
 
@@ -35,7 +37,7 @@ import net.ruesse.idc.database.persistence.Person;
 public class PersonExt {
 
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
-   
+
     public Person person;
 
     public PersonExt(Person person) {
@@ -57,7 +59,7 @@ public class PersonExt {
 
     public int getAge() {
         Date now = new Date();
-                long age = (now.getTime() - person.getGeburtsdatum().getTime()) / 365 / 24 / 60 / 60 / 1000;
+        long age = (now.getTime() - person.getGeburtsdatum().getTime()) / 365 / 24 / 60 / 60 / 1000;
         LOGGER.log(Level.FINE, "Alter: {0}", age);
         return (int) age;
     }
@@ -66,8 +68,10 @@ public class PersonExt {
         String status = "inaktiv";
         LOGGER.log(Level.FINE, "Status: {0}", person.getStatus());
         if ("Aktiv".equals(person.getStatus())) {
-            Collection<Cv> cv = person.getCvCollection();
             Date now = new Date();
+
+            /* suche Mitarbeiter im aktuellen Lebenslaufeintrag */
+            Collection<Cv> cv = person.getCvCollection();
             try {
                 for (Cv c : cv) {
                     LOGGER.log(Level.FINE, "c: {0} {1} {2} {3}", new Object[]{c.getCvkey(), c.getCvvalue(), c.getValidfrom(), c.getValidto()});
@@ -79,12 +83,21 @@ public class PersonExt {
                 }
             } catch (java.util.NoSuchElementException e) {
             }
+
+            /* suche ob in aktuellen Beiträgen Wassergeld vorhanden ist */
+            if (!"Mitarbeiter".equals(status)) {
+                Collection<Beitrag> be = person.getBeitragCollection();
+                for (Beitrag b : be) {
+                    LOGGER.log(Level.FINE, "b: {0} {1} {2}", new Object[]{b.getBeitragsposition(), b.getFaelligStart(), b.getFaelligEnde()});
+                    if ("Wassergeld".equals(b.getBeitragsposition())) {
+                        if (now.getYear() == b.getFaelligStart().getYear() || (now.getYear() + 1) == b.getFaelligStart().getYear() && now.getYear() < b.getFaelligEnde().getYear()) {
+                            status = "aktiv";
+                        }
+                    }
+                }
+            }
         }
         return status;
-    }
-
-    public int getOpenwaterbill() {
-        return 0;
     }
 
     Openpost o = null;
@@ -92,6 +105,7 @@ public class PersonExt {
     public int getOpenposts() {
         if (o == null) {
             Collection<Openpost> op = person.getOpenpostCollection();
+
             try {
                 o = op.iterator().next();
             } catch (java.util.NoSuchElementException e) {
@@ -99,6 +113,43 @@ public class PersonExt {
             }
         }
         return o.getSummevorjahr() + o.getSummeaktjahr();
+    }
+
+    public String getOpenbills() {
+        String str = "";
+        int summe = 0;
+        int count = 0;
+        int lastschriften = 0;
+        if (o == null) {
+            Collection<Offenerechnungen> openbills = person.getOffenerechnungenCollection();
+            for (Offenerechnungen ob : openbills) {
+                LOGGER.log(Level.FINE, "offene Rechnungen: {0} {1} {2}", new Object[]{ob.getRechnungsnummer(), ob.getRechnungssumme(), ob.getRechnungsdatum()});
+                summe += ob.getRechnungssumme();
+                //str += " [" + ob.getRechnungsnummer() + "]";
+                count += 1;
+                if ("Lastschrift".equals(ob.getZahlmodus())) {
+                    lastschriften += ob.getRechnungssumme();
+                }
+            }
+        }
+        if (summe > 0) {
+            if (count == 1) {
+                str = count + " offene Rechnung mit Betrag: ";
+            } else {
+                str = count + " offene Rechnungen mit Gesamtsumme: ";
+            }
+            str += String.format("%,.2f", (double) summe / 100);
+            str += " €";
+            if (lastschriften == summe) {
+                str += ", Gesamtbetrag wird abgebucht";
+            } else if (lastschriften > 0) {
+                str += " -- davon werden ";
+                str += String.format("%,.2f", (double) lastschriften / 100);
+                str += " € abgebucht.";
+            }
+
+        }
+        return str;
     }
 
     public int getSummevorjahr() {

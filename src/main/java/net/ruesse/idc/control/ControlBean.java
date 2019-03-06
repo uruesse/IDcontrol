@@ -236,7 +236,9 @@ public class ControlBean implements Serializable {
         } else {
             atype = accesstype.access;
 
-            if (pe.getOpenposts() > 0) {
+            String op = pe.getOpenbills();
+
+            if (!"".equals(op)) {
                 atype = accesstype.doubt;
             }
 
@@ -252,19 +254,22 @@ public class ControlBean implements Serializable {
             showAccessMessage(atype, getMessage("control.mitgliedsnummer"), pe.getStrMglnr());
 
             showAccessMessage(atype, getMessage("control.alter"), String.valueOf(pe.getAge()));
-            showAccessMessage(atype, getMessage("control.offenerposten"), nf.format((double) pe.getOpenposts() / 100));
+            //showAccessMessage(atype, getMessage("control.offenerposten"), nf.format((double) pe.getOpenposts() / 100));
+            if ("".equals(op)){
+                showAccessMessage(atype, "Beitragskonto ist ausgeglichen");
+            } else {
+                showAccessMessage(atype, getMessage("control.offenerposten"), op);
+            }
+            
+            
 
             String status = pe.getState();
             switch (status) {
                 case "Mitarbeiter":
                     showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), status);
                     break;
-                case "aktives Mitglied":
-                    if (pe.getOpenwaterbill() > 0) {
-                        showAccessMessage(accesstype.doubt, getMessage("control.wasseregeld"), getMessage("control.offenerbetrag"), new Object[]{status, nf.format((double) pe.getOpenwaterbill() / 100)});
-                    } else {
-                        showAccessMessage(accesstype.access, getMessage("control.wasseregeld"), getMessage("control.betragausgeglichen"), status);
-                    }
+                case "aktiv":
+                    showAccessMessage(atype, getMessage("control.wasseregeld"), status);
                     break;
                 default:
                     showAccessMessage(accesstype.deny, getMessage("control.wasseregeld"), status);

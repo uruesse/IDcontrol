@@ -16,6 +16,7 @@
 package net.ruesse.idc.database.persistence;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +28,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -42,6 +45,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Beitrag.findById", query = "SELECT b FROM Beitrag b WHERE b.id = :id")
     , @NamedQuery(name = "Beitrag.findByFnr", query = "SELECT b FROM Beitrag b WHERE b.fnr = :fnr")
     , @NamedQuery(name = "Beitrag.findByBeitragsposition", query = "SELECT b FROM Beitrag b WHERE b.beitragsposition = :beitragsposition")
+    , @NamedQuery(name = "Beitrag.findByBeitragskommentar", query = "SELECT b FROM Beitrag b WHERE b.beitragskommentar = :beitragskommentar")
+    , @NamedQuery(name = "Beitrag.findByFaelligStart", query = "SELECT b FROM Beitrag b WHERE b.faelligStart = :faelligStart")
+    , @NamedQuery(name = "Beitrag.findByFaelligEnde", query = "SELECT b FROM Beitrag b WHERE b.faelligEnde = :faelligEnde")
     , @NamedQuery(name = "Beitrag.findByAbrechnungsstatus", query = "SELECT b FROM Beitrag b WHERE b.abrechnungsstatus = :abrechnungsstatus")
     , @NamedQuery(name = "Beitrag.findByZahlungsweise", query = "SELECT b FROM Beitrag b WHERE b.zahlungsweise = :zahlungsweise")})
 public class Beitrag implements Serializable {
@@ -56,6 +62,15 @@ public class Beitrag implements Serializable {
     @Size(max = 128)
     @Column(length = 128)
     private String beitragsposition;
+    @Size(max = 128)
+    @Column(length = 128)
+    private String beitragskommentar;
+    @Column(name = "FAELLIG_START")
+    @Temporal(TemporalType.DATE)
+    private Date faelligStart;
+    @Column(name = "FAELLIG_ENDE")
+    @Temporal(TemporalType.DATE)
+    private Date faelligEnde;
     @Size(max = 128)
     @Column(length = 128)
     private String abrechnungsstatus;
@@ -95,6 +110,30 @@ public class Beitrag implements Serializable {
 
     public void setBeitragsposition(String beitragsposition) {
         this.beitragsposition = beitragsposition;
+    }
+
+    public String getBeitragskommentar() {
+        return beitragskommentar;
+    }
+
+    public void setBeitragskommentar(String beitragskommentar) {
+        this.beitragskommentar = beitragskommentar;
+    }
+
+    public Date getFaelligStart() {
+        return faelligStart;
+    }
+
+    public void setFaelligStart(Date faelligStart) {
+        this.faelligStart = faelligStart;
+    }
+
+    public Date getFaelligEnde() {
+        return faelligEnde;
+    }
+
+    public void setFaelligEnde(Date faelligEnde) {
+        this.faelligEnde = faelligEnde;
     }
 
     public String getAbrechnungsstatus() {

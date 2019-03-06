@@ -46,7 +46,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Cv.findByCvkey", query = "SELECT c FROM Cv c WHERE c.cvkey = :cvkey")
     , @NamedQuery(name = "Cv.findByCvvalue", query = "SELECT c FROM Cv c WHERE c.cvvalue = :cvvalue")
     , @NamedQuery(name = "Cv.findByValidfrom", query = "SELECT c FROM Cv c WHERE c.validfrom = :validfrom")
-    , @NamedQuery(name = "Cv.findByValidto", query = "SELECT c FROM Cv c WHERE c.validto = :validto")})
+    , @NamedQuery(name = "Cv.findByValidto", query = "SELECT c FROM Cv c WHERE c.validto = :validto")
+    , @NamedQuery(name = "Cv.findByKurztext", query = "SELECT c FROM Cv c WHERE c.kurztext = :kurztext")
+    , @NamedQuery(name = "Cv.findByLangtext", query = "SELECT c FROM Cv c WHERE c.langtext = :langtext")})
 public class Cv implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -65,6 +67,12 @@ public class Cv implements Serializable {
     private Date validfrom;
     @Temporal(TemporalType.DATE)
     private Date validto;
+    @Size(max = 128)
+    @Column(length = 128)
+    private String kurztext;
+    @Size(max = 1024)
+    @Column(length = 1024)
+    private String langtext;
     @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
     @ManyToOne
     private Person mglnr;
@@ -114,6 +122,22 @@ public class Cv implements Serializable {
 
     public void setValidto(Date validto) {
         this.validto = validto;
+    }
+
+    public String getKurztext() {
+        return kurztext;
+    }
+
+    public void setKurztext(String kurztext) {
+        this.kurztext = kurztext;
+    }
+
+    public String getLangtext() {
+        return langtext;
+    }
+
+    public void setLangtext(String langtext) {
+        this.langtext = langtext;
     }
 
     public Person getMglnr() {

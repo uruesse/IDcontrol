@@ -40,14 +40,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(catalog = "", schema = "DLRG")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Rechnung.findAll", query = "SELECT r FROM Rechnung r")
-    , @NamedQuery(name = "Rechnung.findByRechnungsnummer", query = "SELECT r FROM Rechnung r WHERE r.rechnungsnummer = :rechnungsnummer")
-    , @NamedQuery(name = "Rechnung.findByFnr", query = "SELECT r FROM Rechnung r WHERE r.fnr = :fnr")
-    , @NamedQuery(name = "Rechnung.findByRechnungsdatum", query = "SELECT r FROM Rechnung r WHERE r.rechnungsdatum = :rechnungsdatum")
-    , @NamedQuery(name = "Rechnung.findByRechnungssumme", query = "SELECT r FROM Rechnung r WHERE r.rechnungssumme = :rechnungssumme")
-    , @NamedQuery(name = "Rechnung.findByZahlmodus", query = "SELECT r FROM Rechnung r WHERE r.zahlmodus = :zahlmodus")
-    , @NamedQuery(name = "Rechnung.findByZahlungsziel", query = "SELECT r FROM Rechnung r WHERE r.zahlungsziel = :zahlungsziel")})
-public class Rechnung implements Serializable {
+    @NamedQuery(name = "Offenerechnungen.findAll", query = "SELECT o FROM Offenerechnungen o")
+    , @NamedQuery(name = "Offenerechnungen.findByRechnungsnummer", query = "SELECT o FROM Offenerechnungen o WHERE o.rechnungsnummer = :rechnungsnummer")
+    , @NamedQuery(name = "Offenerechnungen.findByRechnungsdatum", query = "SELECT o FROM Offenerechnungen o WHERE o.rechnungsdatum = :rechnungsdatum")
+    , @NamedQuery(name = "Offenerechnungen.findByZahlungsziel", query = "SELECT o FROM Offenerechnungen o WHERE o.zahlungsziel = :zahlungsziel")
+    , @NamedQuery(name = "Offenerechnungen.findByZahlmodus", query = "SELECT o FROM Offenerechnungen o WHERE o.zahlmodus = :zahlmodus")
+    , @NamedQuery(name = "Offenerechnungen.findByMahnstufe", query = "SELECT o FROM Offenerechnungen o WHERE o.mahnstufe = :mahnstufe")
+    , @NamedQuery(name = "Offenerechnungen.findByRechnungssumme", query = "SELECT o FROM Offenerechnungen o WHERE o.rechnungssumme = :rechnungssumme")})
+public class Offenerechnungen implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,23 +55,23 @@ public class Rechnung implements Serializable {
     @NotNull
     @Column(nullable = false)
     private Long rechnungsnummer;
-    private Integer fnr;
     @Temporal(TemporalType.DATE)
     private Date rechnungsdatum;
-    private Integer rechnungssumme;
+    @Temporal(TemporalType.DATE)
+    private Date zahlungsziel;
     @Size(max = 128)
     @Column(length = 128)
     private String zahlmodus;
-    @Temporal(TemporalType.DATE)
-    private Date zahlungsziel;
+    private Integer mahnstufe;
+    private Integer rechnungssumme;
     @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
     @ManyToOne
     private Person mglnr;
 
-    public Rechnung() {
+    public Offenerechnungen() {
     }
 
-    public Rechnung(Long rechnungsnummer) {
+    public Offenerechnungen(Long rechnungsnummer) {
         this.rechnungsnummer = rechnungsnummer;
     }
 
@@ -83,14 +83,6 @@ public class Rechnung implements Serializable {
         this.rechnungsnummer = rechnungsnummer;
     }
 
-    public Integer getFnr() {
-        return fnr;
-    }
-
-    public void setFnr(Integer fnr) {
-        this.fnr = fnr;
-    }
-
     public Date getRechnungsdatum() {
         return rechnungsdatum;
     }
@@ -99,12 +91,12 @@ public class Rechnung implements Serializable {
         this.rechnungsdatum = rechnungsdatum;
     }
 
-    public Integer getRechnungssumme() {
-        return rechnungssumme;
+    public Date getZahlungsziel() {
+        return zahlungsziel;
     }
 
-    public void setRechnungssumme(Integer rechnungssumme) {
-        this.rechnungssumme = rechnungssumme;
+    public void setZahlungsziel(Date zahlungsziel) {
+        this.zahlungsziel = zahlungsziel;
     }
 
     public String getZahlmodus() {
@@ -115,12 +107,20 @@ public class Rechnung implements Serializable {
         this.zahlmodus = zahlmodus;
     }
 
-    public Date getZahlungsziel() {
-        return zahlungsziel;
+    public Integer getMahnstufe() {
+        return mahnstufe;
     }
 
-    public void setZahlungsziel(Date zahlungsziel) {
-        this.zahlungsziel = zahlungsziel;
+    public void setMahnstufe(Integer mahnstufe) {
+        this.mahnstufe = mahnstufe;
+    }
+
+    public Integer getRechnungssumme() {
+        return rechnungssumme;
+    }
+
+    public void setRechnungssumme(Integer rechnungssumme) {
+        this.rechnungssumme = rechnungssumme;
     }
 
     public Person getMglnr() {
@@ -141,10 +141,10 @@ public class Rechnung implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Rechnung)) {
+        if (!(object instanceof Offenerechnungen)) {
             return false;
         }
-        Rechnung other = (Rechnung) object;
+        Offenerechnungen other = (Offenerechnungen) object;
         if ((this.rechnungsnummer == null && other.rechnungsnummer != null) || (this.rechnungsnummer != null && !this.rechnungsnummer.equals(other.rechnungsnummer))) {
             return false;
         }
@@ -153,7 +153,7 @@ public class Rechnung implements Serializable {
 
     @Override
     public String toString() {
-        return "net.ruesse.idc.database.persistence.Rechnung[ rechnungsnummer=" + rechnungsnummer + " ]";
+        return "net.ruesse.idc.database.persistence.Offenerechnungen[ rechnungsnummer=" + rechnungsnummer + " ]";
     }
     
 }

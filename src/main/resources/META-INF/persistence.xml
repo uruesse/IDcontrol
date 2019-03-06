@@ -10,6 +10,15 @@
     <class>net.ruesse.idc.database.persistence.Cv</class>
     <class>net.ruesse.idc.database.persistence.Address</class>
     <class>net.ruesse.idc.database.persistence.Openpost</class>
+    <class>net.ruesse.idc.database.persistence.service.Contact</class>
+    <class>net.ruesse.idc.database.persistence.service.Person</class>
+    <class>net.ruesse.idc.database.persistence.service.Openpost</class>
+    <class>net.ruesse.idc.database.persistence.service.Rechnung</class>
+    <class>net.ruesse.idc.database.persistence.service.Bankverbindung</class>
+    <class>net.ruesse.idc.database.persistence.service.Beitrag</class>
+    <class>net.ruesse.idc.database.persistence.service.Cv</class>
+    <class>net.ruesse.idc.database.persistence.service.Address</class>
+    <class>net.ruesse.idc.database.persistence.Offenerechnungen</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IDControl"/>

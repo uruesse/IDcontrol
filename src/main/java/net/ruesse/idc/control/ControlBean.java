@@ -251,17 +251,27 @@ public class ControlBean implements Serializable {
 
             showAccessMessage(atype, getMessage("control.beitragsinformationfuer") + pe.getFullname(), "");
 
-            showAccessMessage(atype, getMessage("control.mitgliedsnummer"), pe.getStrMglnr());
+            if (null == pe.person.getFnr()) {
+                showAccessMessage(atype, getMessage("control.mitgliedsnummer"), pe.getStrMglnr());
+            } else {
+                showAccessMessage(atype, "Familienmitglied - Mitgliedsnummer", pe.getStrMglnr());
+            }
 
             showAccessMessage(atype, getMessage("control.alter"), String.valueOf(pe.getAge()));
             //showAccessMessage(atype, getMessage("control.offenerposten"), nf.format((double) pe.getOpenposts() / 100));
-            if ("".equals(op)){
+
+            if (pe.person.getAbweichenderzahler()) {
+                if (pe.person.getFremdzahler() == null) {
+                    showAccessMessage(accesstype.doubt, "Abweichender Zahler unbekannt. Angaben zum Beitragskonto könnten falsch sein!");
+                } else {
+                    showAccessMessage(atype, "Abweichender Zahler: ", pe.getFremdzahlerInfo());
+                }
+            }
+            if ("".equals(op)) {
                 showAccessMessage(atype, "Beitragskonto ist ausgeglichen");
             } else {
                 showAccessMessage(atype, getMessage("control.offenerposten"), op);
             }
-            
-            
 
             String status = pe.getState();
             switch (status) {

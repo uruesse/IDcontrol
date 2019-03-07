@@ -1,133 +1,87 @@
-drop table rechnungen_stage;
-drop table beitragspositionen_stage;
-drop table lebenslauf_stage;
-drop table person_stage;
-/*
-create table person_stage (
-ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
-nummer int,
-mitgliedsnummer_sewobe bigint,
-familiennummer_sewobe int,
-firma varchar(128),
-anrede varchar(128),
-titel varchar(128),
-nachname varchar(128),
-vorname varchar(128),
-strasse varchar(128),
-plz varchar(16),
-ort varchar(128),
-land varchar(128),
-hauptkategorie varchar(128),
-telefon_1 varchar(128),
-telefon_2 varchar(128),
-mobil varchar(128),
-telefax varchar(128),
-email varchar(128),
-geburtsdatum date,
-bemerkung varchar(128),
-status varchar(128),
-eintritt date,
-austritt date,
-kuendigung date,
-iban varchar(128),
-bic varchar(128),
-kontoinhaber varchar(128),
-mandatsreferenz varchar(128),
-mandat_vorhanden boolean,
-abweichenderzahler boolean,
-beitragsposition varchar(128),
-beitragskommentar varchar(128),
-faellig_start date,
-faellig_ende date,
-abrechnungsstatus varchar(128),
-zahlungsmodus varchar(128),
-zahlungsweise varchar(128),
-offene_beitraege int,
-alter_errechnet int,
-rechnungsdatum date,
-rechnungsnummer bigint,
-rechnungssumme int
-);
-*/
+DROP TABLE STAGE.RECHNUNGEN;
+DROP TABLE STAGE.BEITRAGSPOSITIONEN;
+DROP TABLE STAGE.LEBENSLAUF;
+DROP TABLE STAGE.OFFENERECHNUNGEN;
+DROP TABLE STAGE.PERSON;
 
-create table person_stage (
+CREATE TABLE STAGE.PERSON (
 ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
-nummer int,
-mitgliedsnummer_sewobe bigint,
-familiennummer_sewobe int,
-firma varchar(128),
-anrede varchar(128),
-titel varchar(128),
-nachname varchar(128),
-vorname varchar(128),
-strasse varchar(128),
-plz varchar(16),
-ort varchar(128),
-land varchar(128),
-hauptkategorie varchar(128),
-telefon_1 varchar(128),
-telefon_2 varchar(128),
-mobil varchar(128),
-telefax varchar(128),
-email varchar(128),
-geburtsdatum date,
-bemerkung varchar(128),
-status varchar(128),
-eintritt date,
-austritt date,
-kuendigung date,
-iban varchar(128),
-bic varchar(128),
-kontoinhaber varchar(128),
-mandatsreferenz varchar(128),
-mandat_vorhanden boolean,
-zahlungsmodus varchar(128),
-abweichenderzahler boolean
+NUMMER INT,
+MITGLIEDSNUMMER_SEWOBE BIGINT,
+FAMILIENNUMMER_SEWOBE INT,
+FIRMA VARCHAR(128),
+ANREDE VARCHAR(128),
+TITEL VARCHAR(128),
+NACHNAME VARCHAR(128),
+VORNAME VARCHAR(128),
+STRASSE VARCHAR(128),
+PLZ VARCHAR(16),
+ORT VARCHAR(128),
+LAND VARCHAR(128),
+HAUPTKATEGORIE VARCHAR(128),
+TELEFON_1 VARCHAR(128),
+TELEFON_2 VARCHAR(128),
+MOBIL VARCHAR(128),
+TELEFAX VARCHAR(128),
+EMAIL VARCHAR(128),
+GEBURTSDATUM DATE,
+BEMERKUNG VARCHAR(128),
+STATUS VARCHAR(128),
+EINTRITT DATE,
+AUSTRITT DATE,
+KUENDIGUNG DATE,
+IBAN VARCHAR(128),
+BIC VARCHAR(128),
+KONTOINHABER VARCHAR(128),
+MANDATSREFERENZ VARCHAR(128),
+MANDAT_VORHANDEN BOOLEAN,
+ZAHLUNGSMODUS VARCHAR(128),
+ABWEICHENDERZAHLER BOOLEAN
 );
 
-create table rechnungen_stage (
+CREATE TABLE STAGE.RECHNUNGEN (
 ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
-mitgliedsnummer_sewobe bigint,
-familiennummer_sewobe int,
-rechnungsdatum date,
-rechnungsnummer bigint,
-rechnungssumme int,
-ZAHLMODUS varchar(128),
-ZAHLUNGSZIEL date
+MITGLIEDSNUMMER_SEWOBE BIGINT,
+FAMILIENNUMMER_SEWOBE INT,
+RECHNUNGSDATUM DATE,
+RECHNUNGSNUMMER BIGINT,
+RECHNUNGSSUMME INT,
+ZAHLMODUS VARCHAR(128),
+ZAHLUNGSZIEL DATE
 );
 
-create table beitragspositionen_stage (
+CREATE TABLE STAGE.BEITRAGSPOSITIONEN (
 ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
-mitgliedsnummer_sewobe bigint,
-familiennummer_sewobe int,
-BEITRAGSPOSITION varchar(128),
-BEITRAGSKOMMENTAR varchar(128),
-FAELLIG_START date,
-FAELLIG_ENDE date,
-ABRECHNUNGSSTATUS varchar(128),
-ZAHLUNGSWEISE varchar(128)
+MITGLIEDSNUMMER_SEWOBE BIGINT,
+FAMILIENNUMMER_SEWOBE INT,
+BEITRAGSPOSITION VARCHAR(128),
+BEITRAGSKOMMENTAR VARCHAR(128),
+FAELLIG_START DATE,
+FAELLIG_ENDE DATE,
+ABRECHNUNGSSTATUS VARCHAR(128),
+ZAHLUNGSWEISE VARCHAR(128)
 );
 
-create table lebenslauf_stage (
+CREATE TABLE STAGE.LEBENSLAUF (
 ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
-mitgliedsnummer_sewobe bigint,
-LEBENSLAUF_ART varchar(128),
-LEBENSLAUF_BEGINN date,
-LEBENSLAUF_ENDE date, 
-LEBENSLAUF_BEZEICHNUNG varchar(128),
-LEBENSLAUF_KURZTEXT varchar(128),
-LEBENSLAUF_LANGTEXT varchar(128)
+MITGLIEDSNUMMER_SEWOBE BIGINT,
+LEBENSLAUF_ART VARCHAR(128),
+LEBENSLAUF_BEGINN DATE,
+LEBENSLAUF_ENDE DATE, 
+LEBENSLAUF_BEZEICHNUNG VARCHAR(128),
+LEBENSLAUF_KURZTEXT VARCHAR(128),
+LEBENSLAUF_LANGTEXT VARCHAR(128)
 );
 
-create table offenerechnungen_stage (
+CREATE TABLE STAGE.OFFENERECHNUNGEN (
 ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
-KDNR varchar(128),
-MITGLIEDSNUMMER_SEWOBE bigint,
-RECHNUNGSNUMMER bigint,
-RECHNUNGSDATUM date,
-ZAHLUNGSZIEL date,
-ZAHLWEISE varchar(128),
-MAHNSTUFE int,
-BEZEICHNUNG varchar(128),
-AKTUELLOFFEN int
+KDNR VARCHAR(128),
+MITGLIEDSNUMMER_SEWOBE BIGINT,
+RECHNUNGSNUMMER BIGINT,
+RECHNUNGSDATUM DATE,
+ZAHLUNGSZIEL DATE,
+ZAHLWEISE VARCHAR(128),
+MAHNSTUFE INT,
+BEZEICHNUNG VARCHAR(128),
+AKTUELLOFFEN INT
 );

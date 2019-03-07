@@ -19,6 +19,7 @@
     <class>net.ruesse.idc.database.persistence.service.Cv</class>
     <class>net.ruesse.idc.database.persistence.service.Address</class>
     <class>net.ruesse.idc.database.persistence.Offenerechnungen</class>
+    <class>net.ruesse.idc.database.persistence.Family</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IDControl"/>

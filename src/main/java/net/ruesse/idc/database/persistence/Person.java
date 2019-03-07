@@ -16,12 +16,15 @@
 package net.ruesse.idc.database.persistence;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -38,12 +41,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(name = "PERSON")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
     , @NamedQuery(name = "Person.findByMglnr", query = "SELECT p FROM Person p WHERE p.mglnr = :mglnr")
-    , @NamedQuery(name = "Person.findByFnr", query = "SELECT p FROM Person p WHERE p.fnr = :fnr")
     , @NamedQuery(name = "Person.findByFirma", query = "SELECT p FROM Person p WHERE p.firma = :firma")
     , @NamedQuery(name = "Person.findByAnrede", query = "SELECT p FROM Person p WHERE p.anrede = :anrede")
     , @NamedQuery(name = "Person.findByTitel", query = "SELECT p FROM Person p WHERE p.titel = :titel")
@@ -57,6 +59,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Person.findByAustritt", query = "SELECT p FROM Person p WHERE p.austritt = :austritt")
     , @NamedQuery(name = "Person.findByKuendigung", query = "SELECT p FROM Person p WHERE p.kuendigung = :kuendigung")
     , @NamedQuery(name = "Person.findByAbweichenderzahler", query = "SELECT p FROM Person p WHERE p.abweichenderzahler = :abweichenderzahler")
+    , @NamedQuery(name = "Person.findByFremdzahler", query = "SELECT p FROM Person p WHERE p.fremdzahler = :fremdzahler")
     , @NamedQuery(name = "Person.findByZahlungsmodus", query = "SELECT p FROM Person p WHERE p.zahlungsmodus = :zahlungsmodus")})
 public class Person implements Serializable {
 
@@ -64,47 +67,50 @@ public class Person implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "MGLNR")
     private Long mglnr;
-    private Integer fnr;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "FIRMA")
     private String firma;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "ANREDE")
     private String anrede;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "TITEL")
     private String titel;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "NACHNAME")
     private String nachname;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "VORNAME")
     private String vorname;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "HAUPTKATEGORIE")
     private String hauptkategorie;
+    @Column(name = "GEBURTSDATUM")
     @Temporal(TemporalType.DATE)
     private Date geburtsdatum;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "BEMERKUNG")
     private String bemerkung;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "STATUS")
     private String status;
+    @Column(name = "EINTRITT")
     @Temporal(TemporalType.DATE)
     private Date eintritt;
+    @Column(name = "AUSTRITT")
     @Temporal(TemporalType.DATE)
     private Date austritt;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "KUENDIGUNG")
     private String kuendigung;
+    @Column(name = "ABWEICHENDERZAHLER")
+    private Boolean abweichenderzahler;
+    @Column(name = "FREMDZAHLER")
+    private BigInteger fremdzahler;
     @Size(max = 128)
-    @Column(length = 128)
-    private String abweichenderzahler;
-    @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "ZAHLUNGSMODUS")
     private String zahlungsmodus;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Bankverbindung> bankverbindungCollection;
@@ -112,8 +118,9 @@ public class Person implements Serializable {
     private Collection<Contact> contactCollection;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Cv> cvCollection;
-    @OneToMany(mappedBy = "mglnr")
-    private Collection<Openpost> openpostCollection;
+    @JoinColumn(name = "FNR", referencedColumnName = "FNR")
+    @ManyToOne
+    private Family fnr;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Rechnung> rechnungCollection;
     @OneToMany(mappedBy = "mglnr")
@@ -136,14 +143,6 @@ public class Person implements Serializable {
 
     public void setMglnr(Long mglnr) {
         this.mglnr = mglnr;
-    }
-
-    public Integer getFnr() {
-        return fnr;
-    }
-
-    public void setFnr(Integer fnr) {
-        this.fnr = fnr;
     }
 
     public String getFirma() {
@@ -242,12 +241,20 @@ public class Person implements Serializable {
         this.kuendigung = kuendigung;
     }
 
-    public String getAbweichenderzahler() {
+    public Boolean getAbweichenderzahler() {
         return abweichenderzahler;
     }
 
-    public void setAbweichenderzahler(String abweichenderzahler) {
+    public void setAbweichenderzahler(Boolean abweichenderzahler) {
         this.abweichenderzahler = abweichenderzahler;
+    }
+
+    public BigInteger getFremdzahler() {
+        return fremdzahler;
+    }
+
+    public void setFremdzahler(BigInteger fremdzahler) {
+        this.fremdzahler = fremdzahler;
     }
 
     public String getZahlungsmodus() {
@@ -285,13 +292,12 @@ public class Person implements Serializable {
         this.cvCollection = cvCollection;
     }
 
-    @XmlTransient
-    public Collection<Openpost> getOpenpostCollection() {
-        return openpostCollection;
+    public Family getFnr() {
+        return fnr;
     }
 
-    public void setOpenpostCollection(Collection<Openpost> openpostCollection) {
-        this.openpostCollection = openpostCollection;
+    public void setFnr(Family fnr) {
+        this.fnr = fnr;
     }
 
     @XmlTransient
@@ -354,6 +360,7 @@ public class Person implements Serializable {
     public String toString() {
         return "net.ruesse.idc.database.persistence.Person[ mglnr=" + mglnr + " ]";
     }
+    
     public String getStrMglnr() {
         return String.format("%013d", mglnr);
     }

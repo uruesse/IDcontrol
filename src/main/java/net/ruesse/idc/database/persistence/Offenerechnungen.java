@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(name = "OFFENERECHNUNGEN")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Offenerechnungen.findAll", query = "SELECT o FROM Offenerechnungen o")
@@ -53,17 +53,24 @@ public class Offenerechnungen implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "RECHNUNGSNUMMER")
     private Long rechnungsnummer;
+    @Column(name = "RECHNUNGSDATUM")
     @Temporal(TemporalType.DATE)
     private Date rechnungsdatum;
+    @Column(name = "ZAHLUNGSZIEL")
     @Temporal(TemporalType.DATE)
     private Date zahlungsziel;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "ZAHLMODUS")
     private String zahlmodus;
+    @Column(name = "MAHNSTUFE")
     private Integer mahnstufe;
+    @Column(name = "RECHNUNGSSUMME")
     private Integer rechnungssumme;
+    @JoinColumn(name = "FNR", referencedColumnName = "FNR")
+    @ManyToOne
+    private Family fnr;
     @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
     @ManyToOne
     private Person mglnr;
@@ -121,6 +128,14 @@ public class Offenerechnungen implements Serializable {
 
     public void setRechnungssumme(Integer rechnungssumme) {
         this.rechnungssumme = rechnungssumme;
+    }
+
+    public Family getFnr() {
+        return fnr;
+    }
+
+    public void setFnr(Family fnr) {
+        this.fnr = fnr;
     }
 
     public Person getMglnr() {

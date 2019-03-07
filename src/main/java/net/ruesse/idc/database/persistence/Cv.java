@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(name = "CV")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Cv.findAll", query = "SELECT c FROM Cv c")
@@ -55,23 +55,25 @@ public class Cv implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(name = "ID")
     private Long id;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "CVKEY")
     private String cvkey;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "CVVALUE")
     private String cvvalue;
+    @Column(name = "VALIDFROM")
     @Temporal(TemporalType.DATE)
     private Date validfrom;
+    @Column(name = "VALIDTO")
     @Temporal(TemporalType.DATE)
     private Date validto;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "KURZTEXT")
     private String kurztext;
     @Size(max = 1024)
-    @Column(length = 1024)
+    @Column(name = "LANGTEXT")
     private String langtext;
     @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
     @ManyToOne

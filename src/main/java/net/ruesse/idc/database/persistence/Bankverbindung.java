@@ -35,12 +35,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(name = "BANKVERBINDUNG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Bankverbindung.findAll", query = "SELECT b FROM Bankverbindung b")
     , @NamedQuery(name = "Bankverbindung.findById", query = "SELECT b FROM Bankverbindung b WHERE b.id = :id")
-    , @NamedQuery(name = "Bankverbindung.findByFnr", query = "SELECT b FROM Bankverbindung b WHERE b.fnr = :fnr")
     , @NamedQuery(name = "Bankverbindung.findByIban", query = "SELECT b FROM Bankverbindung b WHERE b.iban = :iban")
     , @NamedQuery(name = "Bankverbindung.findByBic", query = "SELECT b FROM Bankverbindung b WHERE b.bic = :bic")
     , @NamedQuery(name = "Bankverbindung.findByKontoinhaber", query = "SELECT b FROM Bankverbindung b WHERE b.kontoinhaber = :kontoinhaber")
@@ -52,23 +51,25 @@ public class Bankverbindung implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(name = "ID")
     private Long id;
-    private Integer fnr;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "IBAN")
     private String iban;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "BIC")
     private String bic;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "KONTOINHABER")
     private String kontoinhaber;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "MANDATSREFERENZ")
     private String mandatsreferenz;
     @Column(name = "MANDAT_VORHANDEN")
     private Boolean mandatVorhanden;
+    @JoinColumn(name = "FNR", referencedColumnName = "FNR")
+    @ManyToOne
+    private Family fnr;
     @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
     @ManyToOne
     private Person mglnr;
@@ -86,14 +87,6 @@ public class Bankverbindung implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Integer getFnr() {
-        return fnr;
-    }
-
-    public void setFnr(Integer fnr) {
-        this.fnr = fnr;
     }
 
     public String getIban() {
@@ -134,6 +127,14 @@ public class Bankverbindung implements Serializable {
 
     public void setMandatVorhanden(Boolean mandatVorhanden) {
         this.mandatVorhanden = mandatVorhanden;
+    }
+
+    public Family getFnr() {
+        return fnr;
+    }
+
+    public void setFnr(Family fnr) {
+        this.fnr = fnr;
     }
 
     public Person getMglnr() {

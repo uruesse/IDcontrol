@@ -38,12 +38,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(name = "BEITRAG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Beitrag.findAll", query = "SELECT b FROM Beitrag b")
     , @NamedQuery(name = "Beitrag.findById", query = "SELECT b FROM Beitrag b WHERE b.id = :id")
-    , @NamedQuery(name = "Beitrag.findByFnr", query = "SELECT b FROM Beitrag b WHERE b.fnr = :fnr")
     , @NamedQuery(name = "Beitrag.findByBeitragsposition", query = "SELECT b FROM Beitrag b WHERE b.beitragsposition = :beitragsposition")
     , @NamedQuery(name = "Beitrag.findByBeitragskommentar", query = "SELECT b FROM Beitrag b WHERE b.beitragskommentar = :beitragskommentar")
     , @NamedQuery(name = "Beitrag.findByFaelligStart", query = "SELECT b FROM Beitrag b WHERE b.faelligStart = :faelligStart")
@@ -56,14 +55,13 @@ public class Beitrag implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(name = "ID")
     private Long id;
-    private Integer fnr;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "BEITRAGSPOSITION")
     private String beitragsposition;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "BEITRAGSKOMMENTAR")
     private String beitragskommentar;
     @Column(name = "FAELLIG_START")
     @Temporal(TemporalType.DATE)
@@ -72,11 +70,14 @@ public class Beitrag implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date faelligEnde;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "ABRECHNUNGSSTATUS")
     private String abrechnungsstatus;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "ZAHLUNGSWEISE")
     private String zahlungsweise;
+    @JoinColumn(name = "FNR", referencedColumnName = "FNR")
+    @ManyToOne
+    private Family fnr;
     @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
     @ManyToOne
     private Person mglnr;
@@ -94,14 +95,6 @@ public class Beitrag implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Integer getFnr() {
-        return fnr;
-    }
-
-    public void setFnr(Integer fnr) {
-        this.fnr = fnr;
     }
 
     public String getBeitragsposition() {
@@ -150,6 +143,14 @@ public class Beitrag implements Serializable {
 
     public void setZahlungsweise(String zahlungsweise) {
         this.zahlungsweise = zahlungsweise;
+    }
+
+    public Family getFnr() {
+        return fnr;
+    }
+
+    public void setFnr(Family fnr) {
+        this.fnr = fnr;
     }
 
     public Person getMglnr() {

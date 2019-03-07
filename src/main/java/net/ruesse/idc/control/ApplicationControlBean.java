@@ -32,6 +32,8 @@ import net.ruesse.idc.ressources.MsgBundle;
 public class ApplicationControlBean implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationControlBean.class.getName());
+    
+    public static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
 
     private boolean isDemo;
 

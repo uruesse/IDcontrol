@@ -37,12 +37,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(name = "RECHNUNG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Rechnung.findAll", query = "SELECT r FROM Rechnung r")
     , @NamedQuery(name = "Rechnung.findByRechnungsnummer", query = "SELECT r FROM Rechnung r WHERE r.rechnungsnummer = :rechnungsnummer")
-    , @NamedQuery(name = "Rechnung.findByFnr", query = "SELECT r FROM Rechnung r WHERE r.fnr = :fnr")
     , @NamedQuery(name = "Rechnung.findByRechnungsdatum", query = "SELECT r FROM Rechnung r WHERE r.rechnungsdatum = :rechnungsdatum")
     , @NamedQuery(name = "Rechnung.findByRechnungssumme", query = "SELECT r FROM Rechnung r WHERE r.rechnungssumme = :rechnungssumme")
     , @NamedQuery(name = "Rechnung.findByZahlmodus", query = "SELECT r FROM Rechnung r WHERE r.zahlmodus = :zahlmodus")
@@ -53,17 +52,22 @@ public class Rechnung implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "RECHNUNGSNUMMER")
     private Long rechnungsnummer;
-    private Integer fnr;
+    @Column(name = "RECHNUNGSDATUM")
     @Temporal(TemporalType.DATE)
     private Date rechnungsdatum;
+    @Column(name = "RECHNUNGSSUMME")
     private Integer rechnungssumme;
     @Size(max = 128)
-    @Column(length = 128)
+    @Column(name = "ZAHLMODUS")
     private String zahlmodus;
+    @Column(name = "ZAHLUNGSZIEL")
     @Temporal(TemporalType.DATE)
     private Date zahlungsziel;
+    @JoinColumn(name = "FNR", referencedColumnName = "FNR")
+    @ManyToOne
+    private Family fnr;
     @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
     @ManyToOne
     private Person mglnr;
@@ -81,14 +85,6 @@ public class Rechnung implements Serializable {
 
     public void setRechnungsnummer(Long rechnungsnummer) {
         this.rechnungsnummer = rechnungsnummer;
-    }
-
-    public Integer getFnr() {
-        return fnr;
-    }
-
-    public void setFnr(Integer fnr) {
-        this.fnr = fnr;
     }
 
     public Date getRechnungsdatum() {
@@ -121,6 +117,14 @@ public class Rechnung implements Serializable {
 
     public void setZahlungsziel(Date zahlungsziel) {
         this.zahlungsziel = zahlungsziel;
+    }
+
+    public Family getFnr() {
+        return fnr;
+    }
+
+    public void setFnr(Family fnr) {
+        this.fnr = fnr;
     }
 
     public Person getMglnr() {

@@ -252,9 +252,9 @@ public class ControlBean implements Serializable {
             showAccessMessage(atype, getMessage("control.beitragsinformationfuer") + pe.getFullname(), "");
 
             if (null == pe.person.getFnr()) {
-                showAccessMessage(atype, getMessage("control.mitgliedsnummer"), pe.getStrMglnr());
+                showAccessMessage(atype, getMessage("control.mitgliedsnummer"), pe.getStrFMglnr());
             } else {
-                showAccessMessage(atype, "Familienmitglied - Mitgliedsnummer", pe.getStrMglnr());
+                showAccessMessage(atype, "Familienmitglied - Mitgliedsnummer", pe.getStrFMglnr());
             }
 
             showAccessMessage(atype, getMessage("control.alter"), String.valueOf(pe.getAge()));

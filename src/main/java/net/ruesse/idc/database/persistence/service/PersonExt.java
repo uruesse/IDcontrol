@@ -33,7 +33,6 @@ import net.ruesse.idc.database.persistence.Cv;
 import net.ruesse.idc.database.persistence.Family;
 import net.ruesse.idc.database.persistence.Offenerechnungen;
 import net.ruesse.idc.database.persistence.Person;
-import static net.ruesse.idc.database.persistence.service.PersonService.personlist;
 
 /**
  *
@@ -47,10 +46,33 @@ public class PersonExt {
     public static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
     private static EntityManagerFactory factory;
 
+    static final long MSPERYEAR = ((long) 365 * 24 * 60 * 60 * 1000);
+
     public Person person;
+
+    private boolean mitarbeiter;
+    private boolean wassergeld;
+
+    public boolean isMitarbeiter() {
+        return mitarbeiter;
+    }
+
+    public void setMitarbeiter(boolean mitarbeiter) {
+        this.mitarbeiter = mitarbeiter;
+    }
+
+    public boolean isWassergeld() {
+        return wassergeld;
+    }
+
+    public void setWassergeld(boolean wassergeld) {
+        this.wassergeld = wassergeld;
+    }
 
     public PersonExt(Person person) {
         this.person = person;
+        checkMitarbeiterStatus();
+        checkWassergeldStatus();
         LOGGER.setLevel(Level.FINE);
     }
 
@@ -66,19 +88,58 @@ public class PersonExt {
         return String.format("%013d", person.getMglnr());
     }
 
-    public int getAge() {
+    public String formatMglnr(long mglnr) {
+        String str = String.format("%013d", mglnr);
+        return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
+    }
+
+    public String getStrFMglnr() {
+        return formatMglnr(person.getMglnr());
+    }
+
+    public String getStrFNr() {
+        Collection<Person> family;
+        if (person.getFnr() != null) {
+            return (person.getFnr()).getFnr().toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Berechnet das aktuelle Alter ACHTUNG macht keine Prüfung ob
+     * eingangsparameter valide ist.
+     *
+     * @param d
+     * @return
+     */
+    private int calcAge(Date d) {
         Date now = new Date();
-        long age = (now.getTime() - person.getGeburtsdatum().getTime()) / 365 / 24 / 60 / 60 / 1000;
-        LOGGER.log(Level.FINE, "Alter: {0}", age);
+        return (int) ((now.getTime() - d.getTime()) / MSPERYEAR);
+    }
+
+    public int getAge() {
+        long age = 0;
+        if (person.getGeburtsdatum() != null) {
+            age = calcAge(person.getGeburtsdatum());
+            LOGGER.log(Level.FINE, "Alter: {0}", age);
+        }
         return (int) age;
     }
 
-    public String getState() {
-        String status = "inaktiv";
+    public String getStrAge() {
+        //Irgendwann mal die führenden nullen durch &nbsp; ersetzten. Das wird aber per default angeszeigt und ansonsten nicht richtig sortiert.
+
+        if (person.getGeburtsdatum() != null) {
+            return String.format("%03d", calcAge(person.getGeburtsdatum()));
+        }
+        return null;
+    }
+
+    private void checkMitarbeiterStatus() {
         LOGGER.log(Level.FINE, "Status: {0}", person.getStatus());
         if ("Aktiv".equals(person.getStatus())) {
             Date now = new Date();
-
             /* suche Mitarbeiter im aktuellen Lebenslaufeintrag */
             Collection<Cv> cv = person.getCvCollection();
             try {
@@ -86,27 +147,37 @@ public class PersonExt {
                     LOGGER.log(Level.FINE, "c: {0} {1} {2} {3}", new Object[]{c.getCvkey(), c.getCvvalue(), c.getValidfrom(), c.getValidto()});
                     if ("Funktionen".equals(c.getCvkey())) {
                         if (now.after(c.getValidfrom()) && (c.getValidto() == null || now.before(c.getValidto()))) {
-                            status = "Mitarbeiter";
+                            setMitarbeiter(true);
                         }
                     }
                 }
             } catch (java.util.NoSuchElementException e) {
             }
+        }
+    }
 
-            /* suche ob in aktuellen Beiträgen Wassergeld vorhanden ist */
-            if (!"Mitarbeiter".equals(status)) {
-                Collection<Beitrag> be = person.getBeitragCollection();
-                for (Beitrag b : be) {
-                    LOGGER.log(Level.FINE, "b: {0} {1} {2}", new Object[]{b.getBeitragsposition(), b.getFaelligStart(), b.getFaelligEnde()});
-                    if ("Wassergeld".equals(b.getBeitragsposition())) {
-                        if (now.getYear() == b.getFaelligStart().getYear() || (now.getYear() + 1) == b.getFaelligStart().getYear() && now.getYear() < b.getFaelligEnde().getYear()) {
-                            status = "aktiv";
-                        }
-                    }
+    private void checkWassergeldStatus() {
+        Date now = new Date();
+        Collection<Beitrag> be = person.getBeitragCollection();
+        for (Beitrag b : be) {
+            LOGGER.log(Level.FINE, "b: {0} {1} {2}", new Object[]{b.getBeitragsposition(), b.getFaelligStart(), b.getFaelligEnde()});
+            if ("Wassergeld".equals(b.getBeitragsposition())) {
+                if (now.getYear() == b.getFaelligStart().getYear() || (now.getYear() + 1) == b.getFaelligStart().getYear() && now.getYear() < b.getFaelligEnde().getYear()) {
+                    setWassergeld(true);
                 }
             }
         }
-        return status;
+    }
+
+    public String getState() {
+        LOGGER.log(Level.FINE, "Status: {0}", person.getStatus());
+        if (isMitarbeiter()) {
+            return "Mitarbeiter";
+        } else if (isWassergeld()) {
+            return "aktiv";
+        } else {
+            return "inaktiv";
+        }
     }
 
     public Person getFremdzahlerPerson() {
@@ -131,7 +202,7 @@ public class PersonExt {
         Person fz = getFremdzahlerPerson();
         if (fz != null) {
             str = "[";
-            str += String.format("%013d", fz.getMglnr());
+            str += formatMglnr(fz.getMglnr());
             str += "] " + fz.getVorname() + " " + fz.getNachname();
         }
         return str;

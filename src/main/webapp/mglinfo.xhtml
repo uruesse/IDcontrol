@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        Mitgliederinfo
+    </ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">         
+            /*demo*/
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 25px 10px;
+                /* with the exported variables from Nova and Luna Themes*/
+                border-bottom-color: var(--input-border-color, #A8A8A8);
+            }
+
+            .logo {
+                width: 5%;
+            }
+            .detail {
+                width: 85%;
+                padding-left: 25px;
+            }
+
+            .ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+
+            .ui-button-text-only .ui-button-text {
+                padding: 0.3em 0.4em;
+            }
+
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                visibility: hidden;
+            }
+
+            .ui-filter-column .ui-column-customfilter .custom-filter {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .year-spinner input {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="description">
+
+        Übersicht über die aktuellen Mitglieder
+    </ui:define>
+
+    <ui:define name="implementation">
+
+        <h:form id="form">
+            <p:dataTable id="persons" 
+                         var="mitglied" 
+                         value="#{mglView.allMgl}" 
+                         selection="#{mglView.selectedMgl}" 
+                         rowKey="#{mitglied.person.mglnr}"
+                         widgetVar="mglTable" 
+                         draggableColumns="true" 
+                         resizableColumns="true"
+                         scrollable="true" 
+                         scrollHeight="400"
+                         emptyMessage="Person mit Suchkriterium nicht gefunden" 
+                         filteredValue="#{mglView.filteredMgl}">
+
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <p:panelGrid  columns="2">
+                            <p:outputPanel style="float:left">
+                                <h:outputText value="Durchsuche alle Felder: " />
+                                <p:inputText id="globalFilter" onkeyup="PF('mglTable').filter()" style="width:250px" placeholder="Suchwort eingeben"/>
+                            </p:outputPanel>
+                            <p:outputPanel style="float:right">
+                                <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-print" value="Ausweis drucken" oncomplete="PF('multiMglDialog').show()" />
+                                <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-sign-out" value="Wassergeld kündigen" oncomplete="PF('multiMglDialog').show()" />
+                                <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-sign-in" value="Wassergeld berechnen" oncomplete="PF('multiMglDialog').show()" />
+
+                                <p:commandButton id="toggler" type="button" value="Spalten" style="float:right" icon="pi pi-align-justify" />
+                                <p:columnToggler datasource="persons" trigger="toggler" />
+                            </p:outputPanel>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </f:facet>
+
+
+                <p:column filterBy="#{mitglied.strFMglnr}" headerText="MitgliedsNr" style="width:120px;text-align: center" sortBy="#{mitglied.strFMglnr}" footerText="MitgliedsNr" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.strFMglnr}" />
+                </p:column>
+
+                <p:column filterBy="#{mitglied.strFNr}" headerText="FNr" style="width:35px;text-align: center" sortBy="#{mitglied.strFNr}" footerText="FNr" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.strFNr}" />
+                </p:column>
+
+                <p:column filterBy="#{mitglied.person.nachname}" headerText="Nachname" style="text-align: left" sortBy="#{mitglied.person.nachname}" footerText="Nachname" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.person.nachname}" />
+                </p:column>
+
+                <p:column filterBy="#{mitglied.person.vorname}" headerText="Vorname" style="text-align: left" sortBy="#{mitglied.person.vorname}" footerText="Vorname" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.person.vorname}" />
+                </p:column>      
+
+                <p:column filterBy="#{mitglied.strAge}" headerText="Alter" style="width:40px;text-align: center" sortBy="#{mitglied.strAge}" footerText="Alter" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.strAge}" />
+                </p:column>      
+
+                <p:column filterBy="#{mitglied.person.hauptkategorie}" headerText="Typ" style="width:100px;text-align: center" sortBy="#{mitglied.person.hauptkategorie}" footerText="Typ" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.person.hauptkategorie}" />
+                </p:column>  
+
+                <p:column filterBy="#{mitglied.person.status}" headerText="Status" style="width:100px;text-align: center" sortBy="#{mitglied.person.status}" footerText="Status" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.person.status}" />
+                </p:column>  
+
+                <p:column filterBy="#{mitglied.mitarbeiter}" headerText="Mitarbeiter" style="width:100px;text-align: center" sortBy="#{mitglied.mitarbeiter}" footerText="Mitarbeiter" filterMatchMode="contains">
+                    <p:outputPanel rendered="#{mitglied.mitarbeiter}"><i class="pi pi-check" /></p:outputPanel>
+                    <p:outputPanel rendered="#{!mitglied.mitarbeiter}"><i class="pi pi-times" /></p:outputPanel>
+                </p:column>  
+
+                <p:column filterBy="#{mitglied.wassergeld}" headerText="Wassergeld" style="width:100px;text-align: center" sortBy="#{mitglied.wassergeld}" footerText="Wassergeld" filterMatchMode="contains">
+                    <p:outputPanel rendered="#{mitglied.wassergeld}"><i class="pi pi-check" /></p:outputPanel>
+                    <p:outputPanel rendered="#{!mitglied.wassergeld}"><i class="pi pi-times" /></p:outputPanel>
+                </p:column> 
+                
+                <p:column headerText="Auswahl" footerText="Auswahl" selectionMode="multiple" style="width:16px;text-align:center"/>
+
+                <p:column headerText="Info" footerText="Info" style="width:32px;text-align: center">
+                    <p:commandButton update=":form:mitgliedDetail" oncomplete="PF('mitgliedDialog').show()" icon="pi pi-search" title="View">
+                        <f:setPropertyActionListener value="#{mitglied}" target="#{mglView.selectedPerson}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:dialog header="#{msg['barcodeview.personeninfo']}" widgetVar="mitgliedDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                <p:outputPanel id="mitgliedDetail" style="text-align:center;">
+                    <p:panelGrid  columns="2" rendered="#{not empty mglView.selectedPerson}" columnClasses="label,value">
+                        <f:facet name="header">
+                            <p:barcode value="#{mglView.strMglnrOfSelectedPerson}" type="qr"/>
+                        </f:facet>
+
+                        <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
+                        <h:outputText value="#{mglView.strMglnrOfSelectedPerson}" />
+
+                        <h:outputText value="#{msg['barcodeview.name']}:" />
+                        <h:outputText value="#{mglView.selectedPerson.person.vorname} #{mglView.selectedPerson.person.nachname}" />
+
+                        <h:outputText value="Hauptkategorie" />
+                        <h:outputText value="#{mglView.selectedPerson.person.hauptkategorie}" />
+
+                        <h:outputText value="#{msg['barcodeview.geburtstdatum']}:" />
+                        <h:outputText value="#{mglView.selectedPerson.person.geburtsdatum}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+
+                        <h:outputText value="#{msg['barcodeview.austrittsdatum']}:" />
+                        <h:outputText value="#{mglView.selectedPerson.person.austritt}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+
+                        <h:outputText value="Zahlmodus" />
+                        <h:outputText value="#{mglView.selectedPerson.person.zahlungsmodus}" />
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:dialog header="Ausgewählte Mitglieder" widgetVar="multiMglDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="true" width="400">
+                <p:outputPanel id="multiMglDetail" style="text-align:center;">
+                    <ui:repeat value="#{mglView.selectedMgl}" var="mgl">
+                        <h:outputText value="#{mgl.strFMglnr} - #{mgl.person.vorname} #{mgl.person.nachname}" style="display:block"/>
+                    </ui:repeat>
+                </p:outputPanel>
+            </p:dialog>
+
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>

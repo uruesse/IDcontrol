@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(name = "FAMILY")
+@Table(catalog = "", schema = "DLRG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Family.findAll", query = "SELECT f FROM Family f")
@@ -45,7 +45,7 @@ public class Family implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(name = "FNR")
+    @Column(nullable = false)
     private Integer fnr;
     @OneToMany(mappedBy = "fnr")
     private Collection<Bankverbindung> bankverbindungCollection;

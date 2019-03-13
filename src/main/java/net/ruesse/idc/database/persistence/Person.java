@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(name = "PERSON")
+@Table(catalog = "", schema = "DLRG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
@@ -67,50 +67,45 @@ public class Person implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(name = "MGLNR")
+    @Column(nullable = false)
     private Long mglnr;
     @Size(max = 128)
-    @Column(name = "FIRMA")
+    @Column(length = 128)
     private String firma;
     @Size(max = 128)
-    @Column(name = "ANREDE")
+    @Column(length = 128)
     private String anrede;
     @Size(max = 128)
-    @Column(name = "TITEL")
+    @Column(length = 128)
     private String titel;
     @Size(max = 128)
-    @Column(name = "NACHNAME")
+    @Column(length = 128)
     private String nachname;
     @Size(max = 128)
-    @Column(name = "VORNAME")
+    @Column(length = 128)
     private String vorname;
     @Size(max = 128)
-    @Column(name = "HAUPTKATEGORIE")
+    @Column(length = 128)
     private String hauptkategorie;
-    @Column(name = "GEBURTSDATUM")
     @Temporal(TemporalType.DATE)
     private Date geburtsdatum;
     @Size(max = 128)
-    @Column(name = "BEMERKUNG")
+    @Column(length = 128)
     private String bemerkung;
     @Size(max = 128)
-    @Column(name = "STATUS")
+    @Column(length = 128)
     private String status;
-    @Column(name = "EINTRITT")
     @Temporal(TemporalType.DATE)
     private Date eintritt;
-    @Column(name = "AUSTRITT")
     @Temporal(TemporalType.DATE)
     private Date austritt;
     @Size(max = 128)
-    @Column(name = "KUENDIGUNG")
+    @Column(length = 128)
     private String kuendigung;
-    @Column(name = "ABWEICHENDERZAHLER")
     private Boolean abweichenderzahler;
-    @Column(name = "FREMDZAHLER")
     private BigInteger fremdzahler;
     @Size(max = 128)
-    @Column(name = "ZAHLUNGSMODUS")
+    @Column(length = 128)
     private String zahlungsmodus;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Bankverbindung> bankverbindungCollection;

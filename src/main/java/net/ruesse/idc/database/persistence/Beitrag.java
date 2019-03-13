@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(name = "BEITRAG")
+@Table(catalog = "", schema = "DLRG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Beitrag.findAll", query = "SELECT b FROM Beitrag b")
@@ -55,13 +55,13 @@ public class Beitrag implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "ID")
+    @Column(nullable = false)
     private Long id;
     @Size(max = 128)
-    @Column(name = "BEITRAGSPOSITION")
+    @Column(length = 128)
     private String beitragsposition;
     @Size(max = 128)
-    @Column(name = "BEITRAGSKOMMENTAR")
+    @Column(length = 128)
     private String beitragskommentar;
     @Column(name = "FAELLIG_START")
     @Temporal(TemporalType.DATE)
@@ -70,10 +70,10 @@ public class Beitrag implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date faelligEnde;
     @Size(max = 128)
-    @Column(name = "ABRECHNUNGSSTATUS")
+    @Column(length = 128)
     private String abrechnungsstatus;
     @Size(max = 128)
-    @Column(name = "ZAHLUNGSWEISE")
+    @Column(length = 128)
     private String zahlungsweise;
     @JoinColumn(name = "FNR", referencedColumnName = "FNR")
     @ManyToOne

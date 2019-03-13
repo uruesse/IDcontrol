@@ -33,6 +33,9 @@
                 <p:outputLabel for="barcodeview" value="#{msg['control.barcodeoverview']}:" />
                 <p:button id="barcodeview" outcome="mgllist" type="button" value="#{msg['control.barcodeoverview']}" class="secondary"/>
 
+                <p:outputLabel for="mitgliederliste" value="Mitgliederliste:" />
+                <p:button id="mitgliederliste" outcome="mglinfo" type="button" value="Mitgliederliste" class="secondary"/>
+
                 <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
                 <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
                     <p:menuitem value="Error 404" url="xx" />

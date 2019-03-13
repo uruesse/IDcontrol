@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(name = "RECHNUNG")
+@Table(catalog = "", schema = "DLRG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Rechnung.findAll", query = "SELECT r FROM Rechnung r")
@@ -52,17 +52,14 @@ public class Rechnung implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Column(name = "RECHNUNGSNUMMER")
+    @Column(nullable = false)
     private Long rechnungsnummer;
-    @Column(name = "RECHNUNGSDATUM")
     @Temporal(TemporalType.DATE)
     private Date rechnungsdatum;
-    @Column(name = "RECHNUNGSSUMME")
     private Integer rechnungssumme;
     @Size(max = 128)
-    @Column(name = "ZAHLMODUS")
+    @Column(length = 128)
     private String zahlmodus;
-    @Column(name = "ZAHLUNGSZIEL")
     @Temporal(TemporalType.DATE)
     private Date zahlungsziel;
     @JoinColumn(name = "FNR", referencedColumnName = "FNR")

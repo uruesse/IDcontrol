@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(name = "BANKVERBINDUNG")
+@Table(catalog = "", schema = "DLRG")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Bankverbindung.findAll", query = "SELECT b FROM Bankverbindung b")
@@ -51,19 +51,19 @@ public class Bankverbindung implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "ID")
+    @Column(nullable = false)
     private Long id;
     @Size(max = 128)
-    @Column(name = "IBAN")
+    @Column(length = 128)
     private String iban;
     @Size(max = 128)
-    @Column(name = "BIC")
+    @Column(length = 128)
     private String bic;
     @Size(max = 128)
-    @Column(name = "KONTOINHABER")
+    @Column(length = 128)
     private String kontoinhaber;
     @Size(max = 128)
-    @Column(name = "MANDATSREFERENZ")
+    @Column(length = 128)
     private String mandatsreferenz;
     @Column(name = "MANDAT_VORHANDEN")
     private Boolean mandatVorhanden;

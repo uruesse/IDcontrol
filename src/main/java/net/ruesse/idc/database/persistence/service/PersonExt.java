@@ -71,9 +71,9 @@ public class PersonExt {
 
     public PersonExt(Person person) {
         this.person = person;
+        LOGGER.setLevel(Level.INFO);
         checkMitarbeiterStatus();
         checkWassergeldStatus();
-        LOGGER.setLevel(Level.FINE);
     }
 
     public Person getPerson() {
@@ -106,6 +106,23 @@ public class PersonExt {
         }
     }
 
+    public boolean isAustritt() {
+        return person.getAustritt() != null;
+    }
+
+    public boolean isRechnung() {
+        Collection<Offenerechnungen> or;
+        or = person.getOffenerechnungenCollection();
+        return !or.isEmpty();
+    }
+
+        public boolean isBeitrag() {
+        Collection<Beitrag> be;
+        be = person.getBeitragCollection();
+        return !be.isEmpty();
+    }
+
+    
     /**
      * Berechnet das aktuelle Alter ACHTUNG macht keine Prüfung ob
      * eingangsparameter valide ist.
@@ -116,6 +133,10 @@ public class PersonExt {
     private int calcAge(Date d) {
         Date now = new Date();
         return (int) ((now.getTime() - d.getTime()) / MSPERYEAR);
+    }
+
+    public boolean isGeburtsdatum() {
+        return person.getGeburtsdatum() != null;
     }
 
     public int getAge() {
@@ -134,6 +155,18 @@ public class PersonExt {
             return String.format("%03d", calcAge(person.getGeburtsdatum()));
         }
         return null;
+    }
+
+    public boolean isBemerkung() {
+        return person.getBemerkung() != null;
+    }
+
+    public boolean isFamilie() {
+        return person.getFnr() != null;
+    }
+
+    public boolean isLastschrift() {
+        return "Lastschrift".equals(person.getZahlungsmodus());
     }
 
     private void checkMitarbeiterStatus() {

@@ -260,6 +260,10 @@ public class ControlBean implements Serializable {
             showAccessMessage(atype, getMessage("control.alter"), String.valueOf(pe.getAge()));
             //showAccessMessage(atype, getMessage("control.offenerposten"), nf.format((double) pe.getOpenposts() / 100));
 
+            if (pe.person.getBemerkung() != null) {
+                showAccessMessage(accesstype.doubt, "Bemerkung: ", pe.person.getBemerkung());
+            }
+
             if (pe.person.getAbweichenderzahler()) {
                 if (pe.person.getFremdzahler() == null) {
                     showAccessMessage(accesstype.doubt, "Abweichender Zahler unbekannt. Angaben zum Beitragskonto könnten falsch sein!");

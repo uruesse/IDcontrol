@@ -129,7 +129,12 @@
                     <p:outputPanel rendered="#{mitglied.wassergeld}"><i class="pi pi-check" /></p:outputPanel>
                     <p:outputPanel rendered="#{!mitglied.wassergeld}"><i class="pi pi-times" /></p:outputPanel>
                 </p:column> 
-                
+
+                <p:column filterBy="#{mitglied.person.bemerkung}" headerText="Bemerkung" style="text-align: left" footerText="Bemerkung" filterMatchMode="contains">
+                    <h:outputText value="#{mitglied.person.bemerkung}" />
+                </p:column>      
+
+
                 <p:column headerText="Auswahl" footerText="Auswahl" selectionMode="multiple" style="width:16px;text-align:center"/>
 
                 <p:column headerText="Info" footerText="Info" style="width:32px;text-align: center">
@@ -139,34 +144,238 @@
                 </p:column>
             </p:dataTable>
 
-            <p:dialog header="#{msg['barcodeview.personeninfo']}" widgetVar="mitgliedDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+            <p:dialog header="Mitgliedsinformationen" widgetVar="mitgliedDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
                 <p:outputPanel id="mitgliedDetail" style="text-align:center;">
-                    <p:panelGrid  columns="2" rendered="#{not empty mglView.selectedPerson}" columnClasses="label,value">
+                    <p:panelGrid  rendered="#{not empty mglView.selectedPerson}">
                         <f:facet name="header">
-                            <p:barcode value="#{mglView.strMglnrOfSelectedPerson}" type="qr"/>
+                            <p:row>
+                                <p:column colspan="2" style="text-align:center;">
+                                    <h:outputText value="#{mglView.selectedPerson.person.anrede} #{mglView.selectedPerson.person.titel} #{mglView.selectedPerson.person.vorname} #{mglView.selectedPerson.person.nachname}" />
+                                </p:column>
+                            </p:row>
                         </f:facet>
 
-                        <h:outputText value="#{msg['barcodeview.mitgliedsnummer']}:" />
-                        <h:outputText value="#{mglView.strMglnrOfSelectedPerson}" />
+                        <p:row>
+                            <p:column style="text-align:right;">
+                                <h:outputText  value="#{msg['barcodeview.mitgliedsnummer']}:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <h:outputText value="#{mglView.selectedPerson.strFMglnr}" />
+                            </p:column>
+                        </p:row>
 
-                        <h:outputText value="#{msg['barcodeview.name']}:" />
-                        <h:outputText value="#{mglView.selectedPerson.person.vorname} #{mglView.selectedPerson.person.nachname}" />
+                        <p:row>
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Mitgliedstatus:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <h:outputText value="#{mglView.selectedPerson.person.hauptkategorie}/#{mglView.selectedPerson.person.status}" />
+                            </p:column>
+                        </p:row>
 
-                        <h:outputText value="Hauptkategorie" />
-                        <h:outputText value="#{mglView.selectedPerson.person.hauptkategorie}" />
+                        <p:row rendered="#{mglView.selectedPerson.familie}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Familienmitglieder:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <ui:repeat value="#{mglView.selectedPerson.person.fnr.personCollection}" var="fam">
+                                    <p:outputPanel rendered="#{fam.mglnr != mglView.selectedPerson.person.mglnr}">
+                                        <h:outputText value="#{fam.mglnr}: "/>
+                                        <h:outputText value="#{fam.vorname} #{fam.nachname}"/><br />
+                                    </p:outputPanel>
+                                </ui:repeat>
+                            </p:column>
+                        </p:row>
 
-                        <h:outputText value="#{msg['barcodeview.geburtstdatum']}:" />
-                        <h:outputText value="#{mglView.selectedPerson.person.geburtsdatum}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                        </h:outputText>
 
-                        <h:outputText value="#{msg['barcodeview.austrittsdatum']}:" />
-                        <h:outputText value="#{mglView.selectedPerson.person.austritt}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                        </h:outputText>
+                        <p:row rendered="#{mglView.selectedPerson.bemerkung}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Bemerkung:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <h:outputText value="#{mglView.selectedPerson.person.bemerkung}" />
+                            </p:column>
+                        </p:row>
 
-                        <h:outputText value="Zahlmodus" />
-                        <h:outputText value="#{mglView.selectedPerson.person.zahlungsmodus}" />
+                        <p:row rendered="#{mglView.selectedPerson.mitarbeiter}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Mitarbeiterinformation:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <ui:repeat value="#{mglView.selectedPerson.person.cvCollection}" var="cv">
+                                    <h:outputText value="#{cv.cvkey}: "/>
+                                    <h:outputText value="#{cv.cvvalue}"/>
+                                    <h:outputText value=" seit "/>
+                                    <h:outputText value="#{cv.validfrom}">
+                                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                    </h:outputText>
+                                    <p:outputPanel rendered="#{cv.validto!=null}">
+                                        <h:outputText value=" bis "/>
+                                        <h:outputText value="#{cv.validto}">
+                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                        </h:outputText>
+                                    </p:outputPanel>
+                                    <br />
+                                </ui:repeat>
+                            </p:column>
+                        </p:row>
+
+
+                        <p:row>
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Kontaktdaten:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <p:outputPanel style="text-align:left;">
+                                    <ui:repeat value="#{mglView.selectedPerson.person.addressCollection}" var="adr">
+                                        <p:outputPanel style="text-align:left;">
+                                            <h:outputText value="#{adr.strasse}"/><br />
+                                            <h:outputText value="#{adr.plz} #{adr.ort}"/><br />
+                                            <h:outputText value="#{adr.land}"/>
+                                        </p:outputPanel>
+                                    </ui:repeat>
+
+                                    <ui:repeat value="#{mglView.selectedPerson.person.contactCollection}" var="contact">
+                                        <h:outputText value="#{contact.contactkey}: "/>
+                                        <h:outputText value="#{contact.contactvalue}"/><br />
+                                    </ui:repeat>
+                                </p:outputPanel>
+                            </p:column>
+                        </p:row>
+
+                        <p:row rendered="#{mglView.selectedPerson.geburtsdatum}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="#{msg['barcodeview.geburtstdatum']}:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <p:outputPanel>
+                                    <h:outputText value="#{mglView.selectedPerson.person.geburtsdatum}">
+                                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>       
+                                    </h:outputText>
+                                    <h:outputText value=", #{mglView.selectedPerson.age}" />
+                                </p:outputPanel>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Eintrittsdatum:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <p:outputPanel>
+                                    <h:outputText value="#{mglView.selectedPerson.person.eintritt}">
+                                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                    </h:outputText>
+                                </p:outputPanel>
+                            </p:column>
+                        </p:row>
+
+                        <p:row rendered="#{mglView.selectedPerson.austritt}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="#{msg['barcodeview.austrittsdatum']}:" />
+                            </p:column>
+                            <p:column style="text-align:left;">         
+                                <h:outputText value="#{mglView.selectedPerson.person.austritt}">
+                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                                <h:outputText value=" ["/>
+                                <h:outputText value="#{mglView.selectedPerson.person.kuendigung}">
+                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                                <h:outputText value="]"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row rendered="#{!mglView.selectedPerson.person.abweichenderzahler}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Zahlmodus" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <h:outputText value="#{mglView.selectedPerson.person.zahlungsmodus}" />
+                                <ui:repeat value="#{mglView.selectedPerson.person.bankverbindungCollection}" var="bv" rendered="#{mglView.selectedPerson.lastschrift}">
+                                    <br />
+                                    <h:outputText value="#{bv.iban}: "/>
+                                    <h:outputText value="#{bv.kontoinhaber}" />
+                                    <h:outputText value=", "/>
+                                    <h:outputText value="#{bv.mandatsreferenz}"/>
+                                </ui:repeat>
+                            </p:column>
+                        </p:row>
+
+                        <p:row  rendered="#{mglView.selectedPerson.person.abweichenderzahler}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="Fremdzahler" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <h:outputText value="#{mglView.selectedPerson.fremdzahlerInfo}" />
+                                <ui:repeat value="#{mglView.selectedPerson.fremdzahlerPerson.offenerechnungenCollection}" var="fp">
+                                    <p:outputPanel style="text-align:left;">
+                                        <p:panelGrid  columns="3" >
+                                            <h:outputText value="#{fp.rechnungsnummer} "/>
+                                            <h:outputText value="#{fp.rechnungsdatum}">
+                                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>       
+                                            </h:outputText>
+                                            <h:outputText style="text-align:right;" value= "#{fp.rechnungssumme/100}">
+                                                <f:convertNumber locale="de" currencySymbol="€" type="currency" />
+                                            </h:outputText>
+                                        </p:panelGrid>
+                                    </p:outputPanel>
+                                </ui:repeat>
+                                <h:outputText value="#{mglView.selectedPerson.fremdzahlerPerson.zahlungsmodus}" />
+                                <ui:repeat value="#{mglView.selectedPerson.fremdzahlerPerson.bankverbindungCollection}" var="fbv">
+                                    <br />
+                                    <h:outputText value="#{fbv.iban}: "/>
+                                    <h:outputText value="#{fbv.kontoinhaber}" />
+                                    <h:outputText value=", "/>
+                                    <h:outputText value="#{fbv.mandatsreferenz}"/>
+                                </ui:repeat>
+                            </p:column>
+                        </p:row>
+
+                        <!--p:row rendered="#{!mglView.selectedPerson.person.abweichenderzahler}"-->
+                        <p:row rendered="#{mglView.selectedPerson.rechnung}">
+                            <p:column style="text-align:right;">
+                                <h:outputText style="text-align:right;" value="offene Rechnungen:" />
+                            </p:column>
+                            <p:column style="text-align:left;">
+                                <ui:repeat value="#{mglView.selectedPerson.person.offenerechnungenCollection}" var="ofr">
+                                    <p:outputPanel style="text-align:left;">
+                                        <p:panelGrid  columns="3" >
+                                            <h:outputText value="#{ofr.rechnungsnummer} "/>
+                                            <h:outputText value="#{ofr.rechnungsdatum}">
+                                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>       
+                                            </h:outputText>
+                                            <h:outputText style="text-align:right;" value= "#{ofr.rechnungssumme/100}">
+                                                <f:convertNumber locale="de" currencySymbol="€" type="currency" />
+                                            </h:outputText>
+                                        </p:panelGrid>
+                                    </p:outputPanel>
+                                </ui:repeat>
+                            </p:column>
+                        </p:row>
+
+                        <p:row rendered="#{mglView.selectedPerson.beitrag}">
+                            <p:column colspan="2" style="width:450px;">
+                                <p:dataTable value="#{mglView.selectedPerson.person.beitragCollection}" var="beitr">
+                                    <p:column headerText="Beitragsposition" style="width:150px;text-align: center">
+                                        <h:outputText value= "#{beitr.beitragsposition} "/>
+                                    </p:column>
+                                    <p:column headerText="Kommentar" style="width:120px;text-align: center">
+                                        <h:outputText value= "#{beitr.beitragskommentar} "/>
+                                    </p:column>
+                                    <p:column headerText="nächste" style="width:90px;text-align: center">
+                                        <h:outputText value="#{beitr.faelligStart}">
+                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>       
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Ablauf" style="width:90px;text-align: center">
+                                        <h:outputText value="#{beitr.faelligEnde}">
+                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>       
+                                        </h:outputText>   
+                                    </p:column>
+                                </p:dataTable>
+                            </p:column>
+                        </p:row>
 
                     </p:panelGrid>
                 </p:outputPanel>

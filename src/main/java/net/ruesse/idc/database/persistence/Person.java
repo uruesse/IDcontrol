@@ -99,9 +99,8 @@ public class Person implements Serializable {
     private Date eintritt;
     @Temporal(TemporalType.DATE)
     private Date austritt;
-    @Size(max = 128)
-    @Column(length = 128)
-    private String kuendigung;
+    @Temporal(TemporalType.DATE)
+    private Date kuendigung;
     private Boolean abweichenderzahler;
     private BigInteger fremdzahler;
     @Size(max = 128)
@@ -228,11 +227,11 @@ public class Person implements Serializable {
         this.austritt = austritt;
     }
 
-    public String getKuendigung() {
+    public Date getKuendigung() {
         return kuendigung;
     }
 
-    public void setKuendigung(String kuendigung) {
+    public void setKuendigung(Date kuendigung) {
         this.kuendigung = kuendigung;
     }
 
@@ -356,7 +355,9 @@ public class Person implements Serializable {
         return "net.ruesse.idc.database.persistence.Person[ mglnr=" + mglnr + " ]";
     }
     
+    // fällt weg
     public String getStrMglnr() {
         return String.format("%013d", mglnr);
     }
+    // ----
 }

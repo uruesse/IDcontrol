@@ -26,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -50,6 +51,7 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.swing.text.MaskFormatter;
 import net.ruesse.idc.database.persistence.Person;
+import net.ruesse.idc.database.persistence.Scanlog;
 import net.ruesse.idc.database.persistence.service.PersonExt;
 import net.ruesse.idc.database.persistence.service.PersonService;
 import static net.ruesse.idc.ressources.MsgBundle.getMessage;
@@ -67,12 +69,15 @@ public class ControlBean implements Serializable {
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
     private static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
     private static EntityManagerFactory factory;
+    private static EntityManager em;
 
     /**
      *
      */
     public ControlBean() {
         LOGGER.setLevel(Level.INFO);
+        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        em = factory.createEntityManager();
     }
 
     PersonService ps = new PersonService();
@@ -132,8 +137,7 @@ public class ControlBean implements Serializable {
      */
     public void showMessage() {
         LOGGER.log(Level.FINE, "mnr={0}", this.mnr);
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        EntityManager em = factory.createEntityManager();
+
         //Query q = em.createQuery("SELECT p FROM Person p WHERE p.mglnr = :mglnr");
         Query q = em.createNamedQuery("Person.findByMglnr");
         q.setParameter("mglnr", Mgl2Long(this.mnr));
@@ -234,6 +238,14 @@ public class ControlBean implements Serializable {
                 showAccessMessage(accesstype.error, getMessage("control.mitgliednichtgefunden"), getMessage("control.gescannterwert"), this.mnr);
             }
         } else {
+
+            Scanlog sl = new Scanlog();
+            sl.setScantime(new Timestamp(System.currentTimeMillis()));
+            sl.setMglnr(pe.person);
+            em.getTransaction().begin();
+            em.persist(sl);
+            em.getTransaction().commit();
+
             atype = accesstype.access;
 
             String op = pe.getOpenbills();

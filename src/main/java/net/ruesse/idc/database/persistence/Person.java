@@ -116,6 +116,8 @@ public class Person implements Serializable {
     @ManyToOne
     private Family fnr;
     @OneToMany(mappedBy = "mglnr")
+    private Collection<Scanlog> scanlogCollection;
+    @OneToMany(mappedBy = "mglnr")
     private Collection<Rechnung> rechnungCollection;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Address> addressCollection;
@@ -295,6 +297,15 @@ public class Person implements Serializable {
     }
 
     @XmlTransient
+    public Collection<Scanlog> getScanlogCollection() {
+        return scanlogCollection;
+    }
+
+    public void setScanlogCollection(Collection<Scanlog> scanlogCollection) {
+        this.scanlogCollection = scanlogCollection;
+    }
+
+    @XmlTransient
     public Collection<Rechnung> getRechnungCollection() {
         return rechnungCollection;
     }
@@ -354,7 +365,7 @@ public class Person implements Serializable {
     public String toString() {
         return "net.ruesse.idc.database.persistence.Person[ mglnr=" + mglnr + " ]";
     }
-    
+
     // fällt weg
     public String getStrMglnr() {
         return String.format("%013d", mglnr);

@@ -59,6 +59,8 @@
     <ui:define name="implementation">
 
         <h:form id="form">
+
+
             <p:dataTable id="persons" 
                          var="mitglied" 
                          value="#{mglView.allMgl}" 
@@ -71,7 +73,7 @@
                          scrollHeight="400"
                          emptyMessage="Person mit Suchkriterium nicht gefunden" 
                          filteredValue="#{mglView.filteredMgl}">
-
+                <p:growl id="message" showDetail="true" />
                 <f:facet name="header">
                     <p:outputPanel>
                         <p:panelGrid  columns="2">
@@ -80,9 +82,19 @@
                                 <p:inputText id="globalFilter" onkeyup="PF('mglTable').filter()" style="width:250px" placeholder="Suchwort eingeben"/>
                             </p:outputPanel>
                             <p:outputPanel style="float:right">
-                                <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-print" value="Ausweis drucken" oncomplete="PF('multiMglDialog').show()" />
+                                <!--p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-print" value="Ausweis drucken" oncomplete="PF('multiMglDialog').show()" /-->
+                                <p:commandButton process="persons" icon="pi pi-print" value="Ausweis drucken" action="#{mglView.printAction}" update="message">
+                                    <p:confirm header="Bestätigung erforderlich" message="Jetzt drucken?" icon="pi pi-exclamation-triangle" />
+                                </p:commandButton>
+
                                 <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-sign-out" value="Wassergeld kündigen" oncomplete="PF('multiMglDialog').show()" />
                                 <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-sign-in" value="Wassergeld berechnen" oncomplete="PF('multiMglDialog').show()" />
+
+
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                    <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                                    <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                                </p:confirmDialog> 
 
                                 <p:commandButton id="toggler" type="button" value="Spalten" style="float:right" icon="pi pi-align-justify" />
                                 <p:columnToggler datasource="persons" trigger="toggler" />
@@ -383,12 +395,13 @@
 
             <p:dialog header="Ausgewählte Mitglieder" widgetVar="multiMglDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="true" width="400">
                 <p:outputPanel id="multiMglDetail" style="text-align:center;">
-                    <ui:repeat value="#{mglView.selectedMgl}" var="mgl">
-                        <h:outputText value="#{mgl.strFMglnr} - #{mgl.person.vorname} #{mgl.person.nachname}" style="display:block"/>
-                    </ui:repeat>
+                    <h:form id="dialogform">
+                        <ui:repeat value="#{mglView.selectedMgl}" var="mgl">
+                            <h:outputText value="#{mgl.strFMglnr} - #{mgl.person.vorname} #{mgl.person.nachname}" style="display:block"/>
+                        </ui:repeat>
+                    </h:form>
                 </p:outputPanel>
             </p:dialog>
-
         </h:form>
 
 

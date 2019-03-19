@@ -30,9 +30,6 @@
                     <p:ajax event="change" global="false" />
                 </p:selectBooleanCheckbox>
 
-                <p:outputLabel for="barcodeview" value="#{msg['control.barcodeoverview']}:" />
-                <p:button id="barcodeview" outcome="mgllist" type="button" value="#{msg['control.barcodeoverview']}" class="secondary"/>
-
                 <p:outputLabel for="mitgliederliste" value="Mitgliederliste:" />
                 <p:button id="mitgliederliste" outcome="mglinfo" type="button" value="Mitgliederliste" class="secondary"/>
 
@@ -41,6 +38,13 @@
                     <p:menuitem value="Error 404" url="xx" />
                 </p:splitButton>  
 
+                <!--
+                <p:outputLabel for="barcodeview" value="#{msg['control.barcodeoverview']}:" />
+                <p:button id="barcodeview" outcome="mgllist" type="button" value="#{msg['control.barcodeoverview']}" class="secondary"/>
+                
+                <p:outputLabel for="print" value="Druckdialog:" />
+                <p:button id="print" outcome="print" type="button" value="Drucken" class="secondary"/>
+                -->
             </h:panelGrid>
         </h:form>
 

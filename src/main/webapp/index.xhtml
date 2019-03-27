@@ -14,16 +14,17 @@
     </ui:define>
 
     <ui:define name="description">
-        #{msg['title.description']}
+        #{msg['title.description']} -- Diese Seite wird zu  "Einstellungen"
     </ui:define>
 
     <ui:define name="implementation">
         <h:form>
+            <p:growl id="growlmessage" showDetail="true" />
 
             <h:panelGrid id="display" columns="2" cellpadding="5">
 
                 <p:outputLabel for="scan" value="#{msg['control.scanner']}:" />
-                <p:button id="scan" outcome="scan" type="button" value="#{msg['control.scan']}" class="secondary" update="display"/>
+                <p:button id="scan" outcome="scan" value="#{msg['control.scan']}" class="secondary"/>
 
                 <h:outputLabel for="demo" value="#{msg['control.barcodesimulator']}:" />
                 <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
@@ -31,12 +32,35 @@
                 </p:selectBooleanCheckbox>
 
                 <p:outputLabel for="mitgliederliste" value="Mitgliederliste:" />
-                <p:button id="mitgliederliste" outcome="mglinfo" type="button" value="Mitgliederliste" class="secondary"/>
+                <p:button id="mitgliederliste" outcome="mglinfo"  value="Mitgliederliste" class="secondary"/>
+
+                <h:outputLabel for="ausweisdruck" value="Ausweisdruck in PDF-Datei" />
+                <p:selectBooleanCheckbox id="ausweisdruck" value="#{applicationControlBean.isPDF}">
+                    <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
+
+                <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
+                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}">
+                    <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
+
+                <h:outputLabel for="ausweisrueckseite" value="Ausweisrückseitendruck" />
+                <p:commandButton id="ausweisrueckseite" process="@this" icon="pi pi-print" value="Ausweisrückseite drucken" action="#{applicationControlBean.printActionRS}" update="growlmessage"/>
+
 
                 <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
                 <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
                     <p:menuitem value="Error 404" url="xx" />
                 </p:splitButton>  
+
+                <p:outputLabel for="documentation" value="Dokumentation:" />
+                <p:button id="documentation" outcome="documentation"  value="Bedienungsanleitungen" class="secondary"/>
+
+                <p:outputLabel for="login" value="Login:" />
+                <p:button id="login" outcome="login"  value="eigentliche Startseite" class="secondary"/>
+
+                <h:outputLabel for="stage2prod" value="Stage2Prod" />
+                <p:commandButton id="stage2prod" process="@this" value="Stage-DB in Prod-DB kopieren" action="#{applicationControlBean.stageToProd}" update="growlmessage"/>
 
                 <!--
                 <p:outputLabel for="barcodeview" value="#{msg['control.barcodeoverview']}:" />

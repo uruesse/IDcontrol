@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        #{msg['title.application']}
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        #{msg['title.login']}
+    </ui:define>
+
+    <ui:define name="implementation">
+        <h:form>        <h:form>
+            <p:messages id="messages" escape="false" showDetail="true" closable="false">
+                <p:autoUpdate />
+            </p:messages>
+            
+            <p:focus for="mitgliednummer" />
+            
+            <h:panelGrid id="display" columns="3" cellpadding="5">
+
+                <p:outputLabel for="mitgliednummer" value="#{msg['scan.mitgliedsnummer']}:" />
+                <p:inputMask id="mitgliednummer" value="#{controlBean.mnr}" mask="#{msg['scan.mnr_mask']}"/>
+                <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.showMessage}" update="display"/>
+            </h:panelGrid>
+        </h:form>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

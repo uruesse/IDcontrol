@@ -52,14 +52,12 @@
     </ui:define>
 
     <ui:define name="description">
-
         Übersicht über die aktuellen Mitglieder
     </ui:define>
 
     <ui:define name="implementation">
 
         <h:form id="form">
-
 
             <p:dataTable id="persons" 
                          var="mitglied" 
@@ -73,8 +71,10 @@
                          scrollHeight="400"
                          emptyMessage="Person mit Suchkriterium nicht gefunden" 
                          filteredValue="#{mglView.filteredMgl}">
-                <p:growl id="message" showDetail="true" />
+
                 <f:facet name="header">
+                    <p:growl id="growlmessage" showDetail="true" />
+
                     <p:outputPanel>
                         <p:panelGrid  columns="2">
                             <p:outputPanel style="float:left">
@@ -83,13 +83,12 @@
                             </p:outputPanel>
                             <p:outputPanel style="float:right">
                                 <!--p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-print" value="Ausweis drucken" oncomplete="PF('multiMglDialog').show()" /-->
-                                <p:commandButton process="persons" icon="pi pi-print" value="Ausweis drucken" action="#{mglView.printAction}" update="message">
-                                    <p:confirm header="Bestätigung erforderlich" message="Jetzt drucken?" icon="pi pi-exclamation-triangle" />
+                                <p:commandButton process="persons" icon="pi pi-print" value="Ausweis drucken" action="#{mglView.printAction}" update="growlmessage">
+                                    <p:confirm header="Bestätigung erforderlich" message="Es werden nur Ausweise für Mitglieder gedruckt, deren Status Aktiv ist! Jetzt drucken?" icon="pi pi-exclamation-triangle" />
                                 </p:commandButton>
 
-                                <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-sign-out" value="Wassergeld kündigen" oncomplete="PF('multiMglDialog').show()" />
-                                <p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-sign-in" value="Wassergeld berechnen" oncomplete="PF('multiMglDialog').show()" />
-
+                                <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-out" value="Wassergeld kündigen" oncomplete="PF('multiMglDialog').show()" />
+                                <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-in" value="Wassergeld berechnen" oncomplete="PF('multiMglDialog').show()" />
 
                                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                                     <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />

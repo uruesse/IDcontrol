@@ -12,6 +12,9 @@ DROP TABLE PERSON;
 
 DROP TABLE FAMILY;
 
+DROP TABLE AUSWAHL;
+DROP TABLE VEREIN;
+
 CREATE TABLE FAMILY (
   FNR INT PRIMARY KEY
 );
@@ -131,3 +134,36 @@ CREATE TABLE SCANLOG (
 CREATE TABLE AUSWAHL (
     MGLNR BIGINT PRIMARY KEY
 );
+
+CREATE TABLE VEREIN (
+    MGLNR BIGINT PRIMARY KEY,
+    FIRMA VARCHAR(128),
+    STRASSE VARCHAR(128),
+    PLZ VARCHAR(16),
+    ORT VARCHAR(128),
+    LAND VARCHAR(128),
+    REGISTER VARCHAR(128),
+    EMAIL VARCHAR(128),
+    URI VARCHAR(128)
+);
+
+INSERT INTO VEREIN (
+  MGLNR,
+  FIRMA,
+  STRASSE,
+  PLZ,
+  ORT,
+  LAND,
+  REGISTER,
+  EMAIL,
+  URI) 
+VALUES (
+  0920000,
+  'Bezirk Remscheid e.V.',
+  'Kräwnkler Brücke 10',
+  '42897',
+  'Remscheid',
+  'Deutschland',
+  'Amtsgericht Wuppertal 20959',
+  'info@remscheid.dlrg.de',
+  'www.remscheid.dlrg.de')

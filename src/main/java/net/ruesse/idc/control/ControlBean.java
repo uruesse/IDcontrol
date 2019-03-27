@@ -32,7 +32,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -46,7 +45,6 @@ import javax.faces.context.FacesContext;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.swing.text.MaskFormatter;
@@ -67,17 +65,13 @@ import org.primefaces.event.CaptureEvent;
 public class ControlBean implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
-    private static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
-    private static EntityManagerFactory factory;
-    private static EntityManager em;
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
 
     /**
      *
      */
     public ControlBean() {
         LOGGER.setLevel(Level.INFO);
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        em = factory.createEntityManager();
     }
 
     PersonService ps = new PersonService();

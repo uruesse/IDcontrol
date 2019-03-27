@@ -23,10 +23,10 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import net.ruesse.idc.control.Constants;
 import net.ruesse.idc.control.ControlBean;
 import net.ruesse.idc.database.persistence.Beitrag;
 import net.ruesse.idc.database.persistence.Cv;
@@ -43,8 +43,7 @@ import net.ruesse.idc.database.persistence.Person;
 public class PersonExt {
 
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
-    public static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
-    private static EntityManagerFactory factory;
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
 
     static final long MSPERYEAR = ((long) 365 * 24 * 60 * 60 * 1000);
 
@@ -72,8 +71,10 @@ public class PersonExt {
     public PersonExt(Person person) {
         this.person = person;
         LOGGER.setLevel(Level.INFO);
-        checkMitarbeiterStatus();
-        checkWassergeldStatus();
+        if (person != null) {
+            checkMitarbeiterStatus();
+            checkWassergeldStatus();
+        }
     }
 
     public Person getPerson() {
@@ -116,13 +117,12 @@ public class PersonExt {
         return !or.isEmpty();
     }
 
-        public boolean isBeitrag() {
+    public boolean isBeitrag() {
         Collection<Beitrag> be;
         be = person.getBeitragCollection();
         return !be.isEmpty();
     }
 
-    
     /**
      * Berechnet das aktuelle Alter ACHTUNG macht keine Prüfung ob
      * eingangsparameter valide ist.
@@ -217,8 +217,6 @@ public class PersonExt {
 
         Person fz;
 
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        EntityManager em = factory.createEntityManager();
         Query q = em.createNamedQuery("Person.findByMglnr");
         q.setParameter("mglnr", person.getFremdzahler());
         try {
@@ -247,8 +245,6 @@ public class PersonExt {
         int count = 0;
         int lastschriften = 0;
 
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        EntityManager em = factory.createEntityManager();
         Collection<Offenerechnungen> openbills = null;
 
         Collection<Person> family;

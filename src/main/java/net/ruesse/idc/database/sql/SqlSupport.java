@@ -19,14 +19,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import static java.lang.Math.log;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import net.ruesse.idc.control.Constants;
+import static net.ruesse.idc.control.Constants.INTERNAL_PWD;
+import static net.ruesse.idc.control.FileService.createDatedExportsDir;
+import static net.ruesse.idc.control.FileService.deleteDirectoryStream;
+import static net.ruesse.idc.control.FileService.getExportsDir;
 
 /**
  *
@@ -40,12 +50,129 @@ public class SqlSupport {
 
     /**
      * Liefert die SQL-Connection aus dem Entity Manager
-     * @return 
+     *
+     * @return
      */
     public java.sql.Connection getSqlConnection() {
         return em.unwrap(java.sql.Connection.class);
     }
 
+    public List<String> getTables(String schema) {
+        String stmt = "SELECT TABLENAME "
+                + "FROM SYS.SYSTABLES T, SYS.SYSSCHEMAS S "
+                + "WHERE T.TABLETYPE='T' "
+                + "AND S.SCHEMAID=T.SCHEMAID "
+                + "AND S.SCHEMANAME='" + schema.toUpperCase() + "'";
+        Query q = em.createNativeQuery(stmt);
+        return q.getResultList();
+    }
+
+    public String exportSchema(String schema) {
+
+        Path exportPath = createDatedExportsDir();
+        Path exportFile = Paths.get(exportPath.toString() + ".IDC");
+        getTables(schema).forEach((table) -> {
+            exportTable(schema, table, exportPath);
+        });
+
+        try {
+            ZipFile zipFile = new ZipFile((exportPath.resolve(exportFile.toString())).toFile());
+            ZipParameters parameters = new ZipParameters();
+
+            parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
+            parameters.setEncryptFiles(true);
+            parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
+            parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
+            // Setting password
+            parameters.setPassword(INTERNAL_PWD);
+
+            zipFile.addFolder(exportPath.toFile(), parameters);
+
+        } catch (ZipException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
+        deleteDirectoryStream(exportPath);
+        
+        return exportFile.toString();
+
+    }
+
+    private Path unCompressPasswordProtectedFiles(Path sourcePath) {
+
+        Path destPath = sourcePath.getParent();
+
+        LOGGER.log(Level.INFO, "Destination {0}", destPath.toString());
+        try {
+            ZipFile zipFile = new ZipFile(sourcePath.toFile());
+            // If it is encrypted then provide password
+            if (zipFile.isEncrypted()) {
+                zipFile.setPassword(INTERNAL_PWD);
+            }
+            zipFile.extractAll(destPath.toString());
+        } catch (ZipException ex) {
+            Logger.getLogger(SqlSupport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        String fn = sourcePath.toString();
+
+        int lastIndex = fn.lastIndexOf('.');
+        if (lastIndex == -1) {
+            
+        }
+        return Paths.get(fn.substring(0,lastIndex));
+    }
+
+    public void importSchema(String schema, Path importZip) {
+        Path path = unCompressPasswordProtectedFiles(importZip);
+
+        getTables(schema).forEach((table) -> {
+            importTable(schema, table, path);
+        });
+    }
+
+    public void importTable(String schema, String table, Path importPath) {
+
+        em.getTransaction().begin();
+        Path importFile = importPath.resolve(table.toLowerCase() + ".dat");
+
+        String stmt = "CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE ("
+                + "'" + schema.toUpperCase() + "',"
+                + "'" + table.toUpperCase() + "',"
+                + "'" + importFile.toString() + "',"
+                + "'%',"
+                + "'§',"
+                + "'UTF-8',"
+                + "1"
+                + ")";
+        nativeSQL(stmt);
+
+        em.getTransaction().commit();
+    }
+
+    public void exportTable(String schema, String table, Path exportPath) {
+
+        em.getTransaction().begin();
+
+        Path exportFile = exportPath.resolve(table.toLowerCase() + ".dat");
+
+        String stmt = "CALL SYSCS_UTIL.SYSCS_EXPORT_TABLE ("
+                + "'" + schema.toUpperCase() + "',"
+                + "'" + table.toUpperCase() + "',"
+                + "'" + exportFile.toString() + "',"
+                + "'%',"
+                + "'§',"
+                + "'UTF-8'"
+                + ")";
+        nativeSQL(stmt);
+
+        em.getTransaction().commit();
+    }
+
+    public void exportTable(String table) {
+        exportTable("IDCREMOTE", table, getExportsDir());
+    }
 
     /**
      *

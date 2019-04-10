@@ -16,23 +16,19 @@
 package net.ruesse.idc.control;
 
 import java.util.logging.Logger;
+import javax.faces.bean.ManagedBean;
 
 /**
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-public class Constants {
+@ManagedBean
+public class FooterView {
 
-    private static final Logger LOGGER = Logger.getLogger(Constants.class.getName());
-
-    public static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
-
-    public static final String REPORT_SRC = ".jrxml";
-    public static final String REPORT_DST = ".jasper";
+    private static final Logger LOGGER = Logger.getLogger(FooterView.class.getName());
     
-    public static final String INTERNAL_PWD = "pass@123";
-
-    public static String getPERSISTENCE_UNIT_NAME() {
-        return PERSISTENCE_UNIT_NAME;
+    public String getFileInfo() {
+        VereinService vs = new VereinService();
+        return vs.getFileInfo();
     }
 }

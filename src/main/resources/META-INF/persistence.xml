@@ -22,12 +22,13 @@
     <class>net.ruesse.idc.database.persistence.Family</class>
     <class>net.ruesse.idc.database.persistence.Scanlog</class>
     <class>net.ruesse.idc.database.persistence.Auswahl</class>
+    <class>net.ruesse.idc.database.persistence.Verein</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IDControl"/>
-      <property name="javax.persistence.jdbc.user" value="dlrg"/>
+      <property name="javax.persistence.jdbc.user" value="idc"/>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
-      <property name="javax.persistence.jdbc.password" value="dlrg"/>
+      <property name="javax.persistence.jdbc.password" value="idcpass"/>
     </properties>
   </persistence-unit>
 </persistence>

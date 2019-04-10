@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        Anwesenheitsliste
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        Anwesenheitsliste
+    </ui:define>
+
+    <ui:define name="implementation">
+
+        <p:media   value="/resources/files/pdf/Anwesenheitsliste.pdf" width="100%" height="800px">
+            Ihr Browser kann kein PDF anzeigen, <h:outputLink value="/resources/files/pdf/Anwesenheitsliste.pdf">clicken Sie hier</h:outputLink> um das Dokument herunterzuladen.
+        </p:media>
+
+    </ui:define>
+
+</ui:composition>

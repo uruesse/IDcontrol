@@ -21,12 +21,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.print.PrintService;
@@ -39,7 +42,11 @@ import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import net.ruesse.idc.control.ApplicationControlBean;
 import net.ruesse.idc.control.Constants;
-import net.ruesse.idc.database.sql.SqlSupport;
+import static net.ruesse.idc.control.FileService.getLogoDir;
+import static net.ruesse.idc.control.FileService.getReportTemplatesDir;
+import static net.ruesse.idc.control.FileService.getReportsDir;
+import static net.ruesse.idc.control.FileService.getTempDir;
+import static net.ruesse.idc.control.FileService.getWorkingDir;
 import net.ruesse.idc.mglinfo.MglView;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -86,11 +93,10 @@ public class PrintSupport {
     }
 
     public void test(JasperReport report) {
-        
+
         //http://jasperreports.sourceforge.net/sample.reference/batchexport/index.html
         //http://jasperreports.sourceforge.net/sample.reference/printservice/index.html
         //https://github.com/eugenp/tutorials/blob/master/spring-all/src/main/java/org/baeldung/jasperreports/SimpleReportExporter.java
-        
         HashMap<String, Object> parameter = new HashMap<>();
         parameter.put("aParameter", "Hallo Welt");
         java.sql.Connection conn = em.unwrap(java.sql.Connection.class);
@@ -174,19 +180,20 @@ public class PrintSupport {
      */
     public static JasperReport getReport(String report) {
 
-        String jasperFileName = Constants.REPORTS_DIR + report + Constants.REPORT_DST;
+        Path jasperFile;
+        jasperFile=getReportsDir().resolve(report+Constants.REPORT_DST);
 
-        if (!Files.exists(Paths.get(jasperFileName))) {
+        if (!Files.exists(jasperFile)) {
             try {
                 String str = compileTheReportToFile(report);
                 LOGGER.info("Report kompiliert: " + str);
             } catch (JRException | IOException ex) {
-               LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 return null;
             }
         }
         JasperReport jr = null;
-        if (!Files.exists(Paths.get(jasperFileName))) {
+        if (!Files.exists(jasperFile)) {
             LOGGER.info("Report wurde nicht korrekt kompiliert versuche on the fly zu kompilieren ");
             try {
                 jr = compileReport(report);
@@ -196,7 +203,7 @@ public class PrintSupport {
         } else {
 
             try {
-                jr = (JasperReport) JRLoader.loadObjectFromFile(jasperFileName);
+                jr = (JasperReport) JRLoader.loadObjectFromFile(jasperFile.toString());
             } catch (JRException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
@@ -217,7 +224,7 @@ public class PrintSupport {
 
         JasperReport jasperReport = null;
 
-        String jrxmlFileName = Constants.REPORTTEMPLATES_DIR + report + Constants.REPORT_SRC;
+        String jrxmlFileName = "" + getReportTemplatesDir() + report + Constants.REPORT_SRC;
 
         InputStream jrxmlInput = JRLoader.getFileInputStream(jrxmlFileName);
 
@@ -242,11 +249,11 @@ public class PrintSupport {
      */
     public static String compileTheReportToFile(String report) throws JRException, IOException {
 
-        String jrxmlFileName = Constants.REPORTTEMPLATES_DIR + report + Constants.REPORT_SRC;
-        String jasperFileName = Constants.REPORTS_DIR + report + Constants.REPORT_DST;
-        LOGGER.log(Level.INFO, "Kompiliere: {0}", jrxmlFileName);
+        Path jrxmlFile = getReportTemplatesDir().resolve(report+Constants.REPORT_SRC);
+        Path jasperFile = getReportsDir().resolve(report+Constants.REPORT_DST);
+        LOGGER.log(Level.INFO, "Kompiliere: {0}", jrxmlFile.toString());
 
-        InputStream jrxmlInput = JRLoader.getFileInputStream(jrxmlFileName);
+        InputStream jrxmlInput = JRLoader.getFileInputStream(jrxmlFile.toString());
 
         if (jrxmlInput != null) {
             JasperDesign design;
@@ -255,18 +262,17 @@ public class PrintSupport {
             } finally {
                 jrxmlInput.close();
             }
-            JasperCompileManager.compileReportToFile(design, jasperFileName);
-            return jasperFileName;
+            JasperCompileManager.compileReportToFile(design, jasperFile.toString());
+            return jasperFile.toString();
         }
         return null;
     }
 
-    
-   /**
-    * 
-    * @param report
-    * @param em 
-    */
+    /**
+     *
+     * @param report
+     * @param em
+     */
     public static void printReport(String report, EntityManager em) {
         JasperReport jasperReport;
         JasperPrint jasperPrint;
@@ -275,9 +281,9 @@ public class PrintSupport {
         jasperReport = getReport(report);
         LOGGER.fine("Nach Compile Report");
 
-        // Initialisieren der HashMap wird noch nicht verwendet
         HashMap<String, Object> parameter = new HashMap<>();
-        parameter.put("aParameter", "Hallo Welt");
+        parameter.put("workingdir", getWorkingDir().toString());
+        parameter.put("logodir", getLogoDir().toString());
 
         try {
             if (jasperReport != null) {
@@ -289,7 +295,7 @@ public class PrintSupport {
                 jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, conn);
 
                 if (ApplicationControlBean.isPDF()) {
-                    String pdfFile = Constants.TEMP_DIR + report + ".pdf";
+                    String pdfFile = getTempDir().resolve(report + ".pdf").toString();
                     JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFile);
 
                     if (!ApplicationControlBean.getKartendrucker().isEmpty()) {
@@ -307,6 +313,46 @@ public class PrintSupport {
                         LOGGER.info(err.getMessage());
                     }
                 }
+
+                em.getTransaction().commit();
+            } else {
+                LOGGER.fine("jasperReport ist gleich null");
+            }
+        } catch (JRException ex) {
+            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     *
+     * @param report
+     * @param em
+     */
+    public static void generatePDFReport(String report, EntityManager em) {
+        JasperReport jasperReport;
+        JasperPrint jasperPrint;
+
+        LOGGER.fine("vor Compile Report");
+        jasperReport = getReport(report);
+        LOGGER.fine("Nach Compile Report");
+
+        HashMap<String, Object> parameter = new HashMap<>();
+        parameter.put("workingdir", getWorkingDir().toString());
+        parameter.put("logodir", getLogoDir().toString());
+
+        try {
+            if (jasperReport != null) {
+                em.getTransaction().begin();
+
+                LOGGER.fine("jasperReport ist ungleich null");
+                java.sql.Connection conn = em.unwrap(java.sql.Connection.class);
+                //java.sql.Connection conn = new SqlSupport().getSqlConnection();
+                jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, conn);
+
+                ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+                Path pdfFilePath = Paths.get (externalContext.getRealPath(""),"resources","files","pdf",report + ".pdf");
+                //String pdfFile = externalContext.getRealPath("") + "/resources/files/pdf/" + report + ".pdf";
+                JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath.toString());
 
                 em.getTransaction().commit();
             } else {
@@ -342,7 +388,7 @@ public class PrintSupport {
                     LOGGER.info(err.getMessage());
                 }
                  */
-                JasperExportManager.exportReportToPdfFile(jasperPrint, "/Users/ulrich/Desktop/Example.pdf");
+                JasperExportManager.exportReportToPdfFile(jasperPrint, getTempDir().resolve("Example.pdf").toString());
 
                 em.getTransaction().commit();
             } else {

@@ -8,5 +8,31 @@
         <h:link class="logo-container" outcome="/index.xhtml">
             <p:graphicImage name="images/Logo-WM-Rot_Remscheid_klein.png" library="main" />
         </h:link>
+        <ul class="layout-topbar-menu">
+            <li>
+                <h:link outcome="scan">Einlasskontrolle</h:link>
+            </li>
+            <li>
+                <h:link outcome="mglinfo">Mitgliederinfo</h:link>
+            </li>
+            <li>
+                <h:form>
+                    <p:commandButton id="dynaButton" type="button" icon="pi pi-bars" />
+                    <p:tieredMenu overlay="true" trigger="dynaButton" my="right top" at="right bottom" style="width:200px">
+                        <p:menuitem value="Über IDControl" outcome="info" icon="pi pi-info"/>
+                        <p:separator />
+                        <p:menuitem value="Einstellungen" outcome="index" icon="pi pi-pencil"/>
+                        <p:separator />
+                        <p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
+                        <p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
+                        <p:submenu label="Anleitungen" icon="pi pi-folder-open">
+                            <p:menuitem outcome="documentation"  value="ZEBRA ZXP1" icon="pi pi-file"/>
+                        </p:submenu>                 
+                        <p:separator />
+                        <p:menuitem value="Beenden" action="#{menuView.logout}" icon="pi pi-power-off"/>            
+                    </p:tieredMenu>
+                </h:form>
+            </li>
+        </ul>
     </div>
 </ui:composition>

@@ -235,7 +235,7 @@ public class ControlBean implements Serializable {
 
             Scanlog sl = new Scanlog();
             sl.setScantime(new Timestamp(System.currentTimeMillis()));
-            sl.setMglnr(pe.person);
+            sl.setMglnr(pe.person.getMglnr());
             em.getTransaction().begin();
             em.persist(sl);
             em.getTransaction().commit();

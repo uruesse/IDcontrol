@@ -16,6 +16,7 @@
 package net.ruesse.idc.database.persistence;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,8 +24,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -37,11 +36,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(catalog = "", schema = "IDCLOCAL")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Scanlog.findAll", query = "SELECT s FROM Scanlog s")
     , @NamedQuery(name = "Scanlog.findById", query = "SELECT s FROM Scanlog s WHERE s.id = :id")
+    , @NamedQuery(name = "Scanlog.findByMglnr", query = "SELECT s FROM Scanlog s WHERE s.mglnr = :mglnr")
     , @NamedQuery(name = "Scanlog.findByScantime", query = "SELECT s FROM Scanlog s WHERE s.scantime = :scantime")})
 public class Scanlog implements Serializable {
 
@@ -51,11 +51,9 @@ public class Scanlog implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long id;
+    private BigInteger mglnr;
     @Temporal(TemporalType.TIMESTAMP)
     private Date scantime;
-    @JoinColumn(name = "MGLNR", referencedColumnName = "MGLNR")
-    @ManyToOne
-    private Person mglnr;
 
     public Scanlog() {
     }
@@ -72,20 +70,20 @@ public class Scanlog implements Serializable {
         this.id = id;
     }
 
+    public BigInteger getMglnr() {
+        return mglnr;
+    }
+
+    public void setMglnr(BigInteger mglnr) {
+        this.mglnr = mglnr;
+    }
+
     public Date getScantime() {
         return scantime;
     }
 
     public void setScantime(Date scantime) {
         this.scantime = scantime;
-    }
-
-    public Person getMglnr() {
-        return mglnr;
-    }
-
-    public void setMglnr(Person mglnr) {
-        this.mglnr = mglnr;
     }
 
     @Override

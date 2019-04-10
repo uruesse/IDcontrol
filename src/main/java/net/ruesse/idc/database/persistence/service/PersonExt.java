@@ -95,7 +95,7 @@ public class PersonExt {
     }
 
     public String getStrFMglnr() {
-        return formatMglnr(person.getMglnr());
+        return formatMglnr(person.getMglnr().longValue());
     }
 
     public String getStrFNr() {
@@ -233,7 +233,7 @@ public class PersonExt {
         Person fz = getFremdzahlerPerson();
         if (fz != null) {
             str = "[";
-            str += formatMglnr(fz.getMglnr());
+            str += formatMglnr(fz.getMglnr().longValue());
             str += "] " + fz.getVorname() + " " + fz.getNachname();
         }
         return str;

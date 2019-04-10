@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.control;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +25,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.servlet.http.HttpServletRequest;
 import net.ruesse.idc.database.sql.SqlSupport;
 import net.ruesse.idc.report.PrintSupport;
 
@@ -103,15 +105,49 @@ public class ApplicationControlBean implements Serializable {
         addMessage("Fertig", "Druckauftrag erledigt");
     }
 
+    public void printActionAL() {
+        String REPORT = "Anwesenheitsliste";
+
+        PrintSupport.generatePDFReport(REPORT, em);
+        //return "/files/pdf/Anwesenheitsliste.pdf";
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest origRequest = (HttpServletRequest) context.getExternalContext().getRequest();
+        String contextPath = origRequest.getContextPath();
+
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect(contextPath + "/faces/anwesenheitsliste.xhtml");
+        } catch (IOException ex) {
+            Logger.getLogger(ApplicationControlBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void resetScanLog() {
+        em.getTransaction().begin();
+        em.createNativeQuery("DELETE FROM IDCLOCAL.SCANLOG").executeUpdate();
+        em.getTransaction().commit();
+    }
+
     public void stageToProd() {
         SqlSupport sp = new SqlSupport();
-        
+
+        sp.executeSQLScript("createdb.sql");
+
         sp.executeSQLScript("stage2prod.sql");
         sp.executeSQLScript("fremdzahler.sql");
         sp.executeSQLScript("demo/entenhausen.sql");
 
         addMessage("Fertig", "Datenbank kopiert");
     }
+
+    public void exportTables() {
+        SqlSupport sp = new SqlSupport();
+
+        String exportFile = sp.exportSchema("idcremote");
+
+        addMessage("Fertig", "Datenbank in die Datei " + exportFile + "exportiert");
+    }
+
 
     public void addMessage(String summary, String detail) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);

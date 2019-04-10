@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Entity
-@Table(catalog = "", schema = "DLRG")
+@Table(catalog = "", schema = "IDCREMOTE")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
@@ -68,7 +68,7 @@ public class Person implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
-    private Long mglnr;
+    private BigInteger mglnr;
     @Size(max = 128)
     @Column(length = 128)
     private String firma;
@@ -116,8 +116,6 @@ public class Person implements Serializable {
     @ManyToOne
     private Family fnr;
     @OneToMany(mappedBy = "mglnr")
-    private Collection<Scanlog> scanlogCollection;
-    @OneToMany(mappedBy = "mglnr")
     private Collection<Rechnung> rechnungCollection;
     @OneToMany(mappedBy = "mglnr")
     private Collection<Address> addressCollection;
@@ -129,15 +127,15 @@ public class Person implements Serializable {
     public Person() {
     }
 
-    public Person(Long mglnr) {
+    public Person(BigInteger mglnr) {
         this.mglnr = mglnr;
     }
 
-    public Long getMglnr() {
+    public BigInteger getMglnr() {
         return mglnr;
     }
 
-    public void setMglnr(Long mglnr) {
+    public void setMglnr(BigInteger mglnr) {
         this.mglnr = mglnr;
     }
 
@@ -297,15 +295,6 @@ public class Person implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Scanlog> getScanlogCollection() {
-        return scanlogCollection;
-    }
-
-    public void setScanlogCollection(Collection<Scanlog> scanlogCollection) {
-        this.scanlogCollection = scanlogCollection;
-    }
-
-    @XmlTransient
     public Collection<Rechnung> getRechnungCollection() {
         return rechnungCollection;
     }
@@ -365,10 +354,5 @@ public class Person implements Serializable {
     public String toString() {
         return "net.ruesse.idc.database.persistence.Person[ mglnr=" + mglnr + " ]";
     }
-
-    // fällt weg
-    public String getStrMglnr() {
-        return String.format("%013d", mglnr);
-    }
-    // ----
+    
 }

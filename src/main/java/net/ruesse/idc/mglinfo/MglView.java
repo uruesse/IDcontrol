@@ -143,10 +143,10 @@ public class MglView implements Serializable {
         String REPORT = "IDCard-front";
 
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM DLRG.AUSWAHL").executeUpdate();
+        em.createNativeQuery("DELETE FROM IDCLOCAL.AUSWAHL").executeUpdate();
         // Auswahl füllen
         for (PersonExt p : selectedMgl) {
-            Auswahl a = new Auswahl(p.person.getMglnr());
+            Auswahl a = new Auswahl(p.person.getMglnr().longValue());
             try {
                 em.persist(a);
             } catch (EntityExistsException e) {
@@ -158,7 +158,7 @@ public class MglView implements Serializable {
         PrintSupport.printReport(REPORT, em);
 
         em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM DLRG.AUSWAHL").executeUpdate();
+        em.createNativeQuery("DELETE FROM IDCLOCAL.AUSWAHL").executeUpdate();
         em.getTransaction().commit();
 
         addMessage("Fertig", "Druckauftrag erledigt");

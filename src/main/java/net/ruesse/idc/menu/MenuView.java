@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.ruesse.idc.control;
+package net.ruesse.idc.menu;
 
-import java.util.logging.Logger;
+import java.io.IOException;
+import javax.faces.bean.ManagedBean;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 /**
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-public class Constants {
+@ManagedBean
+public class MenuView {
 
-    private static final Logger LOGGER = Logger.getLogger(Constants.class.getName());
-
-    public static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
-
-    public static final String REPORT_SRC = ".jrxml";
-    public static final String REPORT_DST = ".jasper";
-    
-    public static final String INTERNAL_PWD = "pass@123";
-
-    public static String getPERSISTENCE_UNIT_NAME() {
-        return PERSISTENCE_UNIT_NAME;
+    public void logout() throws IOException {
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        externalContext.redirect("http://closekiosk");
     }
+
 }

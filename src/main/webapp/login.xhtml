@@ -18,20 +18,19 @@
     </ui:define>
 
     <ui:define name="implementation">
-        <h:form>        <h:form>
+        <h:form>        
             <p:messages id="messages" escape="false" showDetail="true" closable="false">
                 <p:autoUpdate />
             </p:messages>
-            
-            <p:focus for="mitgliednummer" />
-            
-            <h:panelGrid id="display" columns="3" cellpadding="5">
 
+            <p:focus for="mitgliednummer" />
+
+            <h:panelGrid id="display" columns="3" cellpadding="5">
                 <p:outputLabel for="mitgliednummer" value="#{msg['scan.mitgliedsnummer']}:" />
-                <p:inputMask id="mitgliednummer" value="#{controlBean.mnr}" mask="#{msg['scan.mnr_mask']}"/>
-                <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.showMessage}" update="display"/>
+                <p:inputMask id="mitgliednummer" value="#{controlBean.mnrLogin}" mask="#{msg['scan.mnr_mask']}"/>
+                <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.startSession}" update="display"/>
             </h:panelGrid>
-        </h:form>
+
         </h:form>
 
     </ui:define>

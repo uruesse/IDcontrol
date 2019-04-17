@@ -17,6 +17,8 @@ package net.ruesse.idc.control;
 
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
+import static net.ruesse.idc.control.ApplicationControlBean.getLoginMgl;
+import net.ruesse.idc.database.persistence.service.PersonExt;
 
 /**
  *
@@ -26,9 +28,18 @@ import javax.faces.bean.ManagedBean;
 public class FooterView {
 
     private static final Logger LOGGER = Logger.getLogger(FooterView.class.getName());
-    
+
     public String getFileInfo() {
         VereinService vs = new VereinService();
         return vs.getFileInfo();
+    }
+
+    public String getUserInfo() {
+        PersonExt pe = getLoginMgl();
+        if (pe != null) {
+            return getLoginMgl().getFullname();
+        } else {
+            return "";
+        }
     }
 }

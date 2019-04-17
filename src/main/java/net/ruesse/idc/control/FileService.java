@@ -17,6 +17,7 @@ package net.ruesse.idc.control;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static net.ruesse.idc.control.ApplicationControlBean.setIsDevelopment;
 
 /**
  *
@@ -43,6 +45,7 @@ public class FileService {
             AppPath = Paths.get(strAppPath, "var");
         } else {
             AppPath = Paths.get("/Users/ulrich/IDControl/var");
+            setIsDevelopment(true);
         }
         LOGGER.log(Level.INFO, "WorkingDir={0}", AppPath);
         return AppPath;
@@ -62,8 +65,8 @@ public class FileService {
     }
 
     public static String getExpFileName() {
-        VereinService vs= new VereinService();
-        
+        VereinService vs = new VereinService();
+
         return vs.getExpFileName();
     }
 
@@ -95,16 +98,42 @@ public class FileService {
         return getExportsDir().resolve("Sewobe");
     }
 
+    public static Path getVereinBaseDir() {
+        return getWorkingDir().resolve("Verein");
+    }
+
+    public static Path getVereinDir() {
+        VereinService vs = new VereinService();
+        return getVereinBaseDir().resolve(vs.getVereinId());
+    }
+
+    public static Path getDatabaseBaseDir() {
+        return getWorkingDir().resolve("DB");
+    }
+
     public static Path getLogoDir() {
-        return getWorkingDir().resolve("Logo");
+        return getVereinDir().resolve("Logo");
     }
 
     public static Path getReportTemplatesDir() {
-        return getWorkingDir().resolve("Reporttemplates");
+        return getVereinDir().resolve("Reporttemplates");
     }
 
     public static Path getReportsDir() {
-        return getWorkingDir().resolve("Reports");
+        Path p = getWorkingDir().resolve("Reports");
+        if (Files.notExists(p)) {
+            LOGGER.log(Level.INFO, "Target file \"{0}\" will be created.", p.toString());
+            try {
+                Files.createFile(Files.createDirectories(p));
+            }  catch (FileAlreadyExistsException ex) {
+                // Wenn Datei bereits existiert ist dies KEIN Fehler!!
+                // java.nio.file.FileAlreadyExistsException: /Users/ulrich/IDControl/var/Reports abfangen.
+            }  catch (IOException ex) {
+                // ansonsten Fehler überprüfen
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+        return p;
     }
 
     public static Path getTempDir() {

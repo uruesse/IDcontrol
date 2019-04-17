@@ -57,6 +57,8 @@
 
     <ui:define name="implementation">
 
+        <p:tooltip />
+
         <h:form id="form">
 
             <p:dataTable id="persons" 
@@ -76,16 +78,19 @@
                     <p:growl id="growlmessage" showDetail="true" />
 
                     <p:outputPanel>
-                        <p:panelGrid  columns="2">
+                        <p:panelGrid  columns="3">
                             <p:outputPanel style="float:left">
                                 <h:outputText value="Durchsuche alle Felder: " />
                                 <p:inputText id="globalFilter" onkeyup="PF('mglTable').filter()" style="width:250px" placeholder="Suchwort eingeben"/>
+                                <p:tooltip id="forGlobalFilter" for="globalFilter" value="Durchsucht alle Felder nach dem hier eingegebenen Wert!" position="top"/>
+
                             </p:outputPanel>
-                            <p:outputPanel style="float:right">
-                                <!--p:commandButton process="persons" update=":form:multiMglDetail" icon="pi pi-print" value="Ausweis drucken" oncomplete="PF('multiMglDialog').show()" /-->
-                                <p:commandButton process="persons" icon="pi pi-print" value="Ausweis drucken" action="#{mglView.printAction}" update="growlmessage">
+
+                            <p:outputPanel >
+                                <p:commandButton id="ausweis" process="persons" icon="pi pi-print" value="Ausweis drucken" action="#{mglView.printAction}" update="growlmessage">
                                     <p:confirm header="Bestätigung erforderlich" message="Es werden nur Ausweise für Mitglieder gedruckt, deren Status Aktiv ist! Jetzt drucken?" icon="pi pi-exclamation-triangle" />
                                 </p:commandButton>
+                                <p:tooltip id="forAusweis" for="ausweis" value="Druckt Ausweise für die ausgewählten Mitglieder." position="top"/>
 
                                 <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-out" value="Wassergeld kündigen" oncomplete="PF('multiMglDialog').show()" />
                                 <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-in" value="Wassergeld berechnen" oncomplete="PF('multiMglDialog').show()" />
@@ -95,8 +100,14 @@
                                     <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
                                 </p:confirmDialog> 
 
+                            </p:outputPanel>
+
+                            <p:outputPanel style="float:right">
+                                <p:commandButton id="refresh" process="persons" action="#{mglView.refreshAction}" icon="pi pi-refresh" onclick="PF('mglTable').clearFilters()"/>
+                                <p:tooltip id="forRefresh" for="refresh" value="Löscht alle Filter und liest die Datentabelle neu ein." position="top"/>
                                 <p:commandButton id="toggler" type="button" value="Spalten" style="float:right" icon="pi pi-align-justify" />
                                 <p:columnToggler datasource="persons" trigger="toggler" />
+                                <p:tooltip id="forToggler" for="toggler" value="Ermöglicht das Ein- und Ausblenden von Tabellenspalten." position="top"/>
                             </p:outputPanel>
                         </p:panelGrid>
                     </p:outputPanel>
@@ -119,7 +130,7 @@
                     <h:outputText value="#{mitglied.person.vorname}" />
                 </p:column>      
 
-                <p:column filterBy="#{mitglied.strAge}" headerText="Alter" style="width:40px;text-align: center" sortBy="#{mitglied.strAge}" footerText="Alter" filterMatchMode="contains">
+                <p:column filterBy="#{mitglied.strAge}" headerText="Alter" style="width:40px;text-align: center" sortBy="#{mitglied.sortAge}" footerText="Alter" filterMatchMode="contains">
                     <h:outputText value="#{mitglied.strAge}" />
                 </p:column>      
 
@@ -149,7 +160,7 @@
                 <p:column headerText="Auswahl" footerText="Auswahl" selectionMode="multiple" style="width:16px;text-align:center"/>
 
                 <p:column headerText="Info" footerText="Info" style="width:32px;text-align: center">
-                    <p:commandButton update=":form:mitgliedDetail" oncomplete="PF('mitgliedDialog').show()" icon="pi pi-search" title="View">
+                    <p:commandButton update=":form:mitgliedDetail" oncomplete="PF('mitgliedDialog').show()" icon="pi pi-search" title="Detailansicht über das Mitglied">
                         <f:setPropertyActionListener value="#{mitglied}" target="#{mglView.selectedPerson}" />
                     </p:commandButton>
                 </p:column>

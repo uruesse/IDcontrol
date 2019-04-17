@@ -41,6 +41,7 @@ import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import net.ruesse.idc.control.ApplicationControlBean;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.control.Constants;
 import static net.ruesse.idc.control.FileService.getLogoDir;
 import static net.ruesse.idc.control.FileService.getReportTemplatesDir;
@@ -64,6 +65,13 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
+/*
+Hinzufügen von Fonts: siehe hier:
+https://medium.com/@seymorethrottle/jasper-reports-adding-custom-fonts-589b55a52e7c
+
+*/
+
+
 /**
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
@@ -72,7 +80,7 @@ public class PrintSupport {
 
     private final static Logger LOGGER = Logger.getLogger(PrintSupport.class.getName());
 
-    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     public PrintSupport() {
         LOGGER.setLevel(Level.INFO);

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 body {
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
@@ -780,6 +781,7 @@ body {
       /* w3c */
       filter: progid:DXImageTransform.Microsoft.gradient( endColorstr='#1b81d7', startColorstr='#1f4869',GradientType=1 );
       /* ie6-9 */
+      /* TODO: Richtige Höhe finden. Original=height: 203px;*/
       height: 203px;
       padding: 8px; }
       .layout-wrapper .layout-fullcontent .layout-error .layout-error-message-box span {

@@ -15,19 +15,31 @@
  */
 package net.ruesse.idc.control;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.http.HttpServletRequest;
+import static net.ruesse.idc.control.FileService.getDatabaseBaseDir;
+import static net.ruesse.idc.control.FileService.getLogoDir;
+import net.ruesse.idc.database.persistence.service.PersonExt;
 import net.ruesse.idc.database.sql.SqlSupport;
 import net.ruesse.idc.report.PrintSupport;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -39,12 +51,15 @@ public class ApplicationControlBean implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationControlBean.class.getName());
 
-    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     static private boolean isDemo;
     static private boolean isPDF;
     static private boolean isDruckerdialog;
+    static private boolean isDevelopment = false;
     static private String kartendrucker;
+    static private Map persistenceParameters = null;
+    static private PersonExt loginMgl;
 
     public ApplicationControlBean() {
         LOGGER.setLevel(Level.INFO);
@@ -52,6 +67,7 @@ public class ApplicationControlBean implements Serializable {
         isDemo = false;
         isPDF = false;
         isDruckerdialog = true;
+        isDevelopment = false;
         kartendrucker = "";
     }
 
@@ -62,7 +78,7 @@ public class ApplicationControlBean implements Serializable {
 
     public void setIsDemo(boolean isDemo) {
         LOGGER.log(Level.FINE, "isDemo={0}", isDemo);
-        this.isDemo = isDemo;
+        ApplicationControlBean.isDemo = isDemo;
     }
 
     public boolean isIsPDF() {
@@ -74,7 +90,7 @@ public class ApplicationControlBean implements Serializable {
     }
 
     public void setIsPDF(boolean isPDF) {
-        this.isPDF = isPDF;
+        ApplicationControlBean.isPDF = isPDF;
     }
 
     public boolean isIsDruckerdialog() {
@@ -82,12 +98,30 @@ public class ApplicationControlBean implements Serializable {
     }
 
     public void setIsDruckerdialog(boolean isDruckerdialog) {
-        this.isDruckerdialog = isDruckerdialog;
+        ApplicationControlBean.isDruckerdialog = isDruckerdialog;
     }
 
     public static boolean isDruckerdialog() {
         return isDruckerdialog;
     }
+
+    public static boolean isIsDevelopment() {
+        return isDevelopment;
+    }
+
+    public static void setIsDevelopment(boolean isDevelopment) {
+        ApplicationControlBean.isDevelopment = isDevelopment;
+    }
+
+    public static PersonExt getLoginMgl() {
+        return loginMgl;
+    }
+
+    public static void setLoginMgl(PersonExt loginMgl) {
+        ApplicationControlBean.loginMgl = loginMgl;
+    }
+    
+    
 
     public static String getKartendrucker() {
         return kartendrucker;
@@ -148,10 +182,47 @@ public class ApplicationControlBean implements Serializable {
         addMessage("Fertig", "Datenbank in die Datei " + exportFile + "exportiert");
     }
 
-
     public void addMessage(String summary, String detail) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+    public StreamedContent getLogoImage() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        StreamedContent img = null;
+
+        if (context.getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+            img = new DefaultStreamedContent();
+        } else {
+            try {
+                Path path = getLogoDir().resolve("Logo.png");
+                byte[] data = Files.readAllBytes(path);
+                img = new DefaultStreamedContent(new ByteArrayInputStream(data), "image/png", "Logo.png");
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+        return (img);
+    }
+
+    public static Map getPersistenceParameters() {
+        if (persistenceParameters == null) {
+            // unbedingt hier aufrufen: in getDataBaseDir wird der Diemo-modus ermittelt
+            String dbDir = getDatabaseBaseDir().resolve("IDControl").toString();
+            persistenceParameters = new HashMap();
+            if (isDevelopment) {
+                LOGGER.info("javax.persistence.jdbc.url: jdbc:derby://localhost:1527/IDControl;create=true");
+                persistenceParameters.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.ClientDriver");
+                persistenceParameters.put("javax.persistence.jdbc.url", "jdbc:derby://localhost:1527/IDControl;create=true");
+            } else {
+                LOGGER.log(Level.INFO, "javax.persistence.jdbc.url:jdbc:derby:{0};create=true", dbDir);
+                persistenceParameters.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.EmbeddedDriver");
+                persistenceParameters.put("javax.persistence.jdbc.url", "jdbc:derby:" + dbDir + ";create=true");
+            }
+            persistenceParameters.put("javax.persistence.jdbc.user", "idc");
+            persistenceParameters.put("javax.persistence.jdbc.password", "idcpass");
+        }
+        return persistenceParameters;
     }
 
 }

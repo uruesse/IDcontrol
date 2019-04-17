@@ -26,6 +26,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.control.Constants;
 import net.ruesse.idc.control.ControlBean;
 import net.ruesse.idc.database.persistence.Beitrag;
@@ -43,7 +44,7 @@ import net.ruesse.idc.database.persistence.Person;
 public class PersonExt {
 
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
-    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     static final long MSPERYEAR = ((long) 365 * 24 * 60 * 60 * 1000);
 
@@ -148,11 +149,18 @@ public class PersonExt {
         return (int) age;
     }
 
-    public String getStrAge() {
+    public String getSortAge() {
         //Irgendwann mal die führenden nullen durch &nbsp; ersetzten. Das wird aber per default angeszeigt und ansonsten nicht richtig sortiert.
 
         if (person.getGeburtsdatum() != null) {
             return String.format("%03d", calcAge(person.getGeburtsdatum()));
+        }
+        return null;
+    }
+
+    public String getStrAge() {
+        if (person.getGeburtsdatum() != null) {
+            return String.format("%d", calcAge(person.getGeburtsdatum()));
         }
         return null;
     }

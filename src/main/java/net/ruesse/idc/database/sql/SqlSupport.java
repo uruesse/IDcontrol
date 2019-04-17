@@ -16,27 +16,37 @@
 package net.ruesse.idc.database.sql;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.servlet.http.HttpServletRequest;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.control.Constants;
 import static net.ruesse.idc.control.Constants.INTERNAL_PWD;
 import static net.ruesse.idc.control.FileService.createDatedExportsDir;
 import static net.ruesse.idc.control.FileService.deleteDirectoryStream;
 import static net.ruesse.idc.control.FileService.getExportsDir;
+import static net.ruesse.idc.control.FileService.getReportsDir;
+import static net.ruesse.idc.control.FileService.getVereinBaseDir;
+import static net.ruesse.idc.control.FileService.getVereinDir;
 
 /**
  *
@@ -46,7 +56,7 @@ public class SqlSupport {
 
     private final static Logger LOGGER = Logger.getLogger(SqlSupport.class.getName());
 
-    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     /**
      * Liefert die SQL-Connection aus dem Entity Manager
@@ -76,6 +86,17 @@ public class SqlSupport {
         });
 
         try {
+            ZipFile zippedFiles = new ZipFile((exportPath.resolve("files.zip")).toFile());
+            ZipParameters parameters = new ZipParameters();
+
+            parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
+            zippedFiles.addFolder(getVereinDir().toFile(), parameters);
+        } catch (ZipException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
+        try {
             ZipFile zipFile = new ZipFile((exportPath.resolve(exportFile.toString())).toFile());
             ZipParameters parameters = new ZipParameters();
 
@@ -94,7 +115,7 @@ public class SqlSupport {
         }
 
         deleteDirectoryStream(exportPath);
-        
+
         return exportFile.toString();
 
     }
@@ -119,36 +140,73 @@ public class SqlSupport {
 
         int lastIndex = fn.lastIndexOf('.');
         if (lastIndex == -1) {
-            
+
         }
-        return Paths.get(fn.substring(0,lastIndex));
+        return Paths.get(fn.substring(0, lastIndex));
     }
 
     public void importSchema(String schema, Path importZip) {
         Path path = unCompressPasswordProtectedFiles(importZip);
 
+        executeSQLScript("createdb.sql");
+
         getTables(schema).forEach((table) -> {
             importTable(schema, table, path);
         });
+
+        LOGGER.log(Level.INFO, "Destination for file.zip  {0}", getVereinBaseDir().toString());
+        try {
+            ZipFile zipFile = new ZipFile((path.resolve("files.zip")).toFile());
+            zipFile.extractAll(getVereinBaseDir().toString());
+        } catch (ZipException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            Files.walk(getReportsDir())
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .peek(System.out::println)
+                    .forEach(File::delete);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
     }
 
     public void importTable(String schema, String table, Path importPath) {
 
-        em.getTransaction().begin();
         Path importFile = importPath.resolve(table.toLowerCase() + ".dat");
+        long fs = 0;
+        try {
+            // schauen, ob in der Datei Inhalt ist, da ansonsten der import-Befehl scheitert.
+            fs = Files.size(importFile);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        if (fs > 0) {
 
-        String stmt = "CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE ("
-                + "'" + schema.toUpperCase() + "',"
-                + "'" + table.toUpperCase() + "',"
-                + "'" + importFile.toString() + "',"
-                + "'%',"
-                + "'§',"
-                + "'UTF-8',"
-                + "1"
-                + ")";
-        nativeSQL(stmt);
+            em.getTransaction().begin();
 
-        em.getTransaction().commit();
+            String stmt = "CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE ("
+                    + "'" + schema.toUpperCase() + "',"
+                    + "'" + table.toUpperCase() + "',"
+                    + "'" + importFile.toString() + "',"
+                    + "'%',"
+                    + "'§',"
+                    + "'UTF-8',"
+                    + "1"
+                    + ")";
+            nativeSQL(stmt);
+
+            em.getTransaction().commit();
+        }
     }
 
     public void exportTable(String schema, String table, Path exportPath) {

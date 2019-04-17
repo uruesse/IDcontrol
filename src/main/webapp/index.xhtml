@@ -53,7 +53,7 @@
                 <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="growlmessage"/>
 
                 <h:outputLabel for="importfile" value="Datenimport" />
-                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="growlmessage" sizeLimit="100000" allowTypes="/(\.|\/)(IDC)$/" />
+                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="growlmessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" />
 
                 <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
                 <p:commandButton id="autoimport"  value="z.Zt. kein Datenupdate verfügbar" disabled="true"/>

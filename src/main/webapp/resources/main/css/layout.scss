@@ -1048,6 +1048,7 @@ body {
 
             .layout-error-message-box {
                 @include gradient(280deg, #1b81d7, #1f4869);
+                /* TODO: Richtige Höhe finden. Original=height: 203px;*/
                 height: 203px;
                 padding: 8px;
 

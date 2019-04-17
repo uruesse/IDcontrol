@@ -20,9 +20,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.database.persistence.Verein;
 
 /**
@@ -32,7 +34,7 @@ import net.ruesse.idc.database.persistence.Verein;
 public class VereinService {
 
     private static final Logger LOGGER = Logger.getLogger(VereinService.class.getName());
-    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     public String getExpFileName() {
         Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
@@ -46,6 +48,14 @@ public class VereinService {
         return expName;
     }
 
+        public String getVereinId() {
+        Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
+        String str =String.format("%07d", v.getMglnr());
+        LOGGER.log(Level.INFO, "aktueller Verein:{0}", str);
+
+        return str;
+    }
+        
     public String getFileInfo() {
         Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
         LOGGER.info("aktuell");

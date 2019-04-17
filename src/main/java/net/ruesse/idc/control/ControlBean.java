@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.ResourceHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
@@ -48,6 +49,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.swing.text.MaskFormatter;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
+import static net.ruesse.idc.control.ApplicationControlBean.setLoginMgl;
 import net.ruesse.idc.database.persistence.Person;
 import net.ruesse.idc.database.persistence.Scanlog;
 import net.ruesse.idc.database.persistence.service.PersonExt;
@@ -65,7 +68,7 @@ import org.primefaces.event.CaptureEvent;
 public class ControlBean implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
-    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     /**
      *
@@ -78,7 +81,9 @@ public class ControlBean implements Serializable {
 
     //@ManagedProperty("#(param.mnr)")
     private String mnr;
+    private String mnrLogin;
     private static String decodermessage;
+    private static PersonExt loginPerson;
 
     private enum accesstype {
         access, doubt, deny, error
@@ -115,6 +120,22 @@ public class ControlBean implements Serializable {
         this.mnr = strmnr;
     }
 
+    public String getMnrLogin() {
+        return mnrLogin;
+    }
+
+    public void setMnrLogin(String mnrLogin) {
+        this.mnrLogin = mnrLogin;
+    }
+
+    public static PersonExt getLoginPerson() {
+        return loginPerson;
+    }
+
+    public static void setLoginPerson(PersonExt loginPerson) {
+        ControlBean.loginPerson = loginPerson;
+    }
+
     private long Mgl2Long(String text) {
         long mgl = 0;
         String strlong = text.replaceAll(" ", "");
@@ -124,6 +145,43 @@ public class ControlBean implements Serializable {
             mgl = 0;
         }
         return mgl;
+    }
+
+    /**
+     *
+     */
+    public void startSession() {
+        LOGGER.log(Level.FINE, "mnrLogin={0}", this.mnrLogin);
+
+        //Query q = em.createQuery("SELECT p FROM Person p WHERE p.mglnr = :mglnr");
+        Query q = em.createNamedQuery("Person.findByMglnr");
+        q.setParameter("mglnr", Mgl2Long(this.mnrLogin));
+        Person person;
+        try {
+            person = (Person) q.getSingleResult();
+        } catch (javax.persistence.NoResultException e) {
+            person = null;
+        }
+
+        if (person != null) {
+            loginPerson = new PersonExt(person);
+            setLoginMgl (loginPerson);
+            try {
+                /*
+                if (request.getRequestURI().startsWith(request.getContextPath() + ResourceHandler.RESOURCE_IDENTIFIER)) {
+                chain.doFilter(request, response);
+                } else {
+                response.sendRedirect(request.getContextPath() + "/scan.xhtml");
+                }
+                */
+                FacesContext.getCurrentInstance().getExternalContext().redirect("scan.xhtml");
+                //return "scan?facesRedirect=true";
+            } catch (IOException ex) {
+                Logger.getLogger(ControlBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            //return "";
+        }
     }
 
     /**
@@ -143,6 +201,7 @@ public class ControlBean implements Serializable {
         }
 
         showPersonStatus(new PersonExt(person));
+
     }
 
     /**

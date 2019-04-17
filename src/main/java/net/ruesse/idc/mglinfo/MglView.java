@@ -29,6 +29,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.database.persistence.Auswahl;
 import net.ruesse.idc.database.persistence.Person;
 import net.ruesse.idc.database.persistence.service.PersonExt;
@@ -45,7 +46,7 @@ public class MglView implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(MglView.class.getName());
 
-    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME).createEntityManager();
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     private List<PersonExt> allMgl;
     private List<PersonExt> filteredMgl;
@@ -65,17 +66,23 @@ public class MglView implements Serializable {
      */
     @PostConstruct
     public void init() {
+        refreshAction();
+    }
+
+    public void refreshAction() {
         allMgl = new ArrayList<>();
 
-        LOGGER.log(Level.FINE, "Starte Query auf Personen");
+        LOGGER.log(Level.INFO, "Starte Query auf Personen");
         Query q = em.createNamedQuery("Person.findAll");
         List<Person> personlist = q.getResultList();
 
         LOGGER.log(Level.FINE, "VorForEach");
-        for (Person p : personlist) {
+        personlist.stream().map((p) -> {
             LOGGER.log(Level.FINE, "mnr: {0}", p.getMglnr());
+            return p;
+        }).forEachOrdered((p) -> {
             allMgl.add(new PersonExt(p));
-        }
+        });
     }
 
     public List<PersonExt> getSelectedMgl() {

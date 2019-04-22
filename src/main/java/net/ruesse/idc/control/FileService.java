@@ -122,22 +122,30 @@ public class FileService {
     public static Path getReportsDir() {
         Path p = getWorkingDir().resolve("Reports");
         if (Files.notExists(p)) {
-            LOGGER.log(Level.INFO, "Target file \"{0}\" will be created.", p.toString());
-            try {
-                Files.createFile(Files.createDirectories(p));
-            }  catch (FileAlreadyExistsException ex) {
-                // Wenn Datei bereits existiert ist dies KEIN Fehler!!
-                // java.nio.file.FileAlreadyExistsException: /Users/ulrich/IDControl/var/Reports abfangen.
-            }  catch (IOException ex) {
-                // ansonsten Fehler überprüfen
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
+            createPath(p);
         }
         return p;
     }
 
     public static Path getTempDir() {
-        return getWorkingDir().resolve("Tmp");
+        Path p = getWorkingDir().resolve("Tmp");
+        if (Files.notExists(p)) {
+            createPath(p);
+        }
+        return p;
+    }
+
+    private static void createPath(Path p) {
+        LOGGER.log(Level.INFO, "Zielpfad \"{0}\" wird angelegt.", p.toString());
+        try {
+            Files.createFile(Files.createDirectories(p));
+        } catch (FileAlreadyExistsException ex) {
+            // Wenn Datei bereits existiert ist dies KEIN Fehler!!
+            // java.nio.file.FileAlreadyExistsException: /Users/ulrich/IDControl/var/Reports abfangen.
+        } catch (IOException ex) {
+            // ansonsten Fehler überprüfen
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
     }
 
 }

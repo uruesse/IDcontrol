@@ -15,9 +15,6 @@
  */
 package net.ruesse.idc.report;
 
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -35,43 +32,40 @@ import javax.persistence.Persistence;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.HashPrintServiceAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.PrintServiceAttributeSet;
 import javax.print.attribute.standard.Copies;
-import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.attribute.standard.MediaSize;
-import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.OrientationRequested;
+import javax.print.attribute.standard.PrinterName;
+import javax.print.attribute.standard.PrinterResolution;
+import javax.servlet.http.HttpServletRequest;
 import net.ruesse.idc.control.ApplicationControlBean;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.control.Constants;
 import static net.ruesse.idc.control.FileService.getLogoDir;
 import static net.ruesse.idc.control.FileService.getReportTemplatesDir;
 import static net.ruesse.idc.control.FileService.getReportsDir;
-import static net.ruesse.idc.control.FileService.getTempDir;
 import static net.ruesse.idc.control.FileService.getWorkingDir;
 import net.ruesse.idc.mglinfo.MglView;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.printing.PDFPageable;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 /*
 Hinzufügen von Fonts: siehe hier:
 https://medium.com/@seymorethrottle/jasper-reports-adding-custom-fonts-589b55a52e7c
 
-*/
-
-
+ */
 /**
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
@@ -100,57 +94,6 @@ public class PrintSupport {
         return printers;
     }
 
-    public void test(JasperReport report) {
-
-        //http://jasperreports.sourceforge.net/sample.reference/batchexport/index.html
-        //http://jasperreports.sourceforge.net/sample.reference/printservice/index.html
-        //https://github.com/eugenp/tutorials/blob/master/spring-all/src/main/java/org/baeldung/jasperreports/SimpleReportExporter.java
-        HashMap<String, Object> parameter = new HashMap<>();
-        parameter.put("aParameter", "Hallo Welt");
-        java.sql.Connection conn = em.unwrap(java.sql.Connection.class);
-        JasperPrint print;
-        try {
-            print = JasperFillManager.fillReport(report, parameter, conn);
-        } catch (JRException ex) {
-            Logger.getLogger(PrintSupport.class.getName()).log(Level.SEVERE, null, ex);
-            return;
-        }
-        PrinterJob job = PrinterJob.getPrinterJob();
-        /* Create an array of PrintServices */
-        PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
-        int selectedService = 0;
-        /* Scan found services to see if anyone suits our needs */
-        for (int i = 0; i < services.length; i++) {
-            if (services[i].getName().toUpperCase().contains("Your printer's name")) {
-                /*If the service is named as what we are querying we select it */
-                selectedService = i;
-            }
-        }
-        try {
-            job.setPrintService(services[selectedService]);
-        } catch (PrinterException ex) {
-            Logger.getLogger(PrintSupport.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();
-        MediaSizeName mediaSizeName = MediaSize.findMedia(4, 4, MediaPrintableArea.INCH);
-        printRequestAttributeSet.add(mediaSizeName);
-        printRequestAttributeSet.add(new Copies(1));
-        JRPrintServiceExporter exporter;
-        exporter = new JRPrintServiceExporter();
-        exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
-        /* We set the selected service and pass it as a paramenter */
-        exporter.setParameter(JRPrintServiceExporterParameter.PRINT_SERVICE, services[selectedService]);
-        exporter.setParameter(JRPrintServiceExporterParameter.PRINT_SERVICE_ATTRIBUTE_SET, services[selectedService].getAttributes());
-        exporter.setParameter(JRPrintServiceExporterParameter.PRINT_REQUEST_ATTRIBUTE_SET, printRequestAttributeSet);
-        exporter.setParameter(JRPrintServiceExporterParameter.DISPLAY_PAGE_DIALOG, Boolean.FALSE);
-        exporter.setParameter(JRPrintServiceExporterParameter.DISPLAY_PRINT_DIALOG, Boolean.TRUE);
-        try {
-            exporter.exportReport();
-        } catch (JRException ex) {
-            Logger.getLogger(PrintSupport.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     /**
      *
      * @param printerName
@@ -166,19 +109,79 @@ public class PrintSupport {
         return null;
     }
 
-    static public void printThePDF(String file, String printer) throws Exception {
+    /**
+     * 
+     * @param jasperPrint
+     * @param report
+     * @throws JRException 
+     */
+    private static void PrintReportToPDF(JasperPrint jasperPrint, String report) throws JRException {
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        Path pdfFilePath = Paths.get(externalContext.getRealPath(""), "resources", "files", "pdf", report + ".pdf");
+        JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath.toString());
+    }
 
-        PDDocument document = PDDocument.load(new File(file));
+    /**
+     * 
+     * @param jasperPrint
+     * @param selectedPrinter
+     * @param anzahlDrucke
+     * @throws JRException 
+     */
+    private static void PrintReportToPrinter(JasperPrint jasperPrint, String selectedPrinter, int anzahlDrucke) throws JRException {
+        // Info zum Setzen der Media-Size
+        //https://community.oracle.com/thread/1264031
+        //http://jasperreports.sourceforge.net/sample.reference/batchexport/index.html
+        //http://jasperreports.sourceforge.net/sample.reference/printservice/index.html
+        //https://github.com/eugenp/tutorials/blob/master/spring-all/src/main/java/org/baeldung/jasperreports/SimpleReportExporter.java
+        //http://jasperreports.sourceforge.net/sample.reference/batchexport/index.html
+        //http://jasperreports.sourceforge.net/sample.reference/printservice/index.html
+        //https://github.com/eugenp/tutorials/blob/master/spring-all/src/main/java/org/baeldung/jasperreports/SimpleReportExporter.java
+        
+        PrintService selectedService = findPrintService(selectedPrinter);
+        
+        if (selectedService != null) {
+            //Set the printing settings
+            PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();
+            //printRequestAttributeSet.add(MediaSizeName.ISO_A4);
+            //printRequestAttributeSet.add(MediaSizeName.ISO_A7);
+            //printRequestAttributeSet.add(MediaSize.findMedia(54.19f,86.71f,Size2DSyntax.MM));
+            //printRequestAttributeSet.add(MediaSize.findMedia(86.71f,54.19f,Size2DSyntax.MM));
+            printRequestAttributeSet.add(new PrinterResolution(300, 300, PrinterResolution.DPI));
+            //printRequestAttributeSet.add(new MediaSize(53.98f, 85.72f, Size2DSyntax.MM));
+            //printRequestAttributeSet.add(new MediaPrintableArea(0.0f, 0.0f, 53.98f, 85.72f, MediaPrintableArea.MM));
+            //printRequestAttributeSet.add(new MediaPrintableArea(0.0f, 0.0f, 2.125f, 3.375f, MediaPrintableArea.INCH));
+            //printRequestAttributeSet.add(new MediaPrintableArea(0.0f, 0.0f, 54.0f, 85.6f, MediaPrintableArea.MM));
+            //printRequestAttributeSet.add(new MediaPrintableArea(0.0f, 0.0f, 54.187f, 86.713f,  MediaPrintableArea.MM));
+            //printRequestAttributeSet.add(new MediaPrintableArea(0.0f, 0.0f, 86.713f, 54.187f,  MediaPrintableArea.MM));
+            printRequestAttributeSet.add(new Copies(anzahlDrucke));
+            if (jasperPrint.getOrientationValue() == net.sf.jasperreports.engine.type.OrientationEnum.LANDSCAPE) {
+                printRequestAttributeSet.add(OrientationRequested.LANDSCAPE);
+            } else {
+                printRequestAttributeSet.add(OrientationRequested.PORTRAIT);
+            }
+            PrintServiceAttributeSet printServiceAttributeSet = new HashPrintServiceAttributeSet();
+            printServiceAttributeSet.add(new PrinterName(selectedPrinter, null));
+            
+            SimplePrintServiceExporterConfiguration configuration = new SimplePrintServiceExporterConfiguration();
+            configuration.setPrintService(selectedService);
+            configuration.setPrintRequestAttributeSet(printRequestAttributeSet);
+            configuration.setPrintServiceAttributeSet(printServiceAttributeSet);
+            configuration.setDisplayPageDialog(false);
+            configuration.setDisplayPrintDialog(ApplicationControlBean.isDruckerdialog());
+            
+            JRPrintServiceExporter exporter = new JRPrintServiceExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setConfiguration(configuration);
 
-        PrintService myPrintService = findPrintService(printer);
-
-        PrinterJob job = PrinterJob.getPrinterJob();
-
-        job.setPageable(new PDFPageable(document));
-
-        job.setPrintService(myPrintService);
-        job.print();
-
+            try {
+                exporter.exportReport();
+            } catch (Exception e) {
+                LOGGER.info("JasperReport Error: " + e.getMessage());
+            }
+        } else {
+            LOGGER.info("JasperReport Error: Printer not found!");
+        }
     }
 
     /**
@@ -189,7 +192,7 @@ public class PrintSupport {
     public static JasperReport getReport(String report) {
 
         Path jasperFile;
-        jasperFile=getReportsDir().resolve(report+Constants.REPORT_DST);
+        jasperFile = getReportsDir().resolve(report + Constants.REPORT_DST);
 
         if (!Files.exists(jasperFile)) {
             try {
@@ -209,7 +212,6 @@ public class PrintSupport {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         } else {
-
             try {
                 jr = (JasperReport) JRLoader.loadObjectFromFile(jasperFile.toString());
             } catch (JRException ex) {
@@ -257,8 +259,8 @@ public class PrintSupport {
      */
     public static String compileTheReportToFile(String report) throws JRException, IOException {
 
-        Path jrxmlFile = getReportTemplatesDir().resolve(report+Constants.REPORT_SRC);
-        Path jasperFile = getReportsDir().resolve(report+Constants.REPORT_DST);
+        Path jrxmlFile = getReportTemplatesDir().resolve(report + Constants.REPORT_SRC);
+        Path jasperFile = getReportsDir().resolve(report + Constants.REPORT_DST);
         LOGGER.log(Level.INFO, "Kompiliere: {0}", jrxmlFile.toString());
 
         InputStream jrxmlInput = JRLoader.getFileInputStream(jrxmlFile.toString());
@@ -280,8 +282,10 @@ public class PrintSupport {
      *
      * @param report
      * @param em
+     * @param anzahlDrucke
+     * @param drucker
      */
-    public static void printReport(String report, EntityManager em) {
+    public static void printReport(String report, EntityManager em, int anzahlDrucke, String drucker) {
         JasperReport jasperReport;
         JasperPrint jasperPrint;
 
@@ -302,21 +306,26 @@ public class PrintSupport {
                 //java.sql.Connection conn = new SqlSupport().getSqlConnection();
                 jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, conn);
 
-                if (ApplicationControlBean.isPDF()) {
-                    String pdfFile = getTempDir().resolve(report + ".pdf").toString();
-                    JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFile);
-
-                    if (!ApplicationControlBean.getKartendrucker().isEmpty()) {
-                        try {
-                            //printThePDF(pdfFile, "ZEBRA CARD PRINTER ZXP11");
-                            printThePDF(pdfFile, ApplicationControlBean.getKartendrucker());
-                        } catch (Exception ex) {
-                            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                if ("PDF".equals(drucker)) {
+                    try {
+                        PrintReportToPDF(jasperPrint, report);
+                    } catch (JRException err) {
+                        LOGGER.info(err.getMessage());
                     }
+                    FacesContext context = FacesContext.getCurrentInstance();
+                    HttpServletRequest origRequest = (HttpServletRequest) context.getExternalContext().getRequest();
+                    String contextPath = origRequest.getContextPath();
+
+                    try {
+                        FacesContext.getCurrentInstance().getExternalContext().redirect(contextPath + "/faces/druckausgabe.xhtml?name=" + report);
+                    } catch (IOException ex) {
+                        Logger.getLogger(ApplicationControlBean.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
                 } else {
                     try {
-                        JasperPrintManager.printReport(jasperPrint, ApplicationControlBean.isDruckerdialog());
+                        PrintReportToPrinter(jasperPrint, drucker, anzahlDrucke);
+                        //JasperPrintManager.printReport(jasperPrint, ApplicationControlBean.isDruckerdialog());
                     } catch (JRException err) {
                         LOGGER.info(err.getMessage());
                     }
@@ -329,90 +338,5 @@ public class PrintSupport {
         } catch (JRException ex) {
             Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     *
-     * @param report
-     * @param em
-     */
-    public static void generatePDFReport(String report, EntityManager em) {
-        JasperReport jasperReport;
-        JasperPrint jasperPrint;
-
-        LOGGER.fine("vor Compile Report");
-        jasperReport = getReport(report);
-        LOGGER.fine("Nach Compile Report");
-
-        HashMap<String, Object> parameter = new HashMap<>();
-        parameter.put("workingdir", getWorkingDir().toString());
-        parameter.put("logodir", getLogoDir().toString());
-
-        try {
-            if (jasperReport != null) {
-                em.getTransaction().begin();
-
-                LOGGER.fine("jasperReport ist ungleich null");
-                java.sql.Connection conn = em.unwrap(java.sql.Connection.class);
-                //java.sql.Connection conn = new SqlSupport().getSqlConnection();
-                jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, conn);
-
-                ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-                Path pdfFilePath = Paths.get (externalContext.getRealPath(""),"resources","files","pdf",report + ".pdf");
-                //String pdfFile = externalContext.getRealPath("") + "/resources/files/pdf/" + report + ".pdf";
-                JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath.toString());
-
-                em.getTransaction().commit();
-            } else {
-                LOGGER.fine("jasperReport ist gleich null");
-            }
-        } catch (JRException ex) {
-            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     *
-     * @param jasperReport
-     */
-    public void exportReport(JasperReport jasperReport) {
-        JasperPrint jasperPrint;
-
-        HashMap<String, Object> parameter = new HashMap<>();
-        parameter.put("aParameter", "Hallo Welt");
-
-        try {
-            if (jasperReport != null) {
-                em.getTransaction().begin();
-                java.sql.Connection connection = em.unwrap(java.sql.Connection.class);
-
-                LOGGER.fine("jasperReport ist ungleich null");
-
-                jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, connection);
-                /*
-                try {
-                    JasperPrintManager.printReport(jasperPrint, true);
-                } catch (JRException err) {
-                    LOGGER.info(err.getMessage());
-                }
-                 */
-                JasperExportManager.exportReportToPdfFile(jasperPrint, getTempDir().resolve("Example.pdf").toString());
-
-                em.getTransaction().commit();
-            } else {
-                LOGGER.fine("jasperReport ist gleich null");
-            }
-        } catch (JRException ex) {
-            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        /*
-        try {
-            printThePDF("/Users/ulrich/Desktop/Example.pdf", "ZEBRA CARD PRINTER ZXP11");
-            //printThePDF("/Users/ulrich/Desktop/Example.pdf", "swdrucker");
-        } catch (Exception ex) {
-            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         */
     }
 }

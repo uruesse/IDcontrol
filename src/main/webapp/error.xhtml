@@ -1,30 +1,32 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/smalltemplate.xhtml">
 
-    <ui:define name="content">
-        <div class="layout-error">
-            <div class="layout-error-message-box">
-                <span class="layout-error-name">#{msg['error.head']}</span>
-                <span class="layout-error-info">#{msg['error.headdescription']}</span>
-                <p:button outcome="/index" value="#{msg['button.backtohome']}" class="secondary"/>
-            </div>
-
-            <div class="layout-error-detail">
-                <h:panelGrid id="display" >
-                    <h:outputText value="#{msg['error.code']}: #{errorHandler.statusCode}"></h:outputText>
-                    <h:outputText value="#{msg['error.description']}: #{errorHandler.message}"></h:outputText>
-                    <h:outputText value="#{msg['error.uri']}: #{errorHandler.requestURI}"></h:outputText>
-                    <br />
-                    <h:outputText value="#{msg['error.exceptiontype']}: #{errorHandler.exceptionType}"></h:outputText>
-                    <br />
-                    <h:outputText value="#{msg['error.exceptionclass']}: #{errorHandler.exception}"></h:outputText>
-                </h:panelGrid>
-            </div>
-        </div>
+    <ui:define name="head">
+        <style type="text/css">
+            .content-source {
+                display: none
+            }
+        </style>
     </ui:define>
 
+    <ui:define name="title">
+        Fehler - <span class="subitem">Es trat ein Fehler auf, bitte überprüfgen Sie die Logdateien</span>
+    </ui:define>
+
+
+    <ui:define name="description">
+        Message: #{pfExceptionHandler.message}
+    </ui:define>
+
+    <ui:define name="implementation">
+        <p:button outcome="/index" value="#{msg['button.backtohome']}" class="secondary"/>
+        <p:button outcome="/logview" value="zum Logviewer" class="secondary"/>
+        <br/>
+        <h:outputText value="Letzte Fehlermeldung:" /><br/>
+        <h:outputText value="#{pfExceptionHandler.formattedStackTrace}" escape="false" />
+    </ui:define>
 </ui:composition>

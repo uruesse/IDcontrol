@@ -21,7 +21,7 @@
     
     <error-page>
         <error-code>404</error-code>
-        <location>/faces/error.xhtml</location>
+        <location>/faces/error404.xhtml</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
@@ -33,7 +33,7 @@
     </error-page>
     <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-        <location>/faces/viewExpired.xhtml</location>
+        <location>/faces/errorExpired.xhtml</location>
     </error-page>
 
     <context-param>

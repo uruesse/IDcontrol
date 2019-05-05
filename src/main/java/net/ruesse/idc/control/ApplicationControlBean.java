@@ -15,29 +15,39 @@
  */
 package net.ruesse.idc.control;
 
+import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.servlet.http.HttpServletRequest;
 import static net.ruesse.idc.control.FileService.getDatabaseBaseDir;
 import static net.ruesse.idc.control.FileService.getLogoDir;
+import static net.ruesse.idc.control.FileService.getWorkingDir;
 import net.ruesse.idc.database.persistence.service.PersonExt;
 import net.ruesse.idc.database.sql.SqlSupport;
 import net.ruesse.idc.report.PrintSupport;
+import static net.ruesse.idc.report.PrintSupport.availablePrinters;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -60,15 +70,32 @@ public class ApplicationControlBean implements Serializable {
     static private String kartendrucker;
     static private Map persistenceParameters = null;
     static private PersonExt loginMgl;
+    static int screenResolution = 0;
+    static int AnzahlDrucke = 1;
+
+    private List<String> printers;
 
     public ApplicationControlBean() {
+
         LOGGER.setLevel(Level.INFO);
         LOGGER.fine("aufgerufen");
         isDemo = false;
         isPDF = false;
-        isDruckerdialog = true;
+
+        screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+        if (screenResolution == 0) {
+            LOGGER.info("ScreenResolution = nicht angeschlossen");
+            isDruckerdialog = false;
+        } else {
+            isDruckerdialog = true;
+            LOGGER.info("ScreenResolution = " + screenResolution);
+        }
+
         isDevelopment = false;
-        kartendrucker = "";
+        kartendrucker = "PDF";
+
+        //options
+        printers = availablePrinters();
     }
 
     public boolean isIsDemo() {
@@ -91,6 +118,10 @@ public class ApplicationControlBean implements Serializable {
 
     public void setIsPDF(boolean isPDF) {
         ApplicationControlBean.isPDF = isPDF;
+    }
+
+    public boolean isValidDruckerdialog() {
+        return screenResolution == 0;
     }
 
     public boolean isIsDruckerdialog() {
@@ -120,40 +151,91 @@ public class ApplicationControlBean implements Serializable {
     public static void setLoginMgl(PersonExt loginMgl) {
         ApplicationControlBean.loginMgl = loginMgl;
     }
-    
-    
 
-    public static String getKartendrucker() {
+    public String getKartendrucker() {
+        LOGGER.info(kartendrucker);
         return kartendrucker;
     }
 
-    public static void setKartendrucker(String kartendrucker) {
+    public static String getStaticKartendrucker() {
+        LOGGER.info(kartendrucker);
+        return kartendrucker;
+    }
+
+    public void setKartendrucker(String kartendrucker) {
+        LOGGER.info(kartendrucker);
         ApplicationControlBean.kartendrucker = kartendrucker;
+    }
+
+    public int getAnzahlDrucke() {
+        return AnzahlDrucke;
+    }
+
+    public void setAnzahlDrucke(int AnzahlDrucke) {
+        ApplicationControlBean.AnzahlDrucke = AnzahlDrucke;
+    }
+
+    public List<String> getPrinters() {
+        return printers;
+    }
+
+    public void setPrinters(List<String> printers) {
+        this.printers = printers;
+    }
+    
+     public String getBuildInfo() {
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = null;
+
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        try {
+            InputStream resourceAsStream = externalContext.getResourceAsStream("/META-INF/maven/net.ruesse/IDControl/pom.xml");
+            if (resourceAsStream != null) {
+                model = reader.read(new InputStreamReader(resourceAsStream));
+            } else {
+                // In der Entwicklungsumgebung:
+                model = reader.read(new FileReader("/Users/ulrich/Documents/Entwicklung/IDControl/pom.xml"));
+                LOGGER.log(Level.INFO, "POM: Resource nicht gefunden -- dies ist vermutlich die Entwicklungsumgebung");
+            }
+
+            if (model != null) {
+                LOGGER.log(Level.INFO, "POM-ID: " + model.getId());
+                LOGGER.log(Level.INFO, "POM-Build: " + model.getBuild());
+                LOGGER.log(Level.INFO, "POM-Version: " + model.getVersion());
+                return model.getId();
+            } else {
+                LOGGER.log(Level.INFO, "POM: Resource nicht gefunden" );
+            }
+
+        } catch (IOException | XmlPullParserException iOException) {
+            LOGGER.log(Level.INFO, "POM: Resource nicht gefunden Fehler beim Einlesen ");
+        }
+        return "";
+    }
+
+
+    public String getWorkingDirInfo() {
+        return getWorkingDir().toString();
+    }
+
+    public String getCATALINA_HOME() {
+        return System.getProperty("catalina.base");
     }
 
     public void printActionRS() {
         String REPORT = "IDCard-back";
 
-        PrintSupport.printReport(REPORT, em);
-
-        addMessage("Fertig", "Druckauftrag erledigt");
+        if (AnzahlDrucke >= 1) {
+            PrintSupport.printReport(REPORT, em, AnzahlDrucke, kartendrucker);
+            addMessage("Fertig", "Druckauftrag erledigt");
+        } else {
+            addMessageFail("KEIN Druck!", "Mindestens eine Kopie erforderlich");
+        }
     }
 
     public void printActionAL() {
         String REPORT = "Anwesenheitsliste";
-
-        PrintSupport.generatePDFReport(REPORT, em);
-        //return "/files/pdf/Anwesenheitsliste.pdf";
-        FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletRequest origRequest = (HttpServletRequest) context.getExternalContext().getRequest();
-        String contextPath = origRequest.getContextPath();
-
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(contextPath + "/faces/anwesenheitsliste.xhtml");
-        } catch (IOException ex) {
-            Logger.getLogger(ApplicationControlBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        PrintSupport.printReport(REPORT, em, AnzahlDrucke, "PDF");
     }
 
     public void resetScanLog() {
@@ -184,6 +266,11 @@ public class ApplicationControlBean implements Serializable {
 
     public void addMessage(String summary, String detail) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
+        FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+    public void addMessageFail(String summary, String detail) {
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
 

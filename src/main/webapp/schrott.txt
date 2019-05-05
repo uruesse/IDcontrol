@@ -1,0 +1,97 @@
+                <h:outputLabel for="ausweisdruck" value="Ausweisdruck in PDF-Datei" />
+                <p:selectBooleanCheckbox id="ausweisdruck" value="#{applicationControlBean.isPDF}">
+                    <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
+
+
+
+                    <p:ajax event="itemSelect" listener="#{applicationControlBean.onItemSelectedListener}"/>
+
+
+
+
+                <!--
+                <h:outputLink value="http://closekiosk">ENDE</h:outputLink>
+                
+                <p:outputLabel for="barcodeview" value="#{msg['control.barcodeoverview']}:" />
+                <p:button id="barcodeview" outcome="mgllist" type="button" value="#{msg['control.barcodeoverview']}" class="secondary"/>
+                
+                <p:outputLabel for="print" value="Druckdialog:" />
+                <p:button id="print" outcome="print" type="button" value="Drucken" class="secondary"/>
+                -->
+
+
+if (!ApplicationControlBean.getStaticKartendrucker().isEmpty()) {
+                        try {
+                            //printThePDF(pdfFile, "ZEBRA CARD PRINTER ZXP11");
+                            printThePDF(pdfFile, ApplicationControlBean.getStaticKartendrucker());
+                        } catch (Exception ex) {
+                            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+
+    static public void printThePDF(String file, String printer) throws Exception {
+
+        PDDocument document = PDDocument.load(new File(file));
+
+        PrintService myPrintService = findPrintService(printer);
+
+        PrinterJob job = PrinterJob.getPrinterJob();
+
+        job.setPageable(new PDFPageable(document));
+
+        job.setPrintService(myPrintService);
+        job.print();
+
+    }
+
+    /**
+     *
+     * @param jasperReport
+     */
+    public void exportReport(JasperReport jasperReport) {
+        JasperPrint jasperPrint;
+
+        HashMap<String, Object> parameter = new HashMap<>();
+        parameter.put("aParameter", "Hallo Welt");
+
+        try {
+            if (jasperReport != null) {
+                em.getTransaction().begin();
+                java.sql.Connection connection = em.unwrap(java.sql.Connection.class);
+
+                LOGGER.fine("jasperReport ist ungleich null");
+
+                jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, connection);
+                /*
+                try {
+                    JasperPrintManager.printReport(jasperPrint, true);
+                } catch (JRException err) {
+                    LOGGER.info(err.getMessage());
+                }
+                 */
+                JasperExportManager.exportReportToPdfFile(jasperPrint, getTempDir().resolve("Example.pdf").toString());
+
+                em.getTransaction().commit();
+            } else {
+                LOGGER.fine("jasperReport ist gleich null");
+            }
+        } catch (JRException ex) {
+            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        /*
+        try {
+            printThePDF("/Users/ulrich/Desktop/Example.pdf", "ZEBRA CARD PRINTER ZXP11");
+            //printThePDF("/Users/ulrich/Desktop/Example.pdf", "swdrucker");
+        } catch (Exception ex) {
+            Logger.getLogger(MglView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         */
+    }
+
+                    <p:ajax event="filter" update="faultTable, :logForm:count" />
+
+filteredValue="#{errorHandler.filteredFileContent}"
+
+ filterBy="#{line}" headerText="LOG-Text" filterMatchMode="contains" filterStyle="width: 450px;"

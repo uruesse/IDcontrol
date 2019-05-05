@@ -6,7 +6,7 @@
                 template="/WEB-INF/smalltemplate.xhtml">
 
     <ui:define name="title">
-        Anwesenheitsliste
+        Druckausgabe
     </ui:define>
 
     <ui:define name="head">
@@ -14,13 +14,13 @@
     </ui:define>
 
     <ui:define name="description">
-        Anwesenheitsliste
+        #{printView.description}
     </ui:define>
 
     <ui:define name="implementation">
 
-        <p:media   value="/resources/files/pdf/Anwesenheitsliste.pdf" width="100%" height="800px">
-            Ihr Browser kann kein PDF anzeigen, <h:outputLink value="/resources/files/pdf/Anwesenheitsliste.pdf">clicken Sie hier</h:outputLink> um das Dokument herunterzuladen.
+        <p:media   value="#{printView.pdfFile}" width="100%" height="800px">
+            Ihr Browser kann kein PDF anzeigen, <h:outputLink value="#{printView.pdfFile}">clicken Sie hier</h:outputLink>, um das Dokument herunterzuladen.
         </p:media>
 
     </ui:define>

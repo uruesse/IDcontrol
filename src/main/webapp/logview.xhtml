@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        LogView
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        LogView
+    </ui:define>
+
+    <ui:define name="implementation">
+
+        <h:form id="logForm">  
+
+            <p:selectOneMenu id="logfile" value="#{errorHandler.logFile}"  dynamic="true" style="width:1000px" >
+                 <p:ajax event="change" update="logsdt"/>
+                <f:selectItems value="#{errorHandler.logFileList}" />
+            </p:selectOneMenu>
+
+            <p:dataTable id="logsdt" 
+                         var="line" 
+                         value="#{errorHandler.fileContent}" 
+                         style="width:100%;"                         
+                         widgetVar="faultTable" 
+                         scrollable="true" 
+                         scrollHeight="600" 
+                         emptyMessage="Keinen Inhalt in der Logdatei gefunden.">
+                <f:facet name="header">
+                    Logdatei: #{errorHandler.logFile}
+                </f:facet>
+
+                <p:column>
+                    <h:outputText value="#{line}" />
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

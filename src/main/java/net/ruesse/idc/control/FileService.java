@@ -51,6 +51,21 @@ public class FileService {
         return AppPath;
     }
 
+    public static Path getLoggingDir() {
+        Path AppPath;
+        String strAppPath = System.getProperty("catalina.base");
+        LOGGER.log(Level.INFO, "catalina.base={0}", strAppPath);
+
+        if (strAppPath != null) {
+            AppPath = Paths.get(strAppPath, "logs");
+        } else {
+            AppPath = Paths.get("/Users/ulrich/Documents/Entwicklung/apache-tomcat-9.0.16/logs/");
+            setIsDevelopment(true);
+        }
+        LOGGER.log(Level.INFO, "CatalinaLogDir={0}", AppPath);
+        return AppPath;
+    }
+
     public static Path getDatabaseDir() {
         return getWorkingDir().resolve("DB");
     }

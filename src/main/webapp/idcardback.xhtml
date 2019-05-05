@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        Ausweisrückseitendruck
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        Ausweisrückseitendruck
+    </ui:define>
+
+    <ui:define name="implementation">
+        <h:form>
+            <p:growl id="growlmessage" showDetail="true" />
+
+            <h:panelGrid id="display" columns="2" cellpadding="5">
+
+
+                <h:outputLabel for="drucker" value="Aktueller Drucker:" />
+                <h:outputText id="drucker" value="#{applicationControlBean.kartendrucker}" />
+
+                <h:outputLabel for="inputnum" value="Zahl der Ausdrucke:" />
+                <p:inputNumber id="inputnum" value="#{applicationControlBean.anzahlDrucke}" minValue="0" maxValue="100" decimalPlaces="0">  
+                    <p:ajax event="change" global="false" />
+                </p:inputNumber>  
+
+
+                <h:outputLabel for="ausweisrueckseite" value="Ausweisrückseitendruck" />
+                <p:commandButton id="ausweisrueckseite" process="@this" icon="pi pi-print" value="Ausweisrückseite drucken" action="#{applicationControlBean.printActionRS}" update="growlmessage"/>
+
+            </h:panelGrid>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

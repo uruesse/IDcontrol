@@ -19,6 +19,15 @@
 
     <ui:define name="implementation">
         Hier entstehen Copyrightinformationen!
+        <br/>
+        <h:panelGrid id="display" columns="2" cellpadding="5">
+            <h:outputLabel for="workingpath" value="Arbeitspfad:" />
+            <h:outputText id="workingpath" value="#{applicationControlBean.workingDirInfo}" />
+
+            <h:outputLabel for="apspath" value="Applikationsserver:" />
+            <h:outputText id="apspath" value="#{applicationControlBean.CATALINA_HOME}" />
+        </h:panelGrid>
+
     </ui:define>
 
 </ui:composition>

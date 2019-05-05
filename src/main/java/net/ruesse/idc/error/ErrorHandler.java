@@ -15,9 +15,28 @@
  */
 package net.ruesse.idc.error;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
+import static net.ruesse.idc.control.FileService.getLoggingDir;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.MenuModel;
 
 /**
  *
@@ -26,6 +45,8 @@ import javax.faces.context.FacesContext;
 @ManagedBean
 @RequestScoped
 public class ErrorHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(ErrorHandler.class.getName());
 
     public String getStatusCode() {
         String val = String.valueOf((Integer) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.status_code"));
@@ -68,7 +89,7 @@ public class ErrorHandler {
     }
 
     /**
-     * Erzeugt eine Exception zum Testen eines 500er Fehlers
+     * Erzeugt eine NullPointer-Exception zum Testen eines 500er Fehlers
      */
     public void error500() {
         //System.out.println (10 / 0);
@@ -76,4 +97,82 @@ public class ErrorHandler {
         s.length();
     }
 
+    public List<String> fileContent = new ArrayList<>();
+
+    public List<String> getFileContent() {
+        return fileContent;
+    }
+
+    public void setFileContent(List<String> fileContent) {
+        this.fileContent = fileContent;
+    }
+
+
+    public void loadFile(String path) throws ParseException {
+        //String path = "/Users/ulrich/Documents/Entwicklung/apache-tomcat-9.0.16/logs/catalina.out";
+        LOGGER.info("Lese Logdatei ein: " + path);
+        fileContent.clear();
+        //fileContent = new ArrayList<String>();
+
+        File f = new File(path);
+        LOGGER.info("Anzahl Bytes: " + f.length());
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(f));
+            String s = "";
+            while ((s = r.readLine()) != null) {
+                fileContent.add(s);
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            if (r != null) {
+                try {
+                    r.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+        }
+
+        //filteredFileContent.addAll(fileContent);
+        LOGGER.info("Anzahl Zeilen: " + fileContent.size());
+    }
+
+    
+    String logFile;
+
+    public String getLogFile() {
+        return logFile;
+    }
+
+    public void setLogFile(String logFile) {
+        this.logFile = logFile;
+        try {
+            loadFile (logFile);
+        } catch (ParseException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+    
+
+    public List<String> getLogFileList() {
+        List<String> result = null;
+
+        try (Stream<Path> walk = Files.walk(getLoggingDir())) {
+
+            result = walk.filter(Files::isRegularFile)
+                    .map(x -> x.toString()).collect(Collectors.toList());
+
+            //result.forEach(System.out::println);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return result;
+    }
 }

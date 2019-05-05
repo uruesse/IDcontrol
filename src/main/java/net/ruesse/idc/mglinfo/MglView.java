@@ -29,6 +29,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import net.ruesse.idc.control.ApplicationControlBean;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.database.persistence.Auswahl;
 import net.ruesse.idc.database.persistence.Person;
@@ -162,20 +163,11 @@ public class MglView implements Serializable {
         }
         em.getTransaction().commit();
 
-        PrintSupport.printReport(REPORT, em);
+        PrintSupport.printReport(REPORT, em, 1, ApplicationControlBean.getStaticKartendrucker());
 
         em.getTransaction().begin();
         em.createNativeQuery("DELETE FROM IDCLOCAL.AUSWAHL").executeUpdate();
         em.getTransaction().commit();
-
-        addMessage("Fertig", "Druckauftrag erledigt");
-    }
-
-    public void printActionRS() {
-        String REPORT = "IDCard-back";
-        LOGGER.info("starte print");
-
-        PrintSupport.printReport(REPORT, em);
 
         addMessage("Fertig", "Druckauftrag erledigt");
     }

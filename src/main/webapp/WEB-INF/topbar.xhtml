@@ -28,7 +28,10 @@
                         <p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
                         <p:submenu label="Anleitungen" icon="pi pi-folder-open">
                             <p:menuitem outcome="documentation"  value="ZEBRA ZXP1" icon="pi pi-file"/>
-                        </p:submenu>                 
+                        </p:submenu>   
+                        <p:submenu label="Drucken" icon="pi pi-folder-open">
+                            <p:menuitem value="Ausweisrückseite" outcome="idcardback" icon="pi pi-print"/>
+                        </p:submenu> 
                         <p:separator />
                         <p:menuitem value="Beenden" action="#{menuView.logout}" icon="pi pi-power-off"/>            
                     </p:tieredMenu>

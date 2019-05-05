@@ -4,7 +4,7 @@
 
     <groupId>net.ruesse</groupId>
     <artifactId>IDControl</artifactId>
-    <version>20190422</version>
+    <version>20190504</version>
     <packaging>war</packaging>
 
     <name>IDControl</name>
@@ -13,9 +13,15 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+ 
     
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>3.3.9</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
@@ -77,6 +83,16 @@
             <version>2.5.2</version>
         </dependency>
         <dependency>
+            <groupId>fonts</groupId>
+            <artifactId>fonts.liberation</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>fonts</groupId>
+            <artifactId>fonts.dlrg</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>7.0</version>
@@ -112,7 +128,7 @@
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>6.7.1</version>
-        </dependency>
+        </dependency>   
         <!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-bridge -->
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>

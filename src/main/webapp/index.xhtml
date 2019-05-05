@@ -23,31 +23,43 @@
 
             <h:panelGrid id="display" columns="2" cellpadding="5">
 
+                <h:outputLabel for="workingpath" value="Arbeitspfad:" />
+                <h:outputText id="workingpath" value="#{applicationControlBean.workingDirInfo}" />
+
+                <h:outputLabel for="apspath" value="Applikationsserver:" />
+                <h:outputText id="apspath" value="#{applicationControlBean.CATALINA_HOME}" />
+
+                <h:outputLabel for="build" value="Build:" />
+                <h:outputText id="build" value="#{applicationControlBean.buildInfo}" />
+
+
                 <h:outputLabel for="demo" value="#{msg['control.barcodesimulator']}:" />
                 <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
                     <p:ajax event="change" global="false" />
                 </p:selectBooleanCheckbox>
 
-                <h:outputLabel for="ausweisdruck" value="Ausweisdruck in PDF-Datei" />
-                <p:selectBooleanCheckbox id="ausweisdruck" value="#{applicationControlBean.isPDF}">
-                    <p:ajax event="change" global="false" />
-                </p:selectBooleanCheckbox>
-
                 <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
-                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}">
+                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{applicationControlBean.validDruckerdialog}">
                     <p:ajax event="change" global="false" />
                 </p:selectBooleanCheckbox>
 
-                <h:outputLabel for="ausweisrueckseite" value="Ausweisrückseitendruck" />
-                <p:commandButton id="ausweisrueckseite" process="@this" icon="pi pi-print" value="Ausweisrückseite drucken" action="#{applicationControlBean.printActionRS}" update="growlmessage"/>
+                <h:outputLabel for="druckerauswahl" value="Kartendrucker auswählen:" />
+                <p:selectOneMenu id="druckerauswahl" value="#{applicationControlBean.kartendrucker}"  dynamic="true" style="width:250px">
+                    <p:ajax event="change" global="false" />
+                    <f:selectItem itemLabel="PDF-Ausgabe" itemValue="PDF" />
+                    <f:selectItems value="#{applicationControlBean.printers}" />
+                </p:selectOneMenu>
 
                 <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
                 <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
                     <p:menuitem value="Error 404" url="xx" />
                 </p:splitButton>  
 
+                <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
+                <p:commandButton id="sewobe2stage" process="@this" value="SEWOBE-daten hochladen" action="#{applicationControlBean.stageToProd}" update="growlmessage" disabled="true"/>
+
                 <h:outputLabel for="stage2prod" value="Stage2Prod" />
-                <p:commandButton id="stage2prod" process="@this" value="Stage-DB in Prod-DB kopieren" action="#{applicationControlBean.stageToProd}" update="growlmessage"/>
+                <p:commandButton id="stage2prod" process="@this" value="Stage-DB in Prod-DB kopieren" action="#{applicationControlBean.stageToProd}" update="growlmessage" disabled="true"/>
 
                 <h:outputLabel for="exportDB" value="Datenexport" />
                 <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="growlmessage"/>
@@ -61,16 +73,6 @@
                 <p:outputLabel for="login" value="Login:" />
                 <p:button id="login" outcome="login"  value="zur eigentlichen Startseite" class="secondary"/>
 
-
-                <!--
-                <h:outputLink value="http://closekiosk">ENDE</h:outputLink>
-                
-                <p:outputLabel for="barcodeview" value="#{msg['control.barcodeoverview']}:" />
-                <p:button id="barcodeview" outcome="mgllist" type="button" value="#{msg['control.barcodeoverview']}" class="secondary"/>
-                
-                <p:outputLabel for="print" value="Druckdialog:" />
-                <p:button id="print" outcome="print" type="button" value="Drucken" class="secondary"/>
-                -->
             </h:panelGrid>
         </h:form>
 

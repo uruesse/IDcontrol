@@ -18,8 +18,12 @@
     </ui:define>
 
     <ui:define name="implementation">
-        Hier entstehen Copyrightinformationen!
+        Hier entstehen Copyrightinformationen!        <br/>
+        <h:outputLabel for="build" value="Build: " />
+        <h:outputText id="build" value="#{applicationControlBean.buildInfo}" />
+
         <br/>
+        <p:separator/>
         <h:panelGrid id="display" columns="2" cellpadding="5">
             <h:outputLabel for="workingpath" value="Arbeitspfad:" />
             <h:outputText id="workingpath" value="#{applicationControlBean.workingDirInfo}" />

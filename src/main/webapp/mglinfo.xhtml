@@ -48,6 +48,11 @@
                 width: 100%;
                 box-sizing: border-box;
             }
+
+            .no-border {
+                border-style: hidden !important ; /* or none */
+                padding:0px;
+            }
         </style>
     </ui:define>
 
@@ -77,40 +82,38 @@
                 <f:facet name="header">
                     <p:growl id="growlmessage" showDetail="true" />
 
-                    <p:outputPanel>
-                        <p:panelGrid  columns="3">
-                            <p:outputPanel style="float:left">
-                                <h:outputText value="Durchsuche alle Felder: " />
-                                <p:inputText id="globalFilter" onkeyup="PF('mglTable').filter()" style="width:250px" placeholder="Suchwort eingeben"/>
-                                <p:tooltip id="forGlobalFilter" for="globalFilter" value="Durchsucht alle Felder nach dem hier eingegebenen Wert!" position="top"/>
+                    <p:toolbar>
+                        <f:facet name="left">
+                            <h:outputText value="Durchsuche alle Felder: " />
+                            <p:inputText id="globalFilter" onkeyup="PF('mglTable').filter()" style="width:250px" placeholder="Suchwort eingeben"/>
+                            <p:tooltip id="forGlobalFilter" for="globalFilter" value="Durchsucht alle Felder nach dem hier eingegebenen Wert!" position="top"/>
+                            <span class="ui-separator">
+                                <span class="ui-icon pi pi-ellipsis-v" />
+                            </span>
 
-                            </p:outputPanel>
+                            <p:commandButton id="ausweis" process="persons" icon="pi pi-print" value="Ausweis drucken" action="#{mglView.printAction}" update="growlmessage">
+                                <p:confirm header="Bestätigung erforderlich" message="Es werden nur Ausweise für Mitglieder gedruckt, deren Status Aktiv ist! Jetzt drucken?" icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                            <p:tooltip id="forAusweis" for="ausweis" value="Druckt Ausweise für die ausgewählten Mitglieder." position="top"/>
 
-                            <p:outputPanel >
-                                <p:commandButton id="ausweis" process="persons" icon="pi pi-print" value="Ausweis drucken" action="#{mglView.printAction}" update="growlmessage">
-                                    <p:confirm header="Bestätigung erforderlich" message="Es werden nur Ausweise für Mitglieder gedruckt, deren Status Aktiv ist! Jetzt drucken?" icon="pi pi-exclamation-triangle" />
-                                </p:commandButton>
-                                <p:tooltip id="forAusweis" for="ausweis" value="Druckt Ausweise für die ausgewählten Mitglieder." position="top"/>
+                            <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-out" value="Wassergeld kündigen" oncomplete="PF('multiMglDialog').show()" />
+                            <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-in" value="Wassergeld berechnen" oncomplete="PF('multiMglDialog').show()" />
 
-                                <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-out" value="Wassergeld kündigen" oncomplete="PF('multiMglDialog').show()" />
-                                <p:commandButton process="persons" disabled="true" update=":form:multiMglDetail" icon="pi pi-sign-in" value="Wassergeld berechnen" oncomplete="PF('multiMglDialog').show()" />
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                                <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                            </p:confirmDialog> 
+                        </f:facet>
 
-                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                                    <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
-                                    <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
-                                </p:confirmDialog> 
+                        <f:facet name="right">
+                            <p:commandButton id="refresh" process="persons" action="#{mglView.refreshAction}" icon="pi pi-refresh" onclick="PF('mglTable').clearFilters()"/>
+                            <p:tooltip id="forRefresh" for="refresh" value="Löscht alle Filter und liest die Datentabelle neu ein." position="top"/>
+                            <p:commandButton id="toggler" type="button" value="Spalten" style="float:right" icon="pi pi-align-justify" />
+                            <p:columnToggler datasource="persons" trigger="toggler" />
+                            <p:tooltip id="forToggler" for="toggler" value="Ermöglicht das Ein- und Ausblenden von Tabellenspalten." position="top"/>
+                        </f:facet>
 
-                            </p:outputPanel>
-
-                            <p:outputPanel style="float:right">
-                                <p:commandButton id="refresh" process="persons" action="#{mglView.refreshAction}" icon="pi pi-refresh" onclick="PF('mglTable').clearFilters()"/>
-                                <p:tooltip id="forRefresh" for="refresh" value="Löscht alle Filter und liest die Datentabelle neu ein." position="top"/>
-                                <p:commandButton id="toggler" type="button" value="Spalten" style="float:right" icon="pi pi-align-justify" />
-                                <p:columnToggler datasource="persons" trigger="toggler" />
-                                <p:tooltip id="forToggler" for="toggler" value="Ermöglicht das Ein- und Ausblenden von Tabellenspalten." position="top"/>
-                            </p:outputPanel>
-                        </p:panelGrid>
-                    </p:outputPanel>
+                    </p:toolbar>
                 </f:facet>
 
 
@@ -362,7 +365,7 @@
                             <p:column style="text-align:left;">
                                 <ui:repeat value="#{mglView.selectedPerson.person.offenerechnungenCollection}" var="ofr">
                                     <p:outputPanel style="text-align:left;">
-                                        <p:panelGrid  columns="3" >
+                                        <p:panelGrid  columns="3"  columnClasses="no-border, no-border, no-border">
                                             <h:outputText value="#{ofr.rechnungsnummer} "/>
                                             <h:outputText value="#{ofr.rechnungsdatum}">
                                                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>       

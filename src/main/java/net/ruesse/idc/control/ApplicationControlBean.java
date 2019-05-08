@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.control;
 
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -70,7 +71,7 @@ public class ApplicationControlBean implements Serializable {
     static private String kartendrucker;
     static private Map persistenceParameters = null;
     static private PersonExt loginMgl;
-    static int screenResolution = 0;
+    static boolean screenResolution = false;
     static int AnzahlDrucke = 1;
 
     private List<String> printers;
@@ -81,13 +82,12 @@ public class ApplicationControlBean implements Serializable {
         LOGGER.fine("aufgerufen");
         isDemo = false;
         isPDF = false;
+        isDruckerdialog = false;
 
-        screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-        if (screenResolution == 0) {
+        screenResolution = GraphicsEnvironment.isHeadless();
+        if (screenResolution == false) {
             LOGGER.info("ScreenResolution = nicht angeschlossen");
-            isDruckerdialog = false;
         } else {
-            isDruckerdialog = true;
             LOGGER.info("ScreenResolution = " + screenResolution);
         }
 
@@ -121,7 +121,7 @@ public class ApplicationControlBean implements Serializable {
     }
 
     public boolean isValidDruckerdialog() {
-        return screenResolution == 0;
+        return screenResolution == false;
     }
 
     public boolean isIsDruckerdialog() {
@@ -182,8 +182,8 @@ public class ApplicationControlBean implements Serializable {
     public void setPrinters(List<String> printers) {
         this.printers = printers;
     }
-    
-     public String getBuildInfo() {
+
+    public String getBuildInfo() {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = null;
 
@@ -199,12 +199,12 @@ public class ApplicationControlBean implements Serializable {
             }
 
             if (model != null) {
-                LOGGER.log(Level.INFO, "POM-ID: " + model.getId());
-                LOGGER.log(Level.INFO, "POM-Build: " + model.getBuild());
-                LOGGER.log(Level.INFO, "POM-Version: " + model.getVersion());
+                LOGGER.log(Level.INFO, "POM-ID: {0}", model.getId());
+                LOGGER.log(Level.INFO, "POM-Build: {0}", model.getBuild());
+                LOGGER.log(Level.INFO, "POM-Version: {0}", model.getVersion());
                 return model.getId();
             } else {
-                LOGGER.log(Level.INFO, "POM: Resource nicht gefunden" );
+                LOGGER.log(Level.INFO, "POM: Resource nicht gefunden");
             }
 
         } catch (IOException | XmlPullParserException iOException) {
@@ -212,7 +212,6 @@ public class ApplicationControlBean implements Serializable {
         }
         return "";
     }
-
 
     public String getWorkingDirInfo() {
         return getWorkingDir().toString();
@@ -242,6 +241,26 @@ public class ApplicationControlBean implements Serializable {
         em.getTransaction().begin();
         em.createNativeQuery("DELETE FROM IDCLOCAL.SCANLOG").executeUpdate();
         em.getTransaction().commit();
+    }
+
+    public void addEntenhauusen() {
+        SqlSupport sp = new SqlSupport();
+        sp.executeSQLScript("demo/entenhausenadd.sql");
+        addMessage("Fertig", "Demodaten in die Datenbank kopiert");
+    }
+
+    public void dropEntenhauusen() {
+        SqlSupport sp = new SqlSupport();
+        sp.executeSQLScript("demo/entenhausendrop.sql");
+        addMessage("Fertig", "Demodaten aus der Datenbank entfernt");
+    }
+
+    public void onlyEntenhauusen() {
+        SqlSupport sp = new SqlSupport();
+        sp.executeSQLScript("createdb.sql");
+        sp.executeSQLScript("demo/entenhausenersv.sql");
+        sp.executeSQLScript("demo/entenhausenadd.sql");
+        addMessage("Fertig", "Datenbank aus Demodaten aus erstellt");
     }
 
     public void stageToProd() {

@@ -30,6 +30,7 @@ public class FooterView {
     private static final Logger LOGGER = Logger.getLogger(FooterView.class.getName());
 
     public String getFileInfo() {
+        LOGGER.info("Lese letztes Aktualisierungsdatum ein");
         VereinService vs = new VereinService();
         return vs.getFileInfo();
     }

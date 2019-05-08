@@ -67,6 +67,11 @@ public class SqlSupport {
         return em.unwrap(java.sql.Connection.class);
     }
 
+    /**
+     *
+     * @param schema
+     * @return
+     */
     public List<String> getTables(String schema) {
         String stmt = "SELECT TABLENAME "
                 + "FROM SYS.SYSTABLES T, SYS.SYSSCHEMAS S "
@@ -77,6 +82,37 @@ public class SqlSupport {
         return q.getResultList();
     }
 
+    /**
+     * 
+     * @param schema
+     * @param name
+     * @return 
+     */
+    public long getTableSize(String schema, String name) {
+        String stmt = "SELECT count(*) FROM " + schema.toUpperCase() + "." + name.toUpperCase();
+
+        Query q = em.createNativeQuery(stmt);
+        Object result = q.getSingleResult();
+
+        Long count = (result != null ? Long.parseLong(result.toString()) : 0);
+
+        LOGGER.log(Level.INFO, "SQL: {0}: {1}", new Object[]{stmt, count});
+        return count;
+    }
+
+    public void beginTransaction() {
+        em.getTransaction().begin();
+    }
+
+    public void commitTransaction() {
+        em.getTransaction().commit();
+    }
+
+    /**
+     *
+     * @param schema
+     * @return
+     */
     public String exportSchema(String schema) {
 
         Path exportPath = createDatedExportsDir();

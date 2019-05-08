@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        SEWOBE-Import
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        Lädt die SEWOBE-Daten 
+    </ui:define>
+
+    <ui:define name="implementation">
+
+        <style type="text/css">
+            .label {
+                width:20%;
+                padding:4px;
+            }
+
+            .value {
+                width:80%;
+                padding:4px;
+            }
+
+            .error {
+                color: red;
+            }
+
+            .outputLabel {
+                font-weight: bold;
+            }
+
+            .grid {
+                width:33%;
+                padding:4px;
+            }
+
+            .no-border {
+                border-style: hidden !important ; /* or none */
+                padding:0px;
+            }
+        </style>
+
+
+        <h:form>
+
+            <p:growl id="growl" sticky="true" showDetail="true"/>
+
+            <p:wizard flowListener="#{loadWizard.onFlowProcess}" nextLabel="Weiter" backLabel="Zurück" >
+                <p:tab id="createstagedb" title="Datenbank">
+                    <p:panel header="Schritt 1: Staging Datenbank initialisieren">
+                        <p:messages escape="false" showDetail="true" closable="false">
+                            <p:autoUpdate />
+                        </p:messages>
+                        <h:outputText escape="false" value="#{loadWizard.createstagedbHint}"/>
+                        <p:separator/>
+                        <p:commandButton process="@this" value="Stage-DB jetzt initialisieren" action="#{loadWizard.stageCreate}" />
+                        <h:inputHidden validator="#{loadWizard.validateStep1}" />
+                    </p:panel>
+                </p:tab>
+
+                <p:tab id="loadcsv" title="CSV-Dateien">
+                    <p:panel header="Schritt 2: CSV-Dateien einlesen und laden">
+                        <p:messages escape="false" showDetail="true" closable="false">
+                            <p:autoUpdate />
+                        </p:messages>
+                        <h:outputText escape="false" value="#{loadWizard.loadcsvHint}"/>
+                        <p:separator/>
+                        <p:dataTable  id="Tabellendaten" var="DataTable" value="#{loadWizard.dataTableList}">
+                            <p:column headerText="Tabellename">
+                                <h:outputText value="#{DataTable.tablename}" />
+                            </p:column>
+
+                            <p:column headerText="Anzahl Sätze in Tabelle" style="text-align: center">
+                                <h:outputText value="#{DataTable.items}" />
+                            </p:column>
+
+                            <p:column headerText="Zeilen in csv" style="text-align: center">
+                                <h:outputText value="#{DataTable.csv}" />
+                            </p:column>
+
+                            <p:column headerText="Einlesefehler" style="width:100px;text-align: center">
+                                <h:panelGrid columns="2" border="0" columnClasses="no-border, no-border">
+                                    <h:outputText value="#{DataTable.failure}" />
+                                    <p:commandButton icon="pi pi-search" title="Fehlerprotokoll" disabled="#{DataTable.showFailure}">
+                                    </p:commandButton>
+                                </h:panelGrid>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:fileUpload id="importfile" fileUploadListener="#{loadWizard.handleFileUpload}" multiple="true"  process="@this"  update="Tabellendaten" label="CSV-Datei [*.csv] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" sizeLimit="100000000" allowTypes="/(\.|\/)(csv)$/" />
+                        <h:inputHidden validator="#{loadWizard.validateStep2}" />
+                    </p:panel>
+                </p:tab>
+
+
+                <p:tab id="stage2prod" title="Stage2Prod">
+                    <p:panel header="Schritt 3: Daten in die ID_Control Datenbank kopieren.">
+                        <p:messages escape="false" showDetail="true" closable="false">
+                            <p:autoUpdate />
+                        </p:messages>
+                        <h:outputText escape="false" value="#{loadWizard.loadStage2ProdHint}"/>
+                        <p:separator/>
+
+                        <p:commandButton id="stage2prodBtn" process="@this" value="Stage-DB in Prod-DB kopieren" action="#{loadWizard.stageToProd}" />
+                        <h:inputHidden validator="#{loadWizard.validateStep3}" />
+                    </p:panel>
+                </p:tab>
+
+                <p:tab id="abschluss" title="Abschluss">
+                    <p:panel header="Schritt 4: Abschluss der Datenübernahme. Löschen der Stage-DB und der temporären Verzeichnisse.">
+                        <p:messages escape="false" showDetail="true" closable="false">
+                            <p:autoUpdate />
+                        </p:messages>
+                        <h:outputText escape="false" value="#{loadWizard.loadFinalizeHint}"/>
+                        <p:separator/>
+                        <p:commandButton id="finalize" process="@this" value="Abschluss und temporäre Datenbereiche löschen" action="#{loadWizard.finalizeImport}" />
+                        <h:inputHidden validator="#{loadWizard.validateStep}" />
+                    </p:panel>
+                </p:tab>
+
+            </p:wizard>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

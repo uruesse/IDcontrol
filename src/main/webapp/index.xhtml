@@ -32,34 +32,12 @@
                 <h:outputLabel for="build" value="Build:" />
                 <h:outputText id="build" value="#{applicationControlBean.buildInfo}" />
 
-
-                <h:outputLabel for="demo" value="#{msg['control.barcodesimulator']}:" />
-                <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
-                    <p:ajax event="change" global="false" />
-                </p:selectBooleanCheckbox>
-
-                <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
-                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{applicationControlBean.validDruckerdialog}">
-                    <p:ajax event="change" global="false" />
-                </p:selectBooleanCheckbox>
-
                 <h:outputLabel for="druckerauswahl" value="Kartendrucker auswählen:" />
                 <p:selectOneMenu id="druckerauswahl" value="#{applicationControlBean.kartendrucker}"  dynamic="true" style="width:250px">
                     <p:ajax event="change" global="false" />
                     <f:selectItem itemLabel="PDF-Ausgabe" itemValue="PDF" />
                     <f:selectItems value="#{applicationControlBean.printers}" />
                 </p:selectOneMenu>
-
-                <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
-                <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
-                    <p:menuitem value="Error 404" url="xx" />
-                </p:splitButton>  
-
-                <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
-                <p:commandButton id="sewobe2stage" process="@this" value="SEWOBE-daten hochladen" action="#{applicationControlBean.stageToProd}" update="growlmessage" disabled="true"/>
-
-                <h:outputLabel for="stage2prod" value="Stage2Prod" />
-                <p:commandButton id="stage2prod" process="@this" value="Stage-DB in Prod-DB kopieren" action="#{applicationControlBean.stageToProd}" update="growlmessage" disabled="true"/>
 
                 <h:outputLabel for="exportDB" value="Datenexport" />
                 <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="growlmessage"/>
@@ -69,10 +47,41 @@
 
                 <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
                 <p:commandButton id="autoimport"  value="z.Zt. kein Datenupdate verfügbar" disabled="true"/>
+                
+                <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
+                <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary"/>
+
+                <p:separator/><p:separator/>
+                <h:outputText value="NUR FÜR TESTZWECKE:" />
+                <h:outputText value="Folgende Zeilen sind nur während der Testphase zu sehen" />
 
                 <p:outputLabel for="login" value="Login:" />
                 <p:button id="login" outcome="login"  value="zur eigentlichen Startseite" class="secondary"/>
 
+                <h:outputLabel for="demo" value="#{msg['control.barcodesimulator']}:" />
+                <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
+                    <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
+
+                <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
+                <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
+                    <p:menuitem value="Error 404" url="xx" />
+                </p:splitButton>  
+
+                <p:outputLabel for="testdata" value="Entenhausener Schwimmverein: " />
+                <p:splitButton id="testdata" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" >
+                    <p:menuitem value="Testdaten entfernen" action="#{applicationControlBean.dropEntenhauusen}" ajax="true" update="growlmessage"/>
+                    <p:menuitem value="reine Testdatenbank erstellen" action="#{applicationControlBean.onlyEntenhauusen}" ajax="true" update="growlmessage"/>
+                </p:splitButton>  
+
+                <p:separator/><p:separator/>
+                <h:outputText value="NUR FÜR ENTWICKLUNGSSYSTEM:" />
+                <h:outputText value="Folgende Befehle sind noch in der Entwicklung und funktionieren ausschließlich auf dem Entwicklungssystem" />
+
+                <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
+                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{applicationControlBean.validDruckerdialog}">
+                    <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
             </h:panelGrid>
         </h:form>
 

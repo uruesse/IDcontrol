@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://localhost:9898/IDC/fileService?wsdl" uri="wsdl/localhost_9898/IDC/fileService.wsdl"/>
+    <system systemId="http://localhost:9898/IDC/fileService?xsd=1" uri="wsdl/localhost_9898/IDC/fileService.xsd_1.xsd"/>
+    <system systemId="http://localhost:12345/IDC/fileService?wsdl" uri="wsdl/localhost_12345/IDC/fileService.wsdl"/>
+    <system systemId="http://localhost:12345/IDC/fileService?xsd=1" uri="wsdl/localhost_12345/IDC/fileService.xsd_1.xsd"/>
+</catalog>

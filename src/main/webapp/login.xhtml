@@ -18,8 +18,8 @@
     </ui:define>
 
     <ui:define name="implementation">
-        <h:form>        
-            <p:messages id="messages" escape="false" showDetail="true" closable="false">
+        <h:form id="loginsheet">        
+            <p:messages id="loginmessages" escape="false" showDetail="true" closable="false">
                 <p:autoUpdate />
             </p:messages>
 
@@ -30,6 +30,10 @@
                 <p:inputMask id="mitgliednummer" value="#{controlBean.mnrLogin}" mask="#{msg['scan.mnr_mask']}"/>
                 <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.startSession}" update="display"/>
             </h:panelGrid>
+
+            <p:separator/>
+
+            <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" update="loginmessages" disabled="#{!applicationControlBean.backupAvailable}"/>
 
         </h:form>
 

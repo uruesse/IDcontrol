@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. --><xs:schema xmlns:tns="http://fileservice.webservice.idc.ruesse.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://fileservice.webservice.idc.ruesse.net/">
+
+<xs:element name="download" type="tns:download"></xs:element>
+
+<xs:element name="downloadResponse" type="tns:downloadResponse"></xs:element>
+
+<xs:element name="lastbackup" type="tns:lastbackup"></xs:element>
+
+<xs:element name="lastbackupResponse" type="tns:lastbackupResponse"></xs:element>
+
+<xs:element name="listbackups" type="tns:listbackups"></xs:element>
+
+<xs:element name="listbackupsResponse" type="tns:listbackupsResponse"></xs:element>
+
+<xs:element name="upload" type="tns:upload"></xs:element>
+
+<xs:element name="uploadResponse" type="tns:uploadResponse"></xs:element>
+
+<xs:complexType name="download">
+<xs:sequence>
+<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="downloadResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:base64Binary" nillable="true" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="upload">
+<xs:sequence>
+<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="arg1" type="xs:base64Binary" nillable="true" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="uploadResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:base64Binary" nillable="true" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="lastbackup">
+<xs:sequence>
+<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="lastbackupResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:base64Binary" nillable="true" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listbackups">
+<xs:sequence>
+<xs:element name="arg0" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listbackupsResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:base64Binary" nillable="true" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

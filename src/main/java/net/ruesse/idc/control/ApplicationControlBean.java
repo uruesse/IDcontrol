@@ -16,9 +16,7 @@
 package net.ruesse.idc.control;
 
 import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +24,9 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import net.ruesse.idc.database.persistence.service.PersonExt;
 import net.ruesse.idc.database.sql.SqlSupport;
 import net.ruesse.idc.report.PrintSupport;
 import static net.ruesse.idc.report.PrintSupport.availablePrinters;
+import net.ruesse.idc.webclient.FileServiceClient;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -67,6 +69,7 @@ public class ApplicationControlBean implements Serializable {
     static private boolean isDemo;
     static private boolean isPDF;
     static private boolean isDruckerdialog;
+    static private boolean isBackupAvailable;
     static private boolean isDevelopment = false;
     static private String kartendrucker;
     static private Map persistenceParameters = null;
@@ -92,6 +95,7 @@ public class ApplicationControlBean implements Serializable {
         }
 
         isDevelopment = false;
+        isBackupAvailable = false;
         kartendrucker = "PDF";
 
         //options
@@ -138,6 +142,18 @@ public class ApplicationControlBean implements Serializable {
 
     public static boolean isIsDevelopment() {
         return isDevelopment;
+    }
+
+    public static boolean isIsBackupAvailable() {
+        return isBackupAvailable;
+    }
+
+    public boolean isBackupAvailable() {
+        return isBackupAvailable;
+    }
+
+    public static void setIsBackupAvailable(boolean isBackupAvailable) {
+        ApplicationControlBean.isBackupAvailable = isBackupAvailable;
     }
 
     public static void setIsDevelopment(boolean isDevelopment) {
@@ -217,6 +233,77 @@ public class ApplicationControlBean implements Serializable {
         return getWorkingDir().toString();
     }
 
+    public String getBackupInfo() {
+        String strResult;
+        try {
+            FileServiceClient fileServiceClient = new FileServiceClient();
+            strResult = fileServiceClient.getLastBackup();
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Konnte den Webservice nicht aufrufen.");
+            isBackupAvailable = false;
+            return "Webservice nicht erreichbar";
+        }
+
+        String strTimestamp = strResult.substring(8, strResult.length() - 4);
+        Timestamp timestamp = null;
+        Date parsedDate;
+        LOGGER.log(Level.INFO, "Timestamp: " + strTimestamp);
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+            parsedDate = dateFormat.parse(strTimestamp);
+            timestamp = new java.sql.Timestamp(parsedDate.getTime());
+        } catch (Exception e) {
+        }
+
+        if (strResult.equals("")) {
+            isBackupAvailable = false;
+            return "";
+        } else {
+            VereinService vs = new VereinService();
+            if (strResult.compareTo(vs.getExpFileName() + ".IDC") > 0) {
+                isBackupAvailable = true;
+            } else {
+                isBackupAvailable = false;
+            }
+            LOGGER.log(Level.INFO, "strResult: {0} expFileName: {1} Result: {2} isBackup: {3}", new Object[]{strResult, vs.getExpFileName() + ".IDC", strResult.compareTo(vs.getExpFileName() + ".IDC"), isBackupAvailable});
+
+            return new SimpleDateFormat("dd.MM.yyyy HH:mm.ss").format(timestamp);
+        }
+    }
+
+    public String getLastBackup() {
+        if (isIsBackupAvailable()) {
+            return "Datenstand vom " + getBackupInfo() + " laden";
+        } else {
+            return "z.Zt. kein Datenupdate verfügbar";
+        }
+    }
+
+    public void uploadLastBackup() {
+        if (isIsBackupAvailable()) {
+            String strResult;
+            FileServiceClient fileServiceClient;
+            try {
+                fileServiceClient = new FileServiceClient();
+                strResult = fileServiceClient.getLastBackup();
+            } catch (Exception ex) {
+                isBackupAvailable = false;
+                return;
+            }
+
+            Path lastBackup = fileServiceClient.downloadFile(strResult);
+            if (lastBackup != null) {
+                SqlSupport sqlSupport = new SqlSupport();
+                sqlSupport.importSchema("IDCREMOTE", lastBackup);
+
+
+                addMessage("Fertig", "Datenstand vom " + getBackupInfo() + " in die Datenbank kopiert");
+                return;
+            }
+        }
+        addMessageFail("Fehler", "Datenstand vom " + getBackupInfo() + " konnte nicht in die Datenbank kopiert werden. Siehe Log-File ausgabe.");
+    }
+
     public String getCATALINA_HOME() {
         return System.getProperty("catalina.base");
     }
@@ -263,24 +350,25 @@ public class ApplicationControlBean implements Serializable {
         addMessage("Fertig", "Datenbank aus Demodaten aus erstellt");
     }
 
-    public void stageToProd() {
-        SqlSupport sp = new SqlSupport();
-
-        sp.executeSQLScript("createdb.sql");
-
-        sp.executeSQLScript("stage2prod.sql");
-        sp.executeSQLScript("fremdzahler.sql");
-        sp.executeSQLScript("demo/entenhausen.sql");
-
-        addMessage("Fertig", "Datenbank kopiert");
-    }
-
     public void exportTables() {
         SqlSupport sp = new SqlSupport();
 
         String exportFile = sp.exportSchema("idcremote");
+        boolean ws = true;
+        try {
+            FileServiceClient fileServiceClient = new FileServiceClient();
+            fileServiceClient.uploadFile(exportFile);
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Konnte die Datei {0} nicht \u00fcber den Webservice exportieren", exportFile);
+            ws = false;
+            // Nix tun, wenn hier was schief läuft
+        }
 
-        addMessage("Fertig", "Datenbank in die Datei " + exportFile + "exportiert");
+        if (ws) {
+            addMessage("Fertig", "Die Datenbank wurde in die Datei " + exportFile + " exportiert und anschließend über den Webservice hochgeladen.");
+        } else {
+            addMessage("Fertig", "Die Datenbank wurde in die Datei " + exportFile + " exportiert. Der Webservice war nicht verfügbar.");
+        }
     }
 
     public void addMessage(String summary, String detail) {

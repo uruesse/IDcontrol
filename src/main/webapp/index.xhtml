@@ -20,6 +20,10 @@
     <ui:define name="implementation">
         <h:form>
             <p:growl id="growlmessage" showDetail="true" />
+            <p:messages id="messages" escape="false" showDetail="true" closable="true">
+                <p:autoUpdate />
+            </p:messages>
+
 
             <h:panelGrid id="display" columns="2" cellpadding="5">
 
@@ -32,6 +36,9 @@
                 <h:outputLabel for="build" value="Build:" />
                 <h:outputText id="build" value="#{applicationControlBean.buildInfo}" />
 
+                <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
+                <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
+
                 <h:outputLabel for="druckerauswahl" value="Kartendrucker auswählen:" />
                 <p:selectOneMenu id="druckerauswahl" value="#{applicationControlBean.kartendrucker}"  dynamic="true" style="width:250px">
                     <p:ajax event="change" global="false" />
@@ -40,14 +47,14 @@
                 </p:selectOneMenu>
 
                 <h:outputLabel for="exportDB" value="Datenexport" />
-                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="growlmessage"/>
+                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="messages"/>
 
                 <h:outputLabel for="importfile" value="Datenimport" />
-                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="growlmessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" />
+                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="messages" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" />
 
                 <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
-                <p:commandButton id="autoimport"  value="z.Zt. kein Datenupdate verfügbar" disabled="true"/>
-                
+                <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" update="messages" disabled="#{!applicationControlBean.backupAvailable}"/>
+
                 <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
                 <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary"/>
 

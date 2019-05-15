@@ -5,9 +5,15 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <div class="layout-topbar">
-        <h:link class="logo-container" outcome="/index.xhtml">
+        <style>
+            ul.ui-menu-child
+            {
+                width: 500px !important;
+            }
+        </style>
+        <h:outputLink class="logo-container" value="http://remscheid.dlrg.de">
             <p:graphicImage value="#{applicationControlBean.logoImage}" />
-        </h:link>
+        </h:outputLink>
         <ul class="layout-topbar-menu">
             <li>
                 <h:link outcome="scan" title="Scannen der Mitgliedsausweise">Einlasskontrolle</h:link>
@@ -16,25 +22,17 @@
                 <h:link outcome="mglinfo" title="Übersichtstabelle mit Detailinformationen zum Mitglied">Mitgliederinfo</h:link>
             </li>
             <li>
+                <h:outputLink value="https://dlrg-mv.sewobe.de/" target="_blank" title="Link zu SEWOBE">Mitgliederverwaltung</h:outputLink>
+            </li>
+            <li>
                 <h:form>
                     <p:commandButton id="dynaButton" type="button" icon="pi pi-bars" />
                     <p:tooltip id="forDynaButton" for="dynaButton" value="Hauptmenü." position="top"/>
-                    <p:tieredMenu overlay="true" trigger="dynaButton" my="right top" at="right bottom" style="width:200px">
-                        <p:menuitem value="Über IDControl" outcome="info" icon="pi pi-info"/>
-                        <p:separator />
-                        <p:menuitem value="Einstellungen" outcome="index" icon="pi pi-cog"/>
-                        <p:separator />
-                        <p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
-                        <p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
-                        <p:submenu label="Anleitungen" icon="pi pi-folder-open">
-                            <p:menuitem outcome="documentation"  value="ZEBRA ZXP1" icon="pi pi-file"/>
-                        </p:submenu>   
-                        <p:submenu label="Drucken" icon="pi pi-folder-open">
-                            <p:menuitem value="Ausweisrückseite" outcome="idcardback" icon="pi pi-print"/>
-                        </p:submenu> 
-                        <p:separator />
-                        <p:menuitem value="Beenden" action="#{menuView.logout}" icon="pi pi-power-off"/>            
-                    </p:tieredMenu>
+                    <p:tieredMenu  model="#{menuView.model}" overlay="true" trigger="dynaButton"  my="right top" at="right bottom" style="width:200px"/>
+
+                    <p:commandButton id="exitButton" type="button" icon="pi pi-power-off" action="#{menuView.logout}" >
+                        <f:ajax />
+                    </p:commandButton>
                 </h:form>
             </li>
         </ul>

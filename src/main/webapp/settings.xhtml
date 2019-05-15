@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        #{msg['title.application']}
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        Einstellungen
+    </ui:define>
+
+    <ui:define name="implementation">
+        <h:form id="AppControl">
+            <h:inputHidden value="#{controlBean.param}" />
+            
+            <p:growl id="growlmessage" for="AppControl" showDetail="true" />
+            <p:messages id="AppControlMessage" for="AppControl" escape="false" showDetail="true" closable="true">
+                <p:autoUpdate />
+            </p:messages>
+
+            <h:panelGrid id="display" columns="2" cellpadding="5">
+
+                <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
+                <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
+
+                <h:outputLabel for="druckerauswahl" value="Kartendrucker auswählen:" />
+                <p:selectOneMenu id="druckerauswahl" value="#{applicationControlBean.kartendrucker}"  dynamic="true" style="width:250px">
+                    <p:ajax event="change" global="false" />
+                    <f:selectItem itemLabel="PDF-Ausgabe" itemValue="PDF" />
+                    <f:selectItems value="#{applicationControlBean.printers}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="exportDB" value="Datenexport" />
+                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="AppControlMessage"/>
+
+                <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
+                <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" update="AppControlMessage" disabled="#{!applicationControlBean.backupAvailable}"/>
+
+                <h:outputLabel for="importfile" value="Datenimport" />
+                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="AppControlMessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" />
+
+                <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
+                <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary"/>
+
+                <p:separator/><p:separator/>
+                <h:outputText value="NUR FÜR TESTZWECKE:" />
+                <h:outputText value="Nur während der Testphase zu sehen. Aufruf kann außerhalb der Entwicklungsumgebung zu Programmfehlern führen." />
+
+                <h:outputLabel for="demo" value="#{msg['control.barcodesimulator']}:" />
+                <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
+                    <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
+
+                <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
+                <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
+                    <p:menuitem value="Error 404" url="xx" />
+                </p:splitButton>  
+
+                <p:outputLabel for="testdata" value="Entenhausener Schwimmverein: " />
+                <p:splitButton id="testdata" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" >
+                    <p:menuitem value="Testdaten entfernen" action="#{applicationControlBean.dropEntenhauusen}" ajax="true" update="growlmessage"/>
+                    <p:menuitem value="reine Testdatenbank erstellen" action="#{applicationControlBean.onlyEntenhauusen}" ajax="true" update="growlmessage"/>
+                </p:splitButton>  
+
+                <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
+                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{applicationControlBean.validDruckerdialog}">
+                    <p:ajax event="change" global="false" />
+                </p:selectBooleanCheckbox>
+            </h:panelGrid>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

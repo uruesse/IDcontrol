@@ -296,7 +296,6 @@ public class ApplicationControlBean implements Serializable {
                 SqlSupport sqlSupport = new SqlSupport();
                 sqlSupport.importSchema("IDCREMOTE", lastBackup);
 
-
                 addMessage("Fertig", "Datenstand vom " + getBackupInfo() + " in die Datenbank kopiert");
                 return;
             }
@@ -372,13 +371,15 @@ public class ApplicationControlBean implements Serializable {
     }
 
     public void addMessage(String summary, String detail) {
+        LOGGER.log(Level.INFO, "{0} {1}", new Object[]{summary, detail});
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        FacesContext.getCurrentInstance().addMessage("AppControl", message);
     }
 
     public void addMessageFail(String summary, String detail) {
+        LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{summary, detail});
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        FacesContext.getCurrentInstance().addMessage("AppControl", message);
     }
 
     public StreamedContent getLogoImage() {

@@ -95,3 +95,41 @@ if (!ApplicationControlBean.getStaticKartendrucker().isEmpty()) {
 filteredValue="#{errorHandler.filteredFileContent}"
 
  filterBy="#{line}" headerText="LOG-Text" filterMatchMode="contains" filterStyle="width: 450px;"
+
+        <h:form>  
+            <p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="pi pi-arrow-down">
+                <p:fileDownload value="#{documentationView.datei}" />
+            </p:commandButton> 
+        </h:form>
+
+    <ui:define name="title">
+        Dokumentation
+    </ui:define>
+
+    <ui:define name="head">
+        
+    </ui:define>
+
+    <ui:define name="description">
+        test #{documentationView.fileName}
+    </ui:define>
+
+
+                    <p:commandButton id="dynaButton" type="button" icon="pi pi-bars" />
+
+                    <p:tieredMenu  overlay="true" trigger="dynaButton" my="right top" at="right bottom" style="width:200px">
+                        <p:menuitem value="Über IDControl" outcome="info" icon="pi pi-info"/>
+                        <p:separator />
+                        <p:menuitem value="Einstellungen" outcome="index" icon="pi pi-cog"/>
+                        <p:separator />
+                        <p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
+                        <p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
+                        <p:submenu label="Anleitungen" icon="pi pi-folder-open">
+                            <p:menuitem outcome="documentation"  value="ZEBRA ZXP1" icon="pi pi-file"/>
+                        </p:submenu> 
+                        <p:submenu label="Drucken" icon="pi pi-folder-open">
+                            <p:menuitem value="Ausweisrückseite" outcome="idcardback" icon="pi pi-print"/>
+                        </p:submenu> 
+                        <p:separator />
+                        <p:menuitem value="Beenden" action="#{menuView.logout}" icon="pi pi-power-off"/>            
+                    </p:tieredMenu>

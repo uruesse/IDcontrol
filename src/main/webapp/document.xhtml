@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/smalltemplate.xhtml">
+
+    <ui:define name="title">
+        Dokumentation 
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        Anzeige von: <h:outputText value="#{documentView.fileNameFormatted}" />
+    </ui:define>
+
+    <ui:define name="implementation">
+        <h:form>  
+            <p:media value="#{documentView.datei}" player="pdf" width="100%" height="800px">
+                Ihr Browser kann kein PDF anzeigen, laden Sie bitte das Dokument herunter.    <br />
+                <p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="pi pi-arrow-down">
+                    <p:fileDownload value="#{documentView.datei}" />
+                </p:commandButton> 
+            </p:media> 
+        </h:form>
+    </ui:define>
+
+</ui:composition>

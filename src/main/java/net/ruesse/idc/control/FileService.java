@@ -58,9 +58,9 @@ public class FileService {
 
         if (strAppPath != null) {
             AppPath = Paths.get(strAppPath, "logs");
-             LOGGER.log(Level.INFO, "CatalinaLogDir={0}", AppPath);
-        } 
-       
+            LOGGER.log(Level.INFO, "CatalinaLogDir={0}", AppPath);
+        }
+
         return AppPath;
     }
 
@@ -70,6 +70,14 @@ public class FileService {
 
     public static Path getExportsDir() {
         return getWorkingDir().resolve("Exports");
+    }
+
+    public static Path getDocumentsDir() {
+        Path p = getWorkingDir().resolve("Dokumente");
+        if (Files.notExists(p)) {
+            createPath(p);
+        }
+        return p;
     }
 
     public static Path getImportsDir() {

@@ -91,15 +91,26 @@ public class ControlBean implements Serializable {
 
     /**
      *
-     * @return projectId
+     * @return userId
      */
     public String getParam() {
         FacesContext context = FacesContext.getCurrentInstance();
         Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
-        String projectId = paramMap.get("mnr");
-        LOGGER.log(Level.FINE, "projectId={0}", projectId);
-        showMessage();
-        return projectId;
+        if (paramMap != null) {
+            String userId = paramMap.get("user");
+            if (userId == null || userId.isEmpty()) {
+            } else {
+                LOGGER.log(Level.FINE, "projectId={0}", userId);
+                startSession(userId);
+                return userId;
+            }
+        }
+        return "";
+    }
+
+    public void setParam(String strParam) {
+       // nix Tun, die Routine muss nur vorhanden sein -- sonst gibt es eine
+       // javax.el.PropretyNotWritableException 
     }
 
     /**
@@ -147,6 +158,33 @@ public class ControlBean implements Serializable {
         return mgl;
     }
 
+    public void startSession(String strLogin) {
+        LOGGER.log(Level.FINE, "mnrLogin={0}", strLogin);
+
+        //Query q = em.createQuery("SELECT p FROM Person p WHERE p.mglnr = :mglnr");
+        Query q = em.createNamedQuery("Person.findByMglnr");
+        q.setParameter("mglnr", Mgl2Long(strLogin));
+        Person person;
+        try {
+            person = (Person) q.getSingleResult();
+        } catch (javax.persistence.NoResultException e) {
+            person = null;
+        }
+
+        if (person != null) {
+            loginPerson = new PersonExt(person);
+            setLoginMgl(loginPerson);
+        } else {
+            // Im Fehlerfall zur loginseite springen
+            try {
+                // Das funktioniert hier so nicht!!
+                FacesContext.getCurrentInstance().getExternalContext().redirect("login.xhtml");
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
     /**
      *
      */
@@ -165,7 +203,7 @@ public class ControlBean implements Serializable {
 
         if (person != null) {
             loginPerson = new PersonExt(person);
-            setLoginMgl (loginPerson);
+            setLoginMgl(loginPerson);
             try {
                 /*
                 if (request.getRequestURI().startsWith(request.getContextPath() + ResourceHandler.RESOURCE_IDENTIFIER)) {
@@ -173,7 +211,7 @@ public class ControlBean implements Serializable {
                 } else {
                 response.sendRedirect(request.getContextPath() + "/scan.xhtml");
                 }
-                */
+                 */
                 FacesContext.getCurrentInstance().getExternalContext().redirect("scan.xhtml");
                 //return "scan?facesRedirect=true";
             } catch (IOException ex) {

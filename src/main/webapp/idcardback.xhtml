@@ -19,6 +19,8 @@
 
     <ui:define name="implementation">
         <h:form>
+            <h:inputHidden value="#{controlBean.param}" />
+            
             <p:growl id="growlmessage" showDetail="true" />
 
             <h:panelGrid id="display" columns="2" cellpadding="5">

@@ -39,10 +39,10 @@
                 </p:selectOneMenu>
 
                 <h:outputLabel for="exportDB" value="Datenexport" />
-                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="AppControlMessage"/>
+                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" icon="pi pi-cloud-upload" update="AppControlMessage"/>
 
                 <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
-                <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" update="AppControlMessage" disabled="#{!applicationControlBean.backupAvailable}"/>
+                <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" icon="pi pi-cloud-download" update="AppControlMessage" disabled="#{!applicationControlBean.backupAvailable}"/>
 
                 <h:outputLabel for="importfile" value="Datenimport" />
                 <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="AppControlMessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" />

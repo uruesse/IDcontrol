@@ -8,14 +8,11 @@ $(document).ready(function() {
         init: function() {    
             this.wrapper = $(document.body).children('.layout-wrapper');
             this.topbar = this.wrapper.children('.layout-topbar');
-            this.sidebar = this.wrapper.children('.layout-sidebar');
             this.menu = $('#layout-menu');
             this.menulinks = this.menu.find('a');
             this.submenuItems = this.menu.find('> li');
             this.menuButton = $('#menu-button');
             this.expandedMenuitems = this.expandedMenuitems||[];
-            this.nano = this.sidebar.children('.nano');
-            this.searchInput = this.sidebar.find('.search-input > input');
 
             this.restoreMenuState();
             
@@ -27,14 +24,9 @@ $(document).ready(function() {
         _bindEvents: function() {
             var $this = this;
 
-            this.sidebar.on('click', function() {
-                $this.menuClick = true;
-            });
-
             this.menuButton.off('click').on('click', function(e) {
                 $this.menuClick = true;
-                if($this.isMobile()) {
-                    $this.wrapper.toggleClass('layout-sidebar-mobile-active');   
+                if($this.isMobile()) {  
                     $(document.body).toggleClass('hidden-overflow-body');   
                 }
                 
@@ -71,7 +63,6 @@ $(document).ready(function() {
 
             $(document.body).on('click', function() {
                 if(!$this.menuClick && $this.isMobile()) {
-                    $this.wrapper.removeClass('layout-sidebar-mobile-active');
                     $(document.body).removeClass('hidden-overflow-body');  
                 }
     

@@ -26,26 +26,23 @@
                 <p:autoUpdate />
             </p:messages>
 
-            <p:focus for="mitgliednummer" />
+            <p:focus for="searchMitglied" />
 
-            <h:panelGrid id="display" columns="3" cellpadding="5">
+            <h:panelGrid id="display" columns="2" cellpadding="5">
 
-                <p:outputLabel for="mitgliednummer" value="#{msg['scan.mitgliedsnummer']}:" />
-                <p:inputMask id="mitgliednummer" value="#{controlBean.mnr}" mask="#{msg['scan.mnr_mask']}"/>
-                <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.showMessage}" update="display"/>
+                <p:outputLabel value="#{msg['scan.mitgliedsnummer']}:" for="searchMitglied" />
+                <p:autoComplete id="searchMitglied" 
+                                immediate="true"
+                                value="#{controlBean.member}" 
+                                completeMethod="#{controlBean.completeMember}"
+                                var="member" 
+                                itemLabel="#{member.displayName}" 
+                                itemValue="#{member}" 
+                                converter="memberConverter" 
+                                forceSelection="true" 
+                                size="50"
+                                minQueryLength="3"/>
             </h:panelGrid>
-        </h:form>
-
-        <h:form rendered="#{applicationControlBean.isDemo}">
-            <p:separator />
-            <h:panelGrid columns="3" cellpadding="5">
-                <p:photoCam widgetVar="pc" listener="#{controlBean.oncapture}" update="photo" />
-                <p:commandButton type="button" value="#{msg['button.scan']}" onclick="PF('pc').capture()"/>
-                <p:outputPanel id="photo">
-                    <p:graphicImage name="files/images/photocam/#{controlBean.filename}.jpeg" rendered="#{not empty controlBean.filename}"/>
-                </p:outputPanel>
-            </h:panelGrid>
-            <p:separator />
         </h:form>
     </ui:define>
 

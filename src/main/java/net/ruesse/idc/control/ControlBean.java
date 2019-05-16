@@ -31,15 +31,17 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
-import javax.faces.application.ResourceHandler;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -84,6 +86,7 @@ public class ControlBean implements Serializable {
     private String mnrLogin;
     private static String decodermessage;
     private static PersonExt loginPerson;
+    private Member member;
 
     private enum accesstype {
         access, doubt, deny, error
@@ -109,8 +112,55 @@ public class ControlBean implements Serializable {
     }
 
     public void setParam(String strParam) {
-       // nix Tun, die Routine muss nur vorhanden sein -- sonst gibt es eine
-       // javax.el.PropretyNotWritableException 
+        // nix Tun, die Routine muss nur vorhanden sein -- sonst gibt es eine
+        // javax.el.PropretyNotWritableException 
+    }
+
+    public Member getMember() {
+        if (member != null) {
+            LOGGER.log(Level.INFO, "mnr={0}", member.getDisplayName());
+        }
+        return member;
+    }
+
+    public void setMember(Member member) {
+        if (member != null) {
+            LOGGER.log(Level.INFO, "strmnr={0}", member.getDisplayName());
+            this.member = member;
+            setMnr(member.getMglnr());
+            showMessage();
+        }
+        this.member = null;
+    }
+
+    @ManagedProperty("#{memberService}")
+    private MemberService memberSrv;
+
+    public List<Member> completeMember(String query) {
+        List<Member> allMembers = memberSrv.getMembers();
+        List<Member> filteredMembers = new ArrayList<>();
+        LOGGER.log(Level.INFO, "Query-String: " + query);
+
+        for (int i = 0; i < allMembers.size(); i++) {
+            Member aktMember = allMembers.get(i);
+            if (aktMember.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredMembers.add(aktMember);
+            }
+        }
+
+        if (filteredMembers.size() == 1) {
+            // if (filteredMembers.get(0).getMglnr().equals(query)) {
+            // Ausweis wurde eingescannt
+            setMember(filteredMembers.get(0));
+            filteredMembers = new ArrayList<>();
+            //}
+        }
+
+        return filteredMembers;
+    }
+
+    public void setMemberSrv(MemberService memberSrv) {
+        this.memberSrv = memberSrv;
     }
 
     /**

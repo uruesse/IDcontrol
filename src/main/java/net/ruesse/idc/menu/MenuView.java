@@ -49,29 +49,46 @@ public class MenuView {
         model = new DefaultMenuModel();
         DefaultMenuItem item;
         DefaultSubMenu firstLevelSubmenu;
+
         //<p:menuitem value="Über IDControl" outcome="info" icon="pi pi-info"/>
         item = new DefaultMenuItem("Über IDControl");
         item.setIcon("pi pi-info");
         item.setOutcome("index");
         model.addElement(item);
         model.addElement(new DefaultSeparator());
+
         // <p:menuitem value="Einstellungen" outcome="index" icon="pi pi-cog"/>
         item = new DefaultMenuItem("Einstellungen");
         item.setIcon("pi pi-cog");
         item.setOutcome("settings");
         model.addElement(item);
         model.addElement(new DefaultSeparator());
-        //<p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
-        item = new DefaultMenuItem("Scanlog zurücksetzten");
-        item.setIcon("pi pi-users");
-        item.setCommand("#{applicationControlBean.resetScanLog}");
-        model.addElement(item);
-        //<p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
-        item = new DefaultMenuItem("Anwesenheitsliste");
-        item.setIcon("pi pi-users");
-        item.setCommand("#{applicationControlBean.printActionAL}");
+
+        item = new DefaultMenuItem("Einlasskontrolle");
+        item.setIcon("pi pi-user-plus");
+        item.setOutcome("scan");
         model.addElement(item);
 
+        //<p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
+        item = new DefaultMenuItem("Scanlog zurücksetzten");
+        item.setIcon("pi pi-user-minus");
+        item.setCommand("#{applicationControlBean.resetScanLog}");
+        model.addElement(item);
+
+        item = new DefaultMenuItem("Mitgliederinfo");
+        item.setIcon("pi pi-users");
+        item.setOutcome("mglinfo");
+        model.addElement(item);
+        model.addElement(new DefaultSeparator());
+
+        //<h:outputLink value="https://dlrg-mv.sewobe.de/" target="_blank" title="Link zu SEWOBE">Mitgliederverwaltung</h:outputLink>
+        item = new DefaultMenuItem("Mitgliederverwaltung");
+        item.setIcon("pi pi-external-link");
+        item.setTarget("_blank");
+        item.setUrl("https://dlrg-mv.sewobe.de/");
+        model.addElement(item);
+        model.addElement(new DefaultSeparator());
+        
         //<p:submenu label="Anleitungen" icon="pi pi-folder-open">
         //  <p:menuitem outcome="documentation"  value="ZEBRA ZXP1" icon="pi pi-file"/>
         //</p:submenu>
@@ -107,6 +124,13 @@ public class MenuView {
         item.setIcon("pi pi-print");
         item.setOutcome("idcardback");
         firstLevelSubmenu.addElement(item);
+
+        //<p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
+        item = new DefaultMenuItem("Anwesenheitsliste");
+        item.setIcon("pi pi-users");
+        item.setCommand("#{applicationControlBean.printActionAL}");
+        firstLevelSubmenu.addElement(item);
+
         model.addElement(firstLevelSubmenu);
 
         model.addElement(new DefaultSeparator());

@@ -95,6 +95,11 @@ public class PersonExt {
         return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
     }
 
+    public String formatMglnr() {
+        String str = getStrMglnr();
+        return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
+    }
+
     public String getStrFMglnr() {
         return formatMglnr(person.getMglnr().longValue());
     }

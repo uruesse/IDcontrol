@@ -33,7 +33,7 @@
 
             <p:separator/>
 
-            <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" update="loginmessages" disabled="#{!applicationControlBean.backupAvailable}"/>
+            <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" icon="pi pi-cloud-download" update="loginmessages" disabled="#{!applicationControlBean.backupAvailable}"/>
 
         </h:form>
 

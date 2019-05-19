@@ -3,7 +3,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                template="/WEB-INF/smalltemplate.xhtml">
+                template="/WEB-INF/maintemplate.xhtml">
 
     <ui:define name="title">
         #{msg['title.application']}
@@ -60,12 +60,12 @@
                 </p:selectBooleanCheckbox>
 
                 <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
-                <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
+                <p:splitButton id="errorgen" style="color:red;background-color: grey;" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
                     <p:menuitem value="Error 404" url="xx" />
                 </p:splitButton>  
 
                 <p:outputLabel for="testdata" value="Entenhausener Schwimmverein: " />
-                <p:splitButton id="testdata" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" >
+                <p:splitButton id="testdata" style="color:red;background-color: grey;" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" >
                     <p:menuitem value="Testdaten entfernen" action="#{applicationControlBean.dropEntenhauusen}" ajax="true" update="growlmessage"/>
                     <p:menuitem value="reine Testdatenbank erstellen" action="#{applicationControlBean.onlyEntenhauusen}" ajax="true" update="growlmessage"/>
                 </p:splitButton>  

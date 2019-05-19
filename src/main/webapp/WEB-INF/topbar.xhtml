@@ -11,11 +11,14 @@
                 width: 500px !important;
             }
         </style>
-        <h:outputLink class="logo-container" value="http://remscheid.dlrg.de">
+        <h:outputLabel class="logo-container" >
             <p:graphicImage value="#{applicationControlBean.logoImage}" />
-        </h:outputLink>
+        </h:outputLabel>
 
         <h:form class="layout-topbar-menu" style="padding-top: 12px">
+
+            <p:commandButton style="color:red;background-color: grey;" onclick="PF('bar').show()" type="button" icon="pi pi-info" />
+
             <p:commandButton id="scanButton" type="button" action="scan?faces-redirect=true" icon="pi pi-user-plus" >
                 <f:ajax />
             </p:commandButton>

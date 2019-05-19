@@ -30,14 +30,29 @@
     </h:head>
 
     <h:body>
+
         <div class="layout-wrapper">
+            <p:notificationBar position="top"  effect="slide" styleClass="top-notification" widgetVar="bar">
+                <h:form  >
+                    <p:commandButton style="float: right;" onclick="PF('bar').hide()" type="button" icon="pi pi-times"/>
+                </h:form>
+                <h:outputText value="#{msg['notification.hint']}" escape="false" style="font-size:12px;font-weight:bold;" />
+            </p:notificationBar>
             <ui:include src="./topbar.xhtml"></ui:include>
 
             <div class="layout-content">
                 <ui:insert name="content">
                     <div class="content-section content-introduction">
-                        <h1><ui:insert name="title"></ui:insert></h1>
-                        <p><ui:insert name="description"></ui:insert></p>
+
+                        <b><ui:insert name="title"></ui:insert></b>  <i class="pi pi-chevron-right"></i> <ui:insert name="description"></ui:insert>
+                        <!--h:panelGrid columns="2" style="color:white;">
+                        <h:panelGroup style="font-size:14px;font-weight: bold;">
+                            <ui:insert name="title"></ui:insert>  <i class="pi pi-angle-right"></i>
+                        </h:panelGroup>
+                        <h:panelGroup style="font-size:14px;margin-left: 12px;"> 
+                            <ui:insert name="description"></ui:insert>
+                        </h:panelGroup>
+                    </h:panelGrid-->
                     </div>
                     <div class="content-section content-implementation {'dark-content'}">
                         <ui:insert name="implementation"></ui:insert>
@@ -46,11 +61,11 @@
             </div>
 
             <ui:include src="./footer.xhtml"></ui:include>
-            <div class="layout-mask"></div>
-
+     
         </div>
 
         <ui:insert name="status">
+            <!-- Das ist die Sanduhr bei längeren Operationen -->
             <p:ajaxStatus style="width:64px;height:64px;position:fixed;right:5px;bottom:5px">
                 <f:facet name="start">
                     <i class="pi pi-spin pi-spinner ajax-loader" aria-hidden="true"></i>
@@ -65,8 +80,6 @@
         <ui:insert name="highlight">
             <h:outputScript name="main/script/sh.js" target="body"/>
         </ui:insert>
-
-        <ui:insert name="body"></ui:insert>
 
         <h:outputStylesheet name="css/layout.css" library="main"/>
     </h:body>

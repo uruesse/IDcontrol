@@ -294,6 +294,37 @@ filteredValue="#{errorHandler.filteredFileContent}"
         }
     }
 
+            .why-primefaces {
+                text-align: center;
+                background-color: #f5f7f8;
+                padding: 32px;
+            }
+
+            .features {
+                background-color: #ffffff;
+                padding: 32px;
+
+                .feature-box {
+                    text-align: center;
+                    padding: 24px;
+
+                    span {
+                        display: block;
+                        color: #30383c;
+
+                        &.feature-header {
+                            font-size: 16px;
+                            font-weight: 600;
+                            margin: 10px;
+                        }
+
+                        &.feature-info {
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+
 
 
     .layout-content {
@@ -766,3 +797,6 @@ filteredValue="#{errorHandler.filteredFileContent}"
             }
         }
     }
+
+                            <h1><ui:insert name="title"></ui:insert></h1>
+                            <p><ui:insert name="description"></ui:insert></p>

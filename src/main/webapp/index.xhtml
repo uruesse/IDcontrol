@@ -3,7 +3,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                template="/WEB-INF/smalltemplate.xhtml">
+                template="/WEB-INF/maintemplate.xhtml">
 
     <ui:define name="title">
         #{msg['title.application']}
@@ -14,67 +14,40 @@
     </ui:define>
 
     <ui:define name="description">
-        #{msg['title.description']} -- Diese Seite wird zu  "Einstellungen"
+        #{msg['title.description']}
     </ui:define>
 
     <ui:define name="implementation">
-        <h:form>
-            <p:growl id="growlmessage" showDetail="true" />
-
+        Copyright 2019 Ulrich Rüße <h:outputLink value="mailto:ulrich@ruesse.net">ulrich@ruesse.net</h:outputLink>. <br/>
+            <br/>
+            Licensed under the Apache License, Version 2.0 (the "License");<br/>
+            you may not use this file except in compliance with the License.<br/>
+            You may obtain a copy of the License at<br/>
+            <br/>
+            <h:outputLink value="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" title="Link zu Apache Lizenz">http://www.apache.org/licenses/LICENSE-2.0</h:outputLink><br/>
+            <br/>
+            Unless required by applicable law or agreed to in writing, software<br/>
+            distributed under the License is distributed on an "AS IS" BASIS,<br/>
+            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<br/>
+            See the License for the specific language governing permissions and<br/>
+            limitations under the License.<br/>
+            <br/>
+                        <p:separator/>
+            <h:outputLabel for="build" value="Build: " />
+            <h:outputText id="build" value="#{applicationControlBean.buildInfo}" /><br/>
+            <h:outputLink value="https://github.com/uruesse/IDControl" target="_blank" title="Link zu Quellen">Projekt auf GitHub</h:outputLink>
+            <p:separator/>
             <h:panelGrid id="display" columns="2" cellpadding="5">
-
                 <h:outputLabel for="workingpath" value="Arbeitspfad:" />
                 <h:outputText id="workingpath" value="#{applicationControlBean.workingDirInfo}" />
 
                 <h:outputLabel for="apspath" value="Applikationsserver:" />
                 <h:outputText id="apspath" value="#{applicationControlBean.CATALINA_HOME}" />
 
-                <h:outputLabel for="build" value="Build:" />
-                <h:outputText id="build" value="#{applicationControlBean.buildInfo}" />
-
-
-                <h:outputLabel for="demo" value="#{msg['control.barcodesimulator']}:" />
-                <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
-                    <p:ajax event="change" global="false" />
-                </p:selectBooleanCheckbox>
-
-                <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
-                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{applicationControlBean.validDruckerdialog}">
-                    <p:ajax event="change" global="false" />
-                </p:selectBooleanCheckbox>
-
-                <h:outputLabel for="druckerauswahl" value="Kartendrucker auswählen:" />
-                <p:selectOneMenu id="druckerauswahl" value="#{applicationControlBean.kartendrucker}"  dynamic="true" style="width:250px">
-                    <p:ajax event="change" global="false" />
-                    <f:selectItem itemLabel="PDF-Ausgabe" itemValue="PDF" />
-                    <f:selectItems value="#{applicationControlBean.printers}" />
-                </p:selectOneMenu>
-
-                <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
-                <p:splitButton id="errorgen" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
-                    <p:menuitem value="Error 404" url="xx" />
-                </p:splitButton>  
-
-                <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
-                <p:commandButton id="sewobe2stage" process="@this" value="SEWOBE-daten hochladen" action="#{applicationControlBean.stageToProd}" update="growlmessage" disabled="true"/>
-
-                <h:outputLabel for="stage2prod" value="Stage2Prod" />
-                <p:commandButton id="stage2prod" process="@this" value="Stage-DB in Prod-DB kopieren" action="#{applicationControlBean.stageToProd}" update="growlmessage" disabled="true"/>
-
-                <h:outputLabel for="exportDB" value="Datenexport" />
-                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" update="growlmessage"/>
-
-                <h:outputLabel for="importfile" value="Datenimport" />
-                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="growlmessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" />
-
-                <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
-                <p:commandButton id="autoimport"  value="z.Zt. kein Datenupdate verfügbar" disabled="true"/>
-
-                <p:outputLabel for="login" value="Login:" />
-                <p:button id="login" outcome="login"  value="zur eigentlichen Startseite" class="secondary"/>
+                <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
+                <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
 
             </h:panelGrid>
-        </h:form>
 
     </ui:define>
 

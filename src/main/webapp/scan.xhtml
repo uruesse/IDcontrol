@@ -3,7 +3,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                template="/WEB-INF/smalltemplate.xhtml">
+                template="/WEB-INF/maintemplate.xhtml">
 
     <ui:define name="title">
         #{msg['scan.head']}
@@ -20,32 +20,29 @@
     </ui:define>
 
     <ui:define name="implementation">
-
         <h:form>
-            <p:messages id="messages" escape="false" showDetail="true" closable="false">
+            <h:inputHidden value="#{controlBean.param}" />
+            <p:messages id="AppControlMessage" escape="false" showDetail="true" closable="false">
                 <p:autoUpdate />
             </p:messages>
-            
-            <p:focus for="mitgliednummer" />
-            
-            <h:panelGrid id="display" columns="3" cellpadding="5">
 
-                <p:outputLabel for="mitgliednummer" value="#{msg['scan.mitgliedsnummer']}:" />
-                <p:inputMask id="mitgliednummer" value="#{controlBean.mnr}" mask="#{msg['scan.mnr_mask']}"/>
-                <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.showMessage}" update="display"/>
-            </h:panelGrid>
-        </h:form>
+            <p:focus for="searchMitglied" />
 
-        <h:form rendered="#{applicationControlBean.isDemo}">
-            <p:separator />
-            <h:panelGrid columns="3" cellpadding="5">
-                <p:photoCam widgetVar="pc" listener="#{controlBean.oncapture}" update="photo" />
-                <p:commandButton type="button" value="#{msg['button.scan']}" onclick="PF('pc').capture()"/>
-                <p:outputPanel id="photo">
-                    <p:graphicImage name="files/images/photocam/#{controlBean.filename}.jpeg" rendered="#{not empty controlBean.filename}"/>
-                </p:outputPanel>
+            <h:panelGrid id="display" columns="2" cellpadding="5">
+
+                <p:outputLabel value="#{msg['scan.mitgliedsnummer']}:" for="searchMitglied" />
+                <p:autoComplete id="searchMitglied" 
+                                immediate="true"
+                                value="#{controlBean.member}" 
+                                completeMethod="#{controlBean.completeMember}"
+                                var="member" 
+                                itemLabel="#{member.displayName}" 
+                                itemValue="#{member}" 
+                                converter="memberConverter" 
+                                forceSelection="true" 
+                                size="50"
+                                minQueryLength="3"/>
             </h:panelGrid>
-            <p:separator />
         </h:form>
     </ui:define>
 

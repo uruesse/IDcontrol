@@ -16,9 +16,22 @@
 package net.ruesse.idc.menu;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import static net.ruesse.idc.control.FileService.getDocumentsDir;
+import net.ruesse.idc.documentation.DocumentView;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.DefaultSeparator;
+import org.primefaces.model.menu.DefaultSubMenu;
+import org.primefaces.model.menu.MenuModel;
 
 /**
  *
@@ -26,6 +39,115 @@ import javax.faces.context.FacesContext;
  */
 @ManagedBean
 public class MenuView {
+
+    private final static Logger LOGGER = Logger.getLogger(MenuView.class.getName());
+
+    private MenuModel model;
+
+    @PostConstruct
+    public void init() {
+        model = new DefaultMenuModel();
+        DefaultMenuItem item;
+        DefaultSubMenu firstLevelSubmenu;
+
+        //<p:menuitem value="Über IDControl" outcome="info" icon="pi pi-info"/>
+        item = new DefaultMenuItem("Über IDControl");
+        item.setIcon("pi pi-info");
+        item.setOutcome("index");
+        model.addElement(item);
+        model.addElement(new DefaultSeparator());
+
+        // <p:menuitem value="Einstellungen" outcome="index" icon="pi pi-cog"/>
+        item = new DefaultMenuItem("Einstellungen");
+        item.setIcon("pi pi-cog");
+        item.setOutcome("settings");
+        model.addElement(item);
+        model.addElement(new DefaultSeparator());
+
+        item = new DefaultMenuItem("Einlasskontrolle");
+        item.setIcon("pi pi-user-plus");
+        item.setOutcome("scan");
+        model.addElement(item);
+
+        //<p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
+        item = new DefaultMenuItem("Scanlog zurücksetzten");
+        item.setIcon("pi pi-user-minus");
+        item.setCommand("#{applicationControlBean.resetScanLog}");
+        model.addElement(item);
+
+        item = new DefaultMenuItem("Mitgliederinfo");
+        item.setIcon("pi pi-users");
+        item.setOutcome("mglinfo");
+        model.addElement(item);
+        model.addElement(new DefaultSeparator());
+
+        //<h:outputLink value="https://dlrg-mv.sewobe.de/" target="_blank" title="Link zu SEWOBE">Mitgliederverwaltung</h:outputLink>
+        item = new DefaultMenuItem("Mitgliederverwaltung");
+        item.setIcon("pi pi-external-link");
+        item.setTarget("_blank");
+        item.setUrl("https://dlrg-mv.sewobe.de/");
+        model.addElement(item);
+        model.addElement(new DefaultSeparator());
+        
+        //<p:submenu label="Anleitungen" icon="pi pi-folder-open">
+        //  <p:menuitem outcome="documentation"  value="ZEBRA ZXP1" icon="pi pi-file"/>
+        //</p:submenu>
+        firstLevelSubmenu = new DefaultSubMenu("Anleitungen");
+        firstLevelSubmenu.setIcon("pi pi-folder-open");
+
+        Path p = getDocumentsDir();
+        DirectoryStream<Path> stream;
+        try {
+            stream = Files.newDirectoryStream(p, "*.pdf");
+            for (Path entry : stream) {
+                String fn = entry.getFileName().toString().replace("_", " ");
+                fn = fn.replace(".pdf", "");
+                item = new DefaultMenuItem(fn);
+                item.setIcon("pi pi-file");
+                item.setStyle("width:500px");
+                item.setOutcome("document?document=" + entry.getFileName().toString());
+                firstLevelSubmenu.addElement(item);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DocumentView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        model.addElement(firstLevelSubmenu);
+
+        //<p:submenu label="Drucken" icon="pi pi-folder-open">
+        //  <p:menuitem value="Ausweisrückseite" outcome="idcardback" icon="pi pi-print"/>
+        //</p:submenu> 
+        firstLevelSubmenu = new DefaultSubMenu("Drucken");
+        firstLevelSubmenu.setIcon("pi pi-folder-open");
+
+        item = new DefaultMenuItem("Ausweisrückseite");
+        item.setIcon("pi pi-print");
+        item.setOutcome("idcardback");
+        firstLevelSubmenu.addElement(item);
+
+        //<p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
+        item = new DefaultMenuItem("Anwesenheitsliste");
+        item.setIcon("pi pi-users");
+        item.setCommand("#{applicationControlBean.printActionAL}");
+        firstLevelSubmenu.addElement(item);
+
+        model.addElement(firstLevelSubmenu);
+
+        model.addElement(new DefaultSeparator());
+        //<p:menuitem value="Beenden" action="#{menuView.logout}" icon="pi pi-power-off"/>  
+        item = new DefaultMenuItem("Beenden");
+        item.setIcon("pi pi-power-off");
+        item.setCommand("#{menuView.logout}");
+        model.addElement(item);
+    }
+
+    public MenuModel getModel() {
+        return model;
+    }
+
+    public void setModel(MenuModel model) {
+        this.model = model;
+    }
 
     public void logout() throws IOException {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();

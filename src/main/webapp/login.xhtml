@@ -3,10 +3,10 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                template="/WEB-INF/smalltemplate.xhtml">
+                template="/WEB-INF/maintemplate.xhtml">
 
     <ui:define name="title">
-        #{msg['title.application']}
+        Anmeldung
     </ui:define>
 
     <ui:define name="head">
@@ -18,8 +18,8 @@
     </ui:define>
 
     <ui:define name="implementation">
-        <h:form>        
-            <p:messages id="messages" escape="false" showDetail="true" closable="false">
+        <h:form id="loginsheet">        
+            <p:messages id="loginmessages" escape="false" showDetail="true" closable="false">
                 <p:autoUpdate />
             </p:messages>
 
@@ -30,6 +30,10 @@
                 <p:inputMask id="mitgliednummer" value="#{controlBean.mnrLogin}" mask="#{msg['scan.mnr_mask']}"/>
                 <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.startSession}" update="display"/>
             </h:panelGrid>
+
+            <p:separator/>
+
+            <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" icon="pi pi-cloud-download" update="loginmessages" disabled="#{!applicationControlBean.backupAvailable}"/>
 
         </h:form>
 

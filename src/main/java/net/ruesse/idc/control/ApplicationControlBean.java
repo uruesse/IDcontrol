@@ -15,9 +15,8 @@
  */
 package net.ruesse.idc.control;
 
-import java.awt.Toolkit;
+import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +24,9 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,7 @@ import net.ruesse.idc.database.persistence.service.PersonExt;
 import net.ruesse.idc.database.sql.SqlSupport;
 import net.ruesse.idc.report.PrintSupport;
 import static net.ruesse.idc.report.PrintSupport.availablePrinters;
+import net.ruesse.idc.webclient.FileServiceClient;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -66,11 +69,12 @@ public class ApplicationControlBean implements Serializable {
     static private boolean isDemo;
     static private boolean isPDF;
     static private boolean isDruckerdialog;
+    static private boolean isBackupAvailable;
     static private boolean isDevelopment = false;
     static private String kartendrucker;
     static private Map persistenceParameters = null;
     static private PersonExt loginMgl;
-    static int screenResolution = 0;
+    static boolean screenResolution = false;
     static int AnzahlDrucke = 1;
 
     private List<String> printers;
@@ -81,17 +85,17 @@ public class ApplicationControlBean implements Serializable {
         LOGGER.fine("aufgerufen");
         isDemo = false;
         isPDF = false;
+        isDruckerdialog = false;
 
-        screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-        if (screenResolution == 0) {
+        screenResolution = GraphicsEnvironment.isHeadless();
+        if (screenResolution == false) {
             LOGGER.info("ScreenResolution = nicht angeschlossen");
-            isDruckerdialog = false;
         } else {
-            isDruckerdialog = true;
             LOGGER.info("ScreenResolution = " + screenResolution);
         }
 
         isDevelopment = false;
+        isBackupAvailable = false;
         kartendrucker = "PDF";
 
         //options
@@ -121,7 +125,7 @@ public class ApplicationControlBean implements Serializable {
     }
 
     public boolean isValidDruckerdialog() {
-        return screenResolution == 0;
+        return screenResolution == false;
     }
 
     public boolean isIsDruckerdialog() {
@@ -138,6 +142,18 @@ public class ApplicationControlBean implements Serializable {
 
     public static boolean isIsDevelopment() {
         return isDevelopment;
+    }
+
+    public static boolean isIsBackupAvailable() {
+        return isBackupAvailable;
+    }
+
+    public boolean isBackupAvailable() {
+        return isBackupAvailable;
+    }
+
+    public static void setIsBackupAvailable(boolean isBackupAvailable) {
+        ApplicationControlBean.isBackupAvailable = isBackupAvailable;
     }
 
     public static void setIsDevelopment(boolean isDevelopment) {
@@ -182,8 +198,8 @@ public class ApplicationControlBean implements Serializable {
     public void setPrinters(List<String> printers) {
         this.printers = printers;
     }
-    
-     public String getBuildInfo() {
+
+    public String getBuildInfo() {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = null;
 
@@ -199,12 +215,12 @@ public class ApplicationControlBean implements Serializable {
             }
 
             if (model != null) {
-                LOGGER.log(Level.INFO, "POM-ID: " + model.getId());
-                LOGGER.log(Level.INFO, "POM-Build: " + model.getBuild());
-                LOGGER.log(Level.INFO, "POM-Version: " + model.getVersion());
+                LOGGER.log(Level.INFO, "POM-ID: {0}", model.getId());
+                LOGGER.log(Level.INFO, "POM-Build: {0}", model.getBuild());
+                LOGGER.log(Level.INFO, "POM-Version: {0}", model.getVersion());
                 return model.getId();
             } else {
-                LOGGER.log(Level.INFO, "POM: Resource nicht gefunden" );
+                LOGGER.log(Level.INFO, "POM: Resource nicht gefunden");
             }
 
         } catch (IOException | XmlPullParserException iOException) {
@@ -213,9 +229,78 @@ public class ApplicationControlBean implements Serializable {
         return "";
     }
 
-
     public String getWorkingDirInfo() {
         return getWorkingDir().toString();
+    }
+
+    public String getBackupInfo() {
+        String strResult;
+        try {
+            FileServiceClient fileServiceClient = new FileServiceClient();
+            strResult = fileServiceClient.getLastBackup();
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Konnte den Webservice nicht aufrufen.");
+            isBackupAvailable = false;
+            return "Webservice nicht erreichbar";
+        }
+
+        String strTimestamp = strResult.substring(8, strResult.length() - 4);
+        Timestamp timestamp = null;
+        Date parsedDate;
+        LOGGER.log(Level.INFO, "Timestamp: " + strTimestamp);
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+            parsedDate = dateFormat.parse(strTimestamp);
+            timestamp = new java.sql.Timestamp(parsedDate.getTime());
+        } catch (Exception e) {
+        }
+
+        if (strResult.equals("")) {
+            isBackupAvailable = false;
+            return "";
+        } else {
+            VereinService vs = new VereinService();
+            if (strResult.compareTo(vs.getExpFileName() + ".IDC") > 0) {
+                isBackupAvailable = true;
+            } else {
+                isBackupAvailable = false;
+            }
+            LOGGER.log(Level.INFO, "strResult: {0} expFileName: {1} Result: {2} isBackup: {3}", new Object[]{strResult, vs.getExpFileName() + ".IDC", strResult.compareTo(vs.getExpFileName() + ".IDC"), isBackupAvailable});
+
+            return new SimpleDateFormat("dd.MM.yyyy HH:mm.ss").format(timestamp);
+        }
+    }
+
+    public String getLastBackup() {
+        if (isIsBackupAvailable()) {
+            return "Datenstand vom " + getBackupInfo() + " laden";
+        } else {
+            return "z.Zt. kein Datenupdate verfügbar";
+        }
+    }
+
+    public void uploadLastBackup() {
+        if (isIsBackupAvailable()) {
+            String strResult;
+            FileServiceClient fileServiceClient;
+            try {
+                fileServiceClient = new FileServiceClient();
+                strResult = fileServiceClient.getLastBackup();
+            } catch (Exception ex) {
+                isBackupAvailable = false;
+                return;
+            }
+
+            Path lastBackup = fileServiceClient.downloadFile(strResult);
+            if (lastBackup != null) {
+                SqlSupport sqlSupport = new SqlSupport();
+                sqlSupport.importSchema("IDCREMOTE", lastBackup);
+
+                addMessage("Fertig", "Datenstand vom " + getBackupInfo() + " in die Datenbank kopiert");
+                return;
+            }
+        }
+        addMessageFail("Fehler", "Datenstand vom " + getBackupInfo() + " konnte nicht in die Datenbank kopiert werden. Siehe Log-File ausgabe.");
     }
 
     public String getCATALINA_HOME() {
@@ -244,34 +329,57 @@ public class ApplicationControlBean implements Serializable {
         em.getTransaction().commit();
     }
 
-    public void stageToProd() {
+    public void addEntenhauusen() {
         SqlSupport sp = new SqlSupport();
+        sp.executeSQLScript("demo/entenhausenadd.sql");
+        addMessage("Fertig", "Demodaten in die Datenbank kopiert");
+    }
 
+    public void dropEntenhauusen() {
+        SqlSupport sp = new SqlSupport();
+        sp.executeSQLScript("demo/entenhausendrop.sql");
+        addMessage("Fertig", "Demodaten aus der Datenbank entfernt");
+    }
+
+    public void onlyEntenhauusen() {
+        SqlSupport sp = new SqlSupport();
         sp.executeSQLScript("createdb.sql");
-
-        sp.executeSQLScript("stage2prod.sql");
-        sp.executeSQLScript("fremdzahler.sql");
-        sp.executeSQLScript("demo/entenhausen.sql");
-
-        addMessage("Fertig", "Datenbank kopiert");
+        sp.executeSQLScript("demo/entenhausenersv.sql");
+        sp.executeSQLScript("demo/entenhausenadd.sql");
+        addMessage("Fertig", "Datenbank aus Demodaten aus erstellt");
     }
 
     public void exportTables() {
         SqlSupport sp = new SqlSupport();
 
         String exportFile = sp.exportSchema("idcremote");
+        boolean ws = true;
+        try {
+            FileServiceClient fileServiceClient = new FileServiceClient();
+            fileServiceClient.uploadFile(exportFile);
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Konnte die Datei {0} nicht \u00fcber den Webservice exportieren", exportFile);
+            ws = false;
+            // Nix tun, wenn hier was schief läuft
+        }
 
-        addMessage("Fertig", "Datenbank in die Datei " + exportFile + "exportiert");
+        if (ws) {
+            addMessage("Fertig", "Die Datenbank wurde in die Datei " + exportFile + " exportiert und anschließend über den Webservice hochgeladen.");
+        } else {
+            addMessage("Fertig", "Die Datenbank wurde in die Datei " + exportFile + " exportiert. Der Webservice war nicht verfügbar.");
+        }
     }
 
     public void addMessage(String summary, String detail) {
+        LOGGER.log(Level.INFO, "{0} {1}", new Object[]{summary, detail});
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        FacesContext.getCurrentInstance().addMessage("AppControl", message);
     }
 
     public void addMessageFail(String summary, String detail) {
+        LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{summary, detail});
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+        FacesContext.getCurrentInstance().addMessage("AppControl", message);
     }
 
     public StreamedContent getLogoImage() {

@@ -48,21 +48,19 @@ public class VereinService {
         return expName;
     }
 
-        public String getVereinId() {
+    public String getVereinId() {
         Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
-        String str =String.format("%07d", v.getMglnr());
+        String str = String.format("%07d", v.getMglnr());
         LOGGER.log(Level.INFO, "aktueller Verein:{0}", str);
 
         return str;
     }
-        
-    public String getFileInfo() {
-        Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
-        LOGGER.info("aktuell");
 
+    public String getFileInfo() {
+        Verein v= em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
         DateFormat df;
         df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, Locale.GERMANY);
-
+        LOGGER.log(Level.INFO, "aktuell: {0}, {1}", new Object[]{v.getFirma(), df.format(v.getDatatime())});
         return v.getFirma() + ", " + df.format(v.getDatatime());
     }
 }

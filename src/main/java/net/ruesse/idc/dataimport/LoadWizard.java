@@ -21,7 +21,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.nio.charset.Charset;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,7 +95,7 @@ public class LoadWizard implements Serializable {
     }
 
     public String getLoadcsvHint() {
-        return "In diesem Schritt werden die exportierten .csv-Dateien aus der SEWOBE-Datenbank hochgeladen und in die Stage-Datenbank importiert.<br/>Dabei muss der Dateiname der SEWOBE-Export-Datei (ohne die Enndung .csv) dem Tabellennamen in der Stage-Datenbank entsprechen, wobei nicht zwischen Groß- und Kleinschreibung unterschieden wird. Dateien mit falschem Namen werden ignoriert.<br/>Bei fehlerhaften Datensätzen versucht das Programm so viele Daten wie möglich zu laden und gibt über die fehlerhaften Datensätze ein Fehlerprotokoll heraus. Kann der Import bereits die Kopfzeile der .csv-Datei nicht auflösen, bricht der Import sofort ab.<br/>Eine Anleitung zum Export der Dateien aus SWEOBE findet sich im Handbuch für die Mitgliederverwaltung";
+        return "In diesem Schritt werden die exportierten .csv-Dateien aus der SEWOBE-Datenbank hochgeladen und in die Stage-Datenbank importiert.<br/>Dabei muss der Dateiname der SEWOBE-Export-Datei (ohne die Enndung .csv) dem Tabellennamen in der Stage-Datenbank entsprechen, wobei großgeschriebene Dateinamen UTF-8 kodiert, alle anderen ISO-8859-1 kodiert eingelesen weden. Dateien mit falschem Namen werden ignoriert.<br/>Bei fehlerhaften Datensätzen versucht das Programm so viele Daten wie möglich zu laden und gibt über die fehlerhaften Datensätze ein Fehlerprotokoll heraus. Kann der Import bereits die Kopfzeile der .csv-Datei nicht auflösen, bricht der Import sofort ab.<br/>Eine Anleitung zum Export der Dateien aus SWEOBE findet sich im Handbuch für die Mitgliederverwaltung";
     }
 
     public String getLoadStage2ProdHint() {
@@ -184,10 +188,19 @@ public class LoadWizard implements Serializable {
         try {
             // write the inputStream to a FileOutputStream
             out = new FileOutputStream(pDest.toFile());
+            boolean firstread= true;
             int read = 0;
             byte[] bytes = new byte[1024];
             while ((read = in.read(bytes)) != -1) {
-                out.write(bytes, 0, read);
+                //BOM für UTF-8 ist 0xEF, 0xBB, 0xBF
+                // hier wird beim ersten Lesen ein eventuell vorhandener BOM entfernt
+                if (firstread && read > 3 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
+                    LOGGER.log(Level.INFO, "Entferne BOM");
+                    out.write(bytes, 3, read - 3);
+                } else {
+                    out.write(bytes, 0, read);
+                }
+                firstread = false;
             }
             in.close();
             out.flush();
@@ -217,8 +230,15 @@ public class LoadWizard implements Serializable {
         String csvfile = filepath.toString();
         String filename;
         filename = filepath.getFileName().toString();
+
         // (.csv entfernen)
         filename = filename.substring(0, filename.length() - 4);
+
+        // großgeschriebene Dateinamen werden als UTF-8 kodiert angesehen alle anderen als ISO-8859-1
+        // das ist eine schmutzige implementierung und ein workaround der nur notwendig ist, solange 
+        // manuell erstellte .csv-Dateien eingelesen werden
+        boolean isUTF = filename.toUpperCase().equals(filename);
+
         DataTable aktTable = null;
 
         for (DataTable dt : DataTableList) {
@@ -233,13 +253,51 @@ public class LoadWizard implements Serializable {
             return;
         }
 
+        // Sonderbehandlung für den Export der offenen Rechnungen aus SEWOBE
+        // Die exportierte Datei ist strenggenommen keine richtige .csv-Datei und wird hier angepasst
+        if ("offenerechnungen".equals(filename.toLowerCase())) {
+            try {
+                List<String> contents = Files.readAllLines(filepath, Charset.forName("ISO-8859-1"));
+                Path outpath = filepath.getParent().resolve("offeneposten.csv");
+                csvfile = outpath.toString();
+                OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(outpath.toFile()), Charset.forName("ISO-8859-1"));
+                //Headerzeile austauschen
+                fw.write("kdnr;mitgliedsnummer_sewobe;rechnungsnummer;rechnungsdatum;zahlungsziel;zahlweise;mahnstufe;bezeichnung;aktuelloffen" + System.lineSeparator());
+
+                //Read from the stream
+                int i = 0;
+                for (String content : contents) {
+                    // die ersten beiden Zeilen verwerfen
+                    if (i > 1) {
+                        // das letzte Semikolon entfernen
+                        if (content.endsWith(";")) {
+                            content = content.substring(0, content.length() - 1);
+                        }
+                        fw.write(content + System.lineSeparator());
+                    }
+                    i++;
+                }
+                fw.close();
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        }
+
         SqlSupport sp = new SqlSupport();
 
         sp.beginTransaction();
 
         try {
-
-            CsvReader person = new CsvReader(csvfile, ';');
+            CsvReader person;
+            Charset charSet;
+            if (isUTF) {
+                LOGGER.log(Level.INFO, "UTF-8");
+                charSet = Charset.forName("UTF-8");
+            } else {
+                LOGGER.log(Level.INFO, "ISO-8859-1");
+                charSet = Charset.forName("ISO-8859-1");
+            }
+            person = new CsvReader(csvfile, ';', charSet);
             person.readHeaders();
             String[] header = person.getHeaders();
 
@@ -359,18 +417,20 @@ public class LoadWizard implements Serializable {
             LOGGER.log(Level.SEVERE, "IO-Fehler", ex);
 
         }
+
         aktTable.setItems(sp.getTableSize("IDCSTAGE", filename));
         aktTable.setCsv(count);
+
         sp.commitTransaction();
 
-        addMessage("Fertig", "Die Datei " + filepath.getFileName().toString() + " wurde erfolgreich hochgeladen und in die Datenbank importiert.");
+        addMessage(
+                "Fertig", "Die Datei " + filepath.getFileName().toString() + " wurde erfolgreich hochgeladen und in die Datenbank importiert.");
     }
 
     public void stageToProd() {
         SqlSupport sp = new SqlSupport();
         sp.executeSQLScript("createdb.sql");
         sp.executeSQLScript("stage2prod.sql");
-        //sp.executeSQLScript("fremdzahler.sql");
         step3done = true;
         addMessage("Fertig", "Die Datenbank wurde erfolgreich kopiert");
     }
@@ -392,7 +452,8 @@ public class LoadWizard implements Serializable {
          */
         em.clear();
         // --- BEGINN WORKAROUND
-        Query q = em.createNamedQuery("Verein.findAll", Verein.class);
+        Query q = em.createNamedQuery("Verein.findAll", Verein.class
+        );
         q.setHint("eclipselink.refresh", "true");
         Verein v = (Verein) q.getSingleResult();
         // --- ENDE WORKAROUND

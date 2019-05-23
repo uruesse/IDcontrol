@@ -186,6 +186,7 @@ public class SqlSupport {
         Path path = unCompressPasswordProtectedFiles(importZip);
 
         executeSQLScript("createdb.sql");
+        executeSQLScript("createverein.sql");
 
         getTables(schema).forEach((table) -> {
             importTable(schema, table, path);

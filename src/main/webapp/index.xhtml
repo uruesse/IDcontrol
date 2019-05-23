@@ -19,35 +19,35 @@
 
     <ui:define name="implementation">
         Copyright 2019 Ulrich Rüße <h:outputLink value="mailto:ulrich@ruesse.net">ulrich@ruesse.net</h:outputLink>. <br/>
-            <br/>
-            Licensed under the Apache License, Version 2.0 (the "License");<br/>
-            you may not use this file except in compliance with the License.<br/>
-            You may obtain a copy of the License at<br/>
-            <br/>
-            <h:outputLink value="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" title="Link zu Apache Lizenz">http://www.apache.org/licenses/LICENSE-2.0</h:outputLink><br/>
-            <br/>
-            Unless required by applicable law or agreed to in writing, software<br/>
-            distributed under the License is distributed on an "AS IS" BASIS,<br/>
-            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<br/>
-            See the License for the specific language governing permissions and<br/>
-            limitations under the License.<br/>
-            <br/>
-                        <p:separator/>
-            <h:outputLabel for="build" value="Build: " />
-            <h:outputText id="build" value="#{applicationControlBean.buildInfo}" /><br/>
-            <h:outputLink value="https://github.com/uruesse/IDControl" target="_blank" title="Link zu Quellen">Projekt auf GitHub</h:outputLink>
-            <p:separator/>
-            <h:panelGrid id="display" columns="2" cellpadding="5">
-                <h:outputLabel for="workingpath" value="Arbeitspfad:" />
-                <h:outputText id="workingpath" value="#{applicationControlBean.workingDirInfo}" />
+        <br/>
+        Licensed under the Apache License, Version 2.0 (the "License");<br/>
+        you may not use this file except in compliance with the License.<br/>
+        You may obtain a copy of the License at<br/>
+        <br/>
+        <h:outputLink value="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" title="Link zu Apache Lizenz">http://www.apache.org/licenses/LICENSE-2.0</h:outputLink><br/>
+        <br/>
+        Unless required by applicable law or agreed to in writing, software<br/>
+        distributed under the License is distributed on an "AS IS" BASIS,<br/>
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<br/>
+        See the License for the specific language governing permissions and<br/>
+        limitations under the License.<br/>
+        <br/>
+        <p:separator/>
+        <h:outputLabel for="build" value="Build: " />
+        <h:outputText id="build" value="#{applicationControlBean.buildInfo}" /><br/>
+        <h:outputLink value="https://github.com/uruesse/IDControl" target="_blank" title="Link zu Quellen">Projekt auf GitHub</h:outputLink>
+        <p:separator/>
+        <h:panelGrid id="display" columns="2" cellpadding="5">
+            <h:outputLabel for="workingpath" value="Arbeitspfad:" />
+            <h:outputText id="workingpath" value="#{applicationControlBean.workingDirInfo}" />
 
-                <h:outputLabel for="apspath" value="Applikationsserver:" />
-                <h:outputText id="apspath" value="#{applicationControlBean.CATALINA_HOME}" />
+            <h:outputLabel for="apspath" value="Applikationsserver:" />
+            <h:outputText id="apspath" value="#{applicationControlBean.CATALINA_HOME}" />
 
-                <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
-                <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
+            <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
+            <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
 
-            </h:panelGrid>
+        </h:panelGrid>
 
     </ui:define>
 

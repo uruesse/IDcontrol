@@ -9,19 +9,21 @@
     </ui:define>
 
     <ui:define name="title">
-        Fehler - <span class="subitem">Es trat ein Fehler auf, bitte überprüfgen Sie die Logdateien</span>
+        Unerwarteter Fehler
     </ui:define>
 
-
     <ui:define name="description">
-        Message: #{pfExceptionHandler.message}
+       Bitte überprüfgen Sie die Logdateien
+    </ui:define>
+
+    <ui:define name="headimplementation">
+        <br/><b>#{pfExceptionHandler.message}</b><br/><br/>
+        <p:button outcome="index" icon="pi pi-home" value="#{msg['button.backtohome']}" class="secondary"/>
+        <p:button outcome="logview" icon="pi pi-info" value="zum Logviewer" class="secondary"/>
     </ui:define>
 
     <ui:define name="implementation">
-        <p:button outcome="/index" value="#{msg['button.backtohome']}" class="secondary"/>
-        <p:button outcome="/logview" value="zum Logviewer" class="secondary"/>
-        <br/>
-        <h:outputText value="Letzte Fehlermeldung:" /><br/>
+        <h3><h:outputText value="Letzter Fehlerstapel:" /></h3>
         <h:outputText value="#{pfExceptionHandler.formattedStackTrace}" escape="false" />
     </ui:define>
 </ui:composition>

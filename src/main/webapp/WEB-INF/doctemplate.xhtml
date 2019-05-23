@@ -33,7 +33,7 @@
         <div class="layout-wrapper">
             <p:notificationBar position="top"  effect="slide" styleClass="top-notification" widgetVar="bar">
                 <h:form  >
-                    <p:commandButton style="float: right;" onclick="PF('bar').hide()" type="button" icon="pi pi-times"/>
+                     <p:commandLink style="float: right;" onclick="PF('bar').hide()" styleClass="pi pi-times"/>
                 </h:form>
                 <h:outputText value="#{msg['notification.hint']}" escape="false" style="font-size:12px;font-weight:bold;" />
             </p:notificationBar>

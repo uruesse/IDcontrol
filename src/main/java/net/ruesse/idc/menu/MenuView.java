@@ -34,6 +34,7 @@ import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuModel;
 
 /**
+ * Stellt Routinen zum Hauptmenu zur Verfügung
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
@@ -44,6 +45,9 @@ public class MenuView {
 
     private MenuModel model;
 
+    /**
+     * Initialisiert das Hauptmenu
+     */
     @PostConstruct
     public void init() {
         model = new DefaultMenuModel();
@@ -54,6 +58,7 @@ public class MenuView {
         item = new DefaultMenuItem("Über IDControl");
         item.setIcon("pi pi-info");
         item.setOutcome("index");
+        item.setTitle("Informationen zu Copyright und Systemvariable");
         model.addElement(item);
         model.addElement(new DefaultSeparator());
 
@@ -61,23 +66,27 @@ public class MenuView {
         item = new DefaultMenuItem("Einstellungen");
         item.setIcon("pi pi-cog");
         item.setOutcome("settings");
+        item.setTitle("grundsätzliche Programmeinstellungen vornehmen");
         model.addElement(item);
         model.addElement(new DefaultSeparator());
 
         item = new DefaultMenuItem("Einlasskontrolle");
         item.setIcon("pi pi-user-plus");
         item.setOutcome("scan");
+        item.setTitle("Einlasskontrolle durch Scannen der Ausweise");
         model.addElement(item);
 
         //<p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
         item = new DefaultMenuItem("Scanlog zurücksetzten");
         item.setIcon("pi pi-user-minus");
         item.setCommand("#{applicationControlBean.resetScanLog}");
+        item.setTitle("Log der gescannten Ausweise wird komplett geleert");
         model.addElement(item);
 
         item = new DefaultMenuItem("Mitgliederinfo");
         item.setIcon("pi pi-users");
         item.setOutcome("mglinfo");
+        item.setTitle("Recherche von Mitgliederdaten");
         model.addElement(item);
         model.addElement(new DefaultSeparator());
 
@@ -86,14 +95,15 @@ public class MenuView {
         item.setIcon("pi pi-external-link");
         item.setTarget("_blank");
         item.setUrl("https://dlrg-mv.sewobe.de/");
+        item.setTitle("Mitgliederverwaltung öffenet in einem neuen Browserfenster");
         model.addElement(item);
         model.addElement(new DefaultSeparator());
-        
+
         //<p:submenu label="Anleitungen" icon="pi pi-folder-open">
         //  <p:menuitem outcome="documentation"  value="ZEBRA ZXP1" icon="pi pi-file"/>
         //</p:submenu>
         firstLevelSubmenu = new DefaultSubMenu("Anleitungen");
-        firstLevelSubmenu.setIcon("pi pi-folder-open");
+        //firstLevelSubmenu.setIcon("pi pi-folder-open");
 
         Path p = getDocumentsDir();
         DirectoryStream<Path> stream;
@@ -118,17 +128,19 @@ public class MenuView {
         //  <p:menuitem value="Ausweisrückseite" outcome="idcardback" icon="pi pi-print"/>
         //</p:submenu> 
         firstLevelSubmenu = new DefaultSubMenu("Drucken");
-        firstLevelSubmenu.setIcon("pi pi-folder-open");
+        //firstLevelSubmenu.setIcon("pi pi-folder-open");
 
         item = new DefaultMenuItem("Ausweisrückseite");
         item.setIcon("pi pi-print");
         item.setOutcome("idcardback");
+        item.setTitle("Drucken der statischen Ausweisrückseite");
         firstLevelSubmenu.addElement(item);
 
         //<p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
         item = new DefaultMenuItem("Anwesenheitsliste");
         item.setIcon("pi pi-users");
         item.setCommand("#{applicationControlBean.printActionAL}");
+        item.setTitle("Report Anwesenheitsliste ausgeben");
         firstLevelSubmenu.addElement(item);
 
         model.addElement(firstLevelSubmenu);
@@ -138,17 +150,38 @@ public class MenuView {
         item = new DefaultMenuItem("Beenden");
         item.setIcon("pi pi-power-off");
         item.setCommand("#{menuView.logout}");
+        item.setTitle("Beenden der aktuellen Sitzung");
         model.addElement(item);
     }
 
+    /**
+     * Liefert das Menumodel
+     *
+     * @return Menumodel
+     */
     public MenuModel getModel() {
         return model;
     }
 
+    /**
+     * setzt das Menumodel
+     *
+     * @param model Menumodel
+     */
     public void setModel(MenuModel model) {
         this.model = model;
     }
 
+    /**
+     * Logout durch Aufruf des externen Links closekiosk. Dieser Mechanismus
+     * basiert auf der Browsererweiterung closekiosk von Google-Chrome und
+     * schließt den Kiosk-Modus. Auf allen anderen Brouwsern führt der Aufruf zu
+     * einem "Page not found" Fehler.
+     *
+     * @see https://chrome.google.com/webstore/detail/close-kiosk
+     *
+     * @throws IOException
+     */
     public void logout() throws IOException {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         externalContext.redirect("http://closekiosk");

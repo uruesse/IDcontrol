@@ -92,9 +92,7 @@ public class ErrorHandler {
      * Erzeugt eine NullPointer-Exception zum Testen eines 500er Fehlers
      */
     public void error500() {
-        //System.out.println (10 / 0);
-        String s = null;
-        s.length();
+        throw new NullPointerException("künstlich erzeugter Fehler zum Testen des Layouts");
     }
 
     public List<String> fileContent = new ArrayList<>();

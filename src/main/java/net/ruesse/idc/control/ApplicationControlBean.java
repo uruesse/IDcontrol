@@ -344,6 +344,7 @@ public class ApplicationControlBean implements Serializable {
     public void onlyEntenhauusen() {
         SqlSupport sp = new SqlSupport();
         sp.executeSQLScript("createdb.sql");
+        sp.executeSQLScript("createverein.sql");
         sp.executeSQLScript("demo/entenhausenersv.sql");
         sp.executeSQLScript("demo/entenhausenadd.sql");
         addMessage("Fertig", "Datenbank aus Demodaten aus erstellt");

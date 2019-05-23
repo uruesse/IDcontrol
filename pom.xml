@@ -4,7 +4,7 @@
 
     <groupId>net.ruesse</groupId>
     <artifactId>IDControl</artifactId>
-    <version>20190519-DEV</version>
+    <version>20190523</version>
     <packaging>war</packaging>
 
     <name>IDControl</name>
@@ -192,7 +192,8 @@
             <artifactId>poi-ooxml</artifactId>
             <version>3.17</version>
         </dependency>
-        <dependency>
+        <!-- ist teil von primefaces selbst -->
+        <!--dependency>
             <groupId>com.lowagie</groupId>
             <artifactId>itext</artifactId>
             <version>2.1.7</version>
@@ -211,7 +212,7 @@
                     <artifactId>bctsp-jdk14</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency-->
 
         <!-- FeedReader -->
         <dependency>

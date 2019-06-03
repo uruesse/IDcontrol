@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-    <persistence-unit name="net.ruesse.IDControl.PU" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>net.ruesse.idc.database.persistence.Person</class>
-        <class>net.ruesse.idc.database.persistence.Bankverbindung</class>
-        <class>net.ruesse.idc.database.persistence.Rechnung</class>
-        <class>net.ruesse.idc.database.persistence.Beitrag</class>
-        <class>net.ruesse.idc.database.persistence.Contact</class>
-        <class>net.ruesse.idc.database.persistence.Cv</class>
-        <class>net.ruesse.idc.database.persistence.Address</class>
-        <class>net.ruesse.idc.database.persistence.Openpost</class>
-        <class>net.ruesse.idc.database.persistence.service.Contact</class>
-        <class>net.ruesse.idc.database.persistence.service.Person</class>
-        <class>net.ruesse.idc.database.persistence.service.Openpost</class>
-        <class>net.ruesse.idc.database.persistence.service.Rechnung</class>
-        <class>net.ruesse.idc.database.persistence.service.Bankverbindung</class>
-        <class>net.ruesse.idc.database.persistence.service.Beitrag</class>
-        <class>net.ruesse.idc.database.persistence.service.Cv</class>
-        <class>net.ruesse.idc.database.persistence.service.Address</class>
-        <class>net.ruesse.idc.database.persistence.Offenerechnungen</class>
-        <class>net.ruesse.idc.database.persistence.Family</class>
-        <class>net.ruesse.idc.database.persistence.Scanlog</class>
-        <class>net.ruesse.idc.database.persistence.Auswahl</class>
-        <class>net.ruesse.idc.database.persistence.Verein</class>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <properties>
-            <!--property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+  <persistence-unit name="net.ruesse.IDControl.PU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>net.ruesse.idc.database.persistence.Person</class>
+    <class>net.ruesse.idc.database.persistence.Bankverbindung</class>
+    <class>net.ruesse.idc.database.persistence.Rechnung</class>
+    <class>net.ruesse.idc.database.persistence.Beitrag</class>
+    <class>net.ruesse.idc.database.persistence.Contact</class>
+    <class>net.ruesse.idc.database.persistence.Cv</class>
+    <class>net.ruesse.idc.database.persistence.Address</class>
+    <class>net.ruesse.idc.database.persistence.Openpost</class>
+    <class>net.ruesse.idc.database.persistence.service.Contact</class>
+    <class>net.ruesse.idc.database.persistence.service.Person</class>
+    <class>net.ruesse.idc.database.persistence.service.Openpost</class>
+    <class>net.ruesse.idc.database.persistence.service.Rechnung</class>
+    <class>net.ruesse.idc.database.persistence.service.Bankverbindung</class>
+    <class>net.ruesse.idc.database.persistence.service.Beitrag</class>
+    <class>net.ruesse.idc.database.persistence.service.Cv</class>
+    <class>net.ruesse.idc.database.persistence.service.Address</class>
+    <class>net.ruesse.idc.database.persistence.Offenerechnungen</class>
+    <class>net.ruesse.idc.database.persistence.Family</class>
+    <class>net.ruesse.idc.database.persistence.Scanlog</class>
+    <class>net.ruesse.idc.database.persistence.Auswahl</class>
+    <class>net.ruesse.idc.database.persistence.Verein</class>
+    <class>net.ruesse.idc.database.persistence.Userpref</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <!--property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:derby:/Users/ulrich/IDControl/var/DB/IDControl;create=true" /-->
-            <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IDControl"/>
-            <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
-            <property name="javax.persistence.jdbc.user" value="idc"/>
-            <property name="javax.persistence.jdbc.password" value="idcpass"/>
-        </properties>
-    </persistence-unit>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IDControl"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.user" value="idc"/>
+      <property name="javax.persistence.jdbc.password" value="idcpass"/>
+    </properties>
+  </persistence-unit>
 </persistence>

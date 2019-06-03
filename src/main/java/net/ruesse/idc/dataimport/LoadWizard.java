@@ -42,6 +42,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
@@ -188,7 +189,7 @@ public class LoadWizard implements Serializable {
         try {
             // write the inputStream to a FileOutputStream
             out = new FileOutputStream(pDest.toFile());
-            boolean firstread= true;
+            boolean firstread = true;
             int read = 0;
             byte[] bytes = new byte[1024];
             while ((read = in.read(bytes)) != -1) {
@@ -455,7 +456,11 @@ public class LoadWizard implements Serializable {
         Query q = em.createNamedQuery("Verein.findAll", Verein.class
         );
         q.setHint("eclipselink.refresh", "true");
-        Verein v = (Verein) q.getSingleResult();
+        try {
+            Verein v = (Verein) q.getSingleResult();
+        } catch (NoResultException e) {
+              //nix tun
+        }
         // --- ENDE WORKAROUND
 
         deleteDirectoryStream(getTempDir());

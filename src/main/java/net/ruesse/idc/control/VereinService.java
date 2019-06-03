@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.database.persistence.Verein;
@@ -36,31 +37,50 @@ public class VereinService {
     private static final Logger LOGGER = Logger.getLogger(VereinService.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
+    Verein aktVerein;
+
+    public VereinService() {
+        try {
+            aktVerein = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
+        } catch (NoResultException e) {
+            aktVerein = new Verein();
+        }
+    }
+
+    public Verein getAktVerein() {
+        return aktVerein;
+    }
+
     public String getExpFileName() {
-        Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
+        //Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
 
         LOGGER.info("aktuell");
 
-        LocalDateTime dt = LocalDateTime.ofInstant(v.getDatatime().toInstant(), ZoneId.systemDefault());
+        LocalDateTime dt = LocalDateTime.ofInstant(aktVerein.getDatatime().toInstant(), ZoneId.systemDefault());
 
-        String expName = String.format("%07d-%s", v.getMglnr(), dt.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        String expName = String.format("%07d-%s", aktVerein.getMglnr(), dt.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
 
         return expName;
     }
 
     public String getVereinId() {
-        Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
-        String str = String.format("%07d", v.getMglnr());
+        //Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
+        String str = String.format("%07d", aktVerein.getMglnr());
         LOGGER.log(Level.INFO, "aktueller Verein:{0}", str);
 
         return str;
     }
 
     public String getFileInfo() {
-        Verein v= em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
+        //Verein v= em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
+
+        if (aktVerein.getFirma() == null || aktVerein.getDatatime() == null) {
+            return "Keine Datenbankinfo vorhanden";
+        }
+        
         DateFormat df;
         df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, Locale.GERMANY);
-        LOGGER.log(Level.INFO, "aktuell: {0}, {1}", new Object[]{v.getFirma(), df.format(v.getDatatime())});
-        return v.getFirma() + ", " + df.format(v.getDatatime());
+        LOGGER.log(Level.INFO, "aktuell: {0}, {1}", new Object[]{aktVerein.getFirma(), df.format(aktVerein.getDatatime())});
+        return aktVerein.getFirma() + ", " + df.format(aktVerein.getDatatime());
     }
 }

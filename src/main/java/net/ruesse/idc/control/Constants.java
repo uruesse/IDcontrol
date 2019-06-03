@@ -29,8 +29,6 @@ public class Constants {
 
     public static final String REPORT_SRC = ".jrxml";
     public static final String REPORT_DST = ".jasper";
-    
-    public static final String INTERNAL_PWD = "pass@123";
 
     public static String getPERSISTENCE_UNIT_NAME() {
         return PERSISTENCE_UNIT_NAME;

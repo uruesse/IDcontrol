@@ -19,11 +19,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import static net.ruesse.idc.control.FileService.getDocumentsDir;
 import org.primefaces.model.DefaultStreamedContent;
@@ -39,28 +41,79 @@ public class DocumentView {
 
     private final static Logger LOGGER = Logger.getLogger(DocumentView.class.getName());
 
-
-    public String getParam() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
-        if (paramMap != null) {
-            String document = paramMap.get("document");
-            if (document == null || document.isEmpty()) {
-            } else {
-                LOGGER.log(Level.INFO, "document={0}", document);
-                return document;
-            }
-        }
-        LOGGER.log(Level.INFO, "Kein Dokument gefunden");
-        return "";
-    }
-
+    int screenhight;
+    boolean printeroutput = false;
     private static String fileName = "";
 
+    /**
+     *
+     * @return
+     */
+    public int getScreenhight() {
+        if (screenhight < 300) {
+            return 1024;
+        } else {
+            return screenhight;
+        }
+    }
+
+    /**
+     *
+     * @param screenhight
+     */
+    public void setScreenhight(int screenhight) {
+        LOGGER.info("Screenhight: " + screenhight);
+        this.screenhight = screenhight;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getParam() {
+        String document = null;
+        
+        //TODO: das hier muss noch eimal überprüft werden, 
+        // die Unterscheidung zwischen Druck-ausgabe und Printausgabe
+        // scheint nicht 100%ig OK zu sein
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
+
+        if (paramMap != null) {
+            document = paramMap.get("document");
+            if (document == null || document.isEmpty()) {
+                document = paramMap.get("printname");
+                if (document == null || document.isEmpty()) {
+                     printeroutput = false;
+                } else {
+                    printeroutput = true;
+                }
+            } else {
+                printeroutput = false;
+            }
+        }
+        if (document == null || document.isEmpty()) {
+            LOGGER.log(Level.INFO, "Kein Dokument gefunden");
+            return "";
+        } else {
+            LOGGER.log(Level.INFO, "document={0}", document);
+            return document;
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
     public static String getFileName() {
         return fileName;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFileNameFormatted() {
         LOGGER.log(Level.INFO, "document1={0}", fileName);
         String fn = getParam();
@@ -78,10 +131,49 @@ public class DocumentView {
         }
     }
 
+    /**
+     *
+     * @param fileName
+     */
     public void setFileName(String fileName) {
         DocumentView.fileName = fileName;
     }
 
+    /**
+     *
+     * @return
+     */
+    public String getDescription() {
+        if (printeroutput) {
+            return "Ausgabeseite von " + getFileName() + ".pdf";
+        } else {
+            return "Anzeige von: " + getFileNameFormatted();
+        }
+
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getTitle() {
+        String fn = getParam();
+
+        if (!fn.isEmpty()) {
+            setFileName(fn);
+        }
+
+        if (printeroutput) {
+            return "Drukerausgabe";
+        } else {
+            return "Dokumentation";
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
     public StreamedContent getDatei() {
         String type = "application/pdf";
         Path path = getDocumentsDir();
@@ -91,17 +183,30 @@ public class DocumentView {
             setFileName(fn);
         }
 
-        File file = path.resolve(fileName).toFile();
+        File file;
+        FileInputStream fis = null;
+
+        if (printeroutput) {
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            Path pdfFilePath = Paths.get(externalContext.getRealPath(""), "resources", "files", "pdf", getFileName() + ".pdf");
+            file = pdfFilePath.toFile();
+            fn = getFileName() + ".pdf";
+        } else {
+            file = path.resolve(fileName).toFile();
+        }
         LOGGER.log(Level.INFO, "document={0}", file.toString());
         try {
-            FileInputStream fis = new FileInputStream(file);
-            return new DefaultStreamedContent(fis, type, fn);
-
+            fis = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        LOGGER.log(Level.INFO, "Hier sollte ich eigentlich nicht sein");
-        return new DefaultStreamedContent();
+        if (fis != null) {
+            LOGGER.log(Level.INFO, "document={0}", fis.toString());
+            return new DefaultStreamedContent(fis, type, fn);
+        } else {
+            LOGGER.log(Level.INFO, "Hier sollte ich eigentlich nicht sein");
+            return new DefaultStreamedContent();
+        }
     }
 }

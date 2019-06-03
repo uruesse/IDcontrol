@@ -10,5 +10,34 @@ CREATE TABLE IDCREMOTE.VEREIN (
     REGISTER VARCHAR(128),
     EMAIL VARCHAR(128),
     URI VARCHAR(128),
+    URIMGV VARCHAR(128),
+    PWD VARCHAR(128),
     DATATIME TIMESTAMP
 );
+
+INSERT INTO IDCREMOTE.VEREIN (
+  MGLNR,
+  FIRMA,
+  STRASSE,
+  PLZ,
+  ORT,
+  LAND,
+  REGISTER,
+  EMAIL,
+  URI,
+  URIMGV,
+  PWD,
+  DATATIME) 
+VALUES (
+  0,
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  'http://null.null',
+  'pass@123',
+  '2000-01-01 00:00:00.000');

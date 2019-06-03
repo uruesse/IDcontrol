@@ -26,6 +26,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import static net.ruesse.idc.control.FileService.getDocumentsDir;
+import net.ruesse.idc.control.VereinService;
 import net.ruesse.idc.documentation.DocumentView;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -91,10 +92,15 @@ public class MenuView {
         model.addElement(new DefaultSeparator());
 
         //<h:outputLink value="https://dlrg-mv.sewobe.de/" target="_blank" title="Link zu SEWOBE">Mitgliederverwaltung</h:outputLink>
+        VereinService vs = new VereinService();
+        String URI = vs.getAktVerein().getUrimgv();
+        if (URI == null || URI.isEmpty()) {
+            URI = "http://null.null";
+        }
         item = new DefaultMenuItem("Mitgliederverwaltung");
         item.setIcon("pi pi-external-link");
         item.setTarget("_blank");
-        item.setUrl("https://dlrg-mv.sewobe.de/");
+        item.setUrl(URI);
         item.setTitle("Mitgliederverwaltung öffenet in einem neuen Browserfenster");
         model.addElement(item);
         model.addElement(new DefaultSeparator());

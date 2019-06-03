@@ -40,13 +40,13 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.control.Constants;
-import static net.ruesse.idc.control.Constants.INTERNAL_PWD;
 import static net.ruesse.idc.control.FileService.createDatedExportsDir;
 import static net.ruesse.idc.control.FileService.deleteDirectoryStream;
 import static net.ruesse.idc.control.FileService.getExportsDir;
 import static net.ruesse.idc.control.FileService.getReportsDir;
 import static net.ruesse.idc.control.FileService.getVereinBaseDir;
 import static net.ruesse.idc.control.FileService.getVereinDir;
+import net.ruesse.idc.control.VereinService;
 import net.ruesse.idc.database.persistence.Verein;
 
 /**
@@ -109,6 +109,11 @@ public class SqlSupport {
         em.getTransaction().commit();
     }
 
+    private String getPassword() {
+        VereinService vs=new VereinService();
+        return vs.getAktVerein().getPwd();
+    }
+
     /**
      *
      * @param schema
@@ -143,7 +148,7 @@ public class SqlSupport {
             parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
             parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
             // Setting password
-            parameters.setPassword(INTERNAL_PWD);
+            parameters.setPassword(getPassword());
 
             zipFile.addFolder(exportPath.toFile(), parameters);
 
@@ -166,7 +171,7 @@ public class SqlSupport {
             ZipFile zipFile = new ZipFile(sourcePath.toFile());
             // If it is encrypted then provide password
             if (zipFile.isEncrypted()) {
-                zipFile.setPassword(INTERNAL_PWD);
+                zipFile.setPassword(getPassword());
             }
             zipFile.extractAll(destPath.toString());
         } catch (ZipException ex) {

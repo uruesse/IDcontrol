@@ -800,3 +800,145 @@ filteredValue="#{errorHandler.filteredFileContent}"
 
                             <h1><ui:insert name="title"></ui:insert></h1>
                             <p><ui:insert name="description"></ui:insert></p>
+
+
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <f:view contentType="text/html" encoding="UTF-8">
+        <h:head>
+            <h:outputScript library="primefaces" name="jquery/jquery.js" />
+            <h:outputScript library="primefaces" name="charts/charts.js" />
+            <h:outputScript library="primefaces" name="charts/charts.css" />
+
+            <script type="text/javascript">
+                //<![CDATA[
+                function Fensterweite () {
+                    if (window.innerWidth) {
+                        return window.innerWidth;
+                    } else if (document.body && document.body.offsetWidth) {
+                        return document.body.offsetWidth;
+                    } else {
+                        return 0;
+                    }
+                }
+
+                function Fensterhoehe () {
+                    if (window.innerHeight) {
+                        return window.innerHeight;
+                    } else if (document.body && document.body.offsetHeight) {
+                        return document.body.offsetHeight;
+                    } else {
+                        return 0;
+                    }
+                }
+            
+                function neuAufbau () {
+                    WeiteAlt = Weite;
+                    HoeheAlt = Hoehe;
+                    Weite = Fensterweite();
+                    Hoehe = Fensterhoehe();
+                    WeiteDiv = $('#container').width();
+                    HoeheDiv = $('#container').height();
+                    
+                    // Neueberechnung Pie-Größe
+                    WeiteDiv = $('#pieContainer').width();
+                    HoeheDiv = $('#pieContainer').height();
+                    $('#pieContainer').width (WeiteDiv * (Weite / WeiteAlt));
+                    $('#pieContainer').height(HoeheDiv * (Hoehe / HoeheAlt));
+                    $('#pieChartIdent').height($('#pieContainer').height()*0.96);
+                    $('#pieChartIdent').width($('#pieContainer').width()*0.96);
+                    pieChart.plot.replot( { resetAxes: true } )
+                    
+                    // Neueberechnung Donut-Größe
+                    WeiteDiv = $('#donutContainer').width();
+                    HoeheDiv = $('#donutContainer').height();
+                    $('#donutContainer').width (WeiteDiv * (Weite / WeiteAlt));
+                    $('#donutContainer').height(HoeheDiv * (Hoehe / HoeheAlt));
+                    $('#donutChartIdent').height($('#donutContainer').height()*0.96);
+                    $('#donutChartIdent').width($('#donutContainer').width()*0.96);
+                    donutChart.plot.replot( { resetAxes: true } )
+                    
+                    // Neueberechnung Line-Größe
+                    WeiteDiv = $('#lineContainer').width();
+                    HoeheDiv = $('#lineContainer').height();
+                    $('#lineContainer').width (WeiteDiv * (Weite / WeiteAlt));
+                    $('#lineContainer').height(HoeheDiv * (Hoehe / HoeheAlt));
+                    $('#lineChartIdent').height($('#lineContainer').height()*0.96);
+                    $('#lineChartIdent').width($('#lineContainer').width()*0.96);
+                    lineChart.plot.replot( { resetAxes: true } )
+                    
+                    // Neueberechnung Line-Größe
+                    WeiteDiv = $('#barContainer').width();
+                    HoeheDiv = $('#barContainer').height();
+                    $('#barContainer').width (WeiteDiv * (Weite / WeiteAlt));
+                    $('#barContainer').height(HoeheDiv * (Hoehe / HoeheAlt));
+                    $('#barChartIdent').height($('#barContainer').height()*0.96);
+                    $('#barChartIdent').width($('#barContainer').width()*0.96);
+                    barChart.plot.replot( { resetAxes: true } )
+                }
+                //]]>
+            </script>
+        </h:head>
+        <h:body>
+            <script type="text/javascript">
+                //<![CDATA[
+                /* Überwachung von Internet Explorer initialisieren */
+                if (!window.Weite && document.body && document.body.offsetWidth) {
+                    window.onresize = neuAufbau;
+                    Weite = Fensterweite();
+                    Hoehe = Fensterhoehe();
+                }
+                //]]>
+            </script>
+
+            <p:panel id="pieContainer" style="width:400px;height:300px">
+                <p:pieChart id="pieChartIdent" widgetVar="pieChart" value="#{chartBean.pieModel}"
+                            legendPosition="e" title="Sample Donut Chart"
+                            showMarkers="true" shadow="false"
+                            yaxisAngle="0" xaxisAngle="0"
+                            yaxisLabel="" xaxisLabel="" />
+            </p:panel>
+            <p:resizable for="pieContainer" onResize="$('#pieChartIdent').height($('#pieContainer').height()*0.96);
+                         $('#pieChartIdent').width($('#pieContainer').width()*0.96);
+                         pieChart.plot.replot( { resetAxes: true } )" />
+
+            <p:panel id="donutContainer" style="width:400px;height:300px">
+                <p:donutChart id="donutChartIdent" widgetVar="donutChart" value="#{chartBean.donutModel}"
+                              legendPosition="e" title="Sample Donut Chart"
+                              showMarkers="true" shadow="false"
+                              yaxisAngle="0" xaxisAngle="0"
+                              yaxisLabel="" xaxisLabel="" />
+            </p:panel>
+            <p:resizable for="donutContainer" onResize="$('#donutChartIdent').height($('#donutContainer').height()*0.96);
+                         $('#donutChartIdent').width($('#donutContainer').width()*0.96);
+                         donutChart.plot.replot( { resetAxes: true } )" />
+
+            <p:panel id="lineContainer" style="width:400px;height:300px">
+                <p:lineChart id="lineChartIdent" widgetVar="lineChart" value="#{chartBean.linearModel}"
+                              legendPosition="e" title="Sample Donut Chart"
+                              showMarkers="true" shadow="false"
+                              yaxisAngle="0" xaxisAngle="0"
+                              yaxisLabel="" xaxisLabel="" />
+            </p:panel>
+            <p:resizable for="lineContainer" onResize="$('#lineChartIdent').height($('#lineContainer').height()*0.96);
+                         $('#lineChartIdent').width($('#lineContainer').width()*0.96);
+                         lineChart.plot.replot( { resetAxes: true } )" />
+            
+            <p:panel id="barContainer" style="width:400px;height:300px">
+                <p:barChart id="barChartIdent" widgetVar="barChart" value="#{chartBean.categoryModel}"
+                              legendPosition="e" title="Sample Donut Chart"
+                              showMarkers="true" shadow="false"
+                              yaxisAngle="0" xaxisAngle="0"
+                              yaxisLabel="" xaxisLabel="" />
+            </p:panel>
+            <p:resizable for="barContainer" onResize="$('#barChartIdent').height($('#barContainer').height()*0.96);
+                         $('#barChartIdent').width($('#barContainer').width()*0.96);
+                         barChart.plot.replot( { resetAxes: true } )" />
+        </h:body>
+    </f:view>
+</html>

@@ -317,7 +317,7 @@ public class PrintSupport {
                     String contextPath = origRequest.getContextPath();
 
                     try {
-                        FacesContext.getCurrentInstance().getExternalContext().redirect(contextPath + "/faces/druckausgabe.xhtml?name=" + report);
+                        FacesContext.getCurrentInstance().getExternalContext().redirect(contextPath + "/faces/document.xhtml?printname=" + report);
                     } catch (IOException ex) {
                         Logger.getLogger(ApplicationControlBean.class.getName()).log(Level.SEVERE, null, ex);
                     }

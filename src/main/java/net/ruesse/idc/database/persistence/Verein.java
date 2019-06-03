@@ -48,7 +48,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Verein.findByRegister", query = "SELECT v FROM Verein v WHERE v.register = :register")
     , @NamedQuery(name = "Verein.findByEmail", query = "SELECT v FROM Verein v WHERE v.email = :email")
     , @NamedQuery(name = "Verein.findByUri", query = "SELECT v FROM Verein v WHERE v.uri = :uri")
-    , @NamedQuery(name = "Verein.findByDatatime", query = "SELECT v FROM Verein v WHERE v.datatime = :datatime")})
+    , @NamedQuery(name = "Verein.findByDatatime", query = "SELECT v FROM Verein v WHERE v.datatime = :datatime")
+    , @NamedQuery(name = "Verein.findByUrimgv", query = "SELECT v FROM Verein v WHERE v.urimgv = :urimgv")
+    , @NamedQuery(name = "Verein.findByPwd", query = "SELECT v FROM Verein v WHERE v.pwd = :pwd")})
 public class Verein implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -84,6 +86,12 @@ public class Verein implements Serializable {
     private String uri;
     @Temporal(TemporalType.TIMESTAMP)
     private Date datatime;
+    @Size(max = 128)
+    @Column(length = 128)
+    private String urimgv;
+    @Size(max = 128)
+    @Column(length = 128)
+    private String pwd;
 
     public Verein() {
     }
@@ -170,6 +178,22 @@ public class Verein implements Serializable {
 
     public void setDatatime(Date datatime) {
         this.datatime = datatime;
+    }
+
+    public String getUrimgv() {
+        return urimgv;
+    }
+
+    public void setUrimgv(String urimgv) {
+        this.urimgv = urimgv;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
     }
 
     @Override

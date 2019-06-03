@@ -114,7 +114,7 @@ public class FileServiceClient {
 
     }
 
-    public String getLastBackup() {
+    public String getLastBackup() throws Exception {
         FileServiceImplService client = new FileServiceImplService();
         FileServiceImpl service = client.getFileServiceImplPort();
 
@@ -125,6 +125,8 @@ public class FileServiceClient {
         String strResult = new String(result);
         LOGGER.log(Level.INFO, "Letzter Backup: {0}", strResult);
 
+        // TODO Das ist ein Provisorium -- eigene FileService Exceptions definieren
+        if (strResult.isEmpty()) throw new Exception();
         return strResult;
     }
 }

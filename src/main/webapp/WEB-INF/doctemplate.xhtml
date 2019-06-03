@@ -25,15 +25,16 @@
         <h:outputScript name="jquery/jquery-plugins.js" library="primefaces"/>
         <h:outputScript name="script/layout.js" library="main"/>
 
+
         <ui:insert name="head"/>
     </h:head>
 
-    <h:body>
+    <h:body  onload="getSreenSize()"> 
 
         <div class="layout-wrapper">
             <p:notificationBar position="top"  effect="slide" styleClass="top-notification" widgetVar="bar">
                 <h:form  >
-                     <p:commandLink style="float: right;" onclick="PF('bar').hide()" styleClass="pi pi-times"/>
+                    <p:commandLink style="float: right;" onclick="PF('bar').hide()" styleClass="pi pi-times"/>
                 </h:form>
                 <h:outputText value="#{msg['notification.hint']}" escape="false" style="font-size:12px;font-weight:bold;" />
             </p:notificationBar>
@@ -43,15 +44,21 @@
                 <ui:insert name="content">
                     <div class="content-introduction">
                         <b><ui:insert name="title"></ui:insert></b>  <i class="pi pi-chevron-right"></i> <ui:insert name="description"></ui:insert>
-                    </div>
-                    <div class="content-viewer">
-                        <ui:insert name="implementation"></ui:insert>
+
+                        <p:outputPanel style="float: right;" >
+                            <h:form>
+                                <h:outputLabel for="ajaxSpinner" value="Anpassen der Ausgabe:" title="Höhe des Medienfensters wählen" style="padding-right: 12px" />
+                                <p:spinner id="ajaxSpinner" value="#{documentView.screenhight}"   immediate="true" title="Höhe des Medienfensters wählen" size="4" maxlength="4" min="300" max="2048" stepFactor="10" style="vertical-align: middle;">
+                                    <p:ajax update="docimp:myviewer" partialSubmit="true" immediate="true" process="docimp" />
+                                </p:spinner>
+                            </h:form>
+                        </p:outputPanel>
                     </div>
                 </ui:insert>
-            </div>
+            </div>         
+        </div>        
 
-            <ui:include src="./footer.xhtml"></ui:include>
-        </div>
+
 
         <ui:insert name="status">
             <!-- Das ist die Sanduhr bei längeren Operationen -->
@@ -69,6 +76,22 @@
         <ui:insert name="highlight">
             <h:outputScript name="main/script/sh.js" target="body"/>
         </ui:insert>
+
+        <ui:insert name="implementation"></ui:insert>
+        <div id="screensize"></div>
+        <script>
+            function getScreenSize() {
+                var txt = "";
+                txt += "innerWidth: (" + window.innerWidth;
+                txt += ") innerHeight: (" + window.innerHeight;
+                txt += ") outerWidth: (" + window.outerWidth;
+                txt += ") outerHeight: (" + window.outerHeight + ")";
+
+                document.getElementById("screensize").innerHTML = txt;
+            }
+            getScreenSize();
+            onresize.getScreenSize();
+        </script>
 
         <h:outputStylesheet name="css/layout.css" library="main"/>
     </h:body>

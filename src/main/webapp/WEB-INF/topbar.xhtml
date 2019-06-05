@@ -17,13 +17,14 @@
 
         <h:form class="layout-topbar-menu" style="padding-top: 12px">
 
-            <p:commandButton style="color:red;background-color: grey;" onclick="PF('bar').show()" type="button" icon="pi pi-info" />
+            <p:commandButton style="color:red;background-color: grey;" onclick="PF('bar').show()" type="button" icon="pi pi-info" rendered="#{controlBean.userRightDev}"/>
 
-            <p:commandButton id="scanButton" type="button" action="scan?faces-redirect=true" icon="pi pi-user-plus" >
+            <p:commandButton id="scanButton" type="button" action="scan?faces-redirect=true" icon="pi pi-user-plus"  rendered="#{controlBean.userRightEinlass}" >
                 <f:ajax />
             </p:commandButton>
-            <p:tooltip id="forScanButton" for="scanButton" value="Einlasskontrolle - Scannen der Mitgliedsausweise" position="top"/>
-            <p:commandButton id="mglinfoButton" type="button" action="mglinfo?faces-redirect=true" icon="pi pi-users" >
+            <p:tooltip id="forScanButton" for="scanButton" value="Einlasskontrolle - Scannen der Mitgliedsausweise" position="top" />
+            
+            <p:commandButton id="mglinfoButton" type="button" action="mglinfo?faces-redirect=true" icon="pi pi-users" rendered="#{controlBean.userRightSewobe}" >
                 <f:ajax />
             </p:commandButton>
             <p:tooltip id="forMglinfoButton" for="mglinfoButton" value="Mitgliederinfo - Übersichtstabelle mit Detailinformationen zum Mitglied" position="top"/>

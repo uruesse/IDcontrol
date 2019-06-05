@@ -942,3 +942,5 @@ filteredValue="#{errorHandler.filteredFileContent}"
         </h:body>
     </f:view>
 </html>
+
+                <p:inputMask id="mitgliednummer" value="#{controlBean.mnrLogin}" mask="999999999999999" maxlength="15"  slotChar=" "/>

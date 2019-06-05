@@ -14,7 +14,7 @@
     </ui:define>
 
     <ui:define name="description">
-        Lädt die SEWOBE-Daten 
+        #{controlBean.userRightSewobe ? 'Lädt die SEWOBE-Daten' : 'Sie haben keine Berechtigung für diese Seite'}
     </ui:define>
 
     <ui:define name="implementation">
@@ -49,9 +49,11 @@
             }
         </style>
 
-
-        <h:form>
+        <h:form> 
             <h:inputHidden value="#{controlBean.param}" />
+        </h:form>
+
+        <h:form id="formwizard" rendered="#{controlBean.userRightSewobe}">
 
             <p:growl id="growl" sticky="true" showDetail="true"/>
 

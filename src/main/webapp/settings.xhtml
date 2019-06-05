@@ -39,16 +39,16 @@
                 </p:selectOneMenu>
 
                 <h:outputLabel for="exportDB" value="Datenexport" />
-                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" icon="pi pi-cloud-upload" update="AppControlMessage"/>
+                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" icon="pi pi-cloud-upload" update="AppControlMessage" disabled="#{!controlBean.userRightSewobe}"/>
 
                 <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
                 <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" icon="pi pi-cloud-download" update="AppControlMessage" disabled="#{!applicationControlBean.backupAvailable}"/>
 
                 <h:outputLabel for="importfile" value="Datenimport" />
-                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="AppControlMessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" />
+                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="AppControlMessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" disabled="#{!controlBean.userRightSewobe}"/>
 
                 <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
-                <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary"/>
+                <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary" disabled="#{!controlBean.userRightSewobe}"/>
 
                 <p:separator/><p:separator/>
                 <h:outputText value="NUR FÜR TESTZWECKE:" />
@@ -60,18 +60,18 @@
                 </p:selectBooleanCheckbox>
 
                 <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
-                <p:splitButton id="errorgen" style="color:red;background-color: grey;" value="Error 500" action="#{errorHandler.error500}" ajax="true" >
+                <p:splitButton id="errorgen" style="color:red;background-color: grey;" value="Error 500" action="#{errorHandler.error500}" ajax="true" disabled="#{!controlBean.userRightAdmin}">
                     <p:menuitem value="Error 404" url="xx" />
                 </p:splitButton>  
 
                 <p:outputLabel for="testdata" value="Entenhausener Schwimmverein: " />
-                <p:splitButton id="testdata" style="color:red;background-color: grey;" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" >
+                <p:splitButton id="testdata" style="color:red;background-color: grey;" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" disabled="#{!controlBean.userRightAdmin}">
                     <p:menuitem value="Testdaten entfernen" action="#{applicationControlBean.dropEntenhauusen}" ajax="true" update="growlmessage"/>
                     <p:menuitem value="reine Testdatenbank erstellen" action="#{applicationControlBean.onlyEntenhauusen}" ajax="true" update="growlmessage"/>
                 </p:splitButton>  
 
                 <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
-                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{applicationControlBean.validDruckerdialog}">
+                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{!controlBean.userRightDev}">
                     <p:ajax event="change" global="false" />
                 </p:selectBooleanCheckbox>
             </h:panelGrid>

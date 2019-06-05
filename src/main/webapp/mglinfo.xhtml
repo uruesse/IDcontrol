@@ -57,16 +57,16 @@
     </ui:define>
 
     <ui:define name="description">
-        Übersicht über die aktuellen Mitglieder
+        #{controlBean.userRightSewobe ? 'Übersicht über die aktuellen Mitglieder' : 'Sie haben keine Berechtigung für diese Seite'}
     </ui:define>
 
     <ui:define name="implementation">
-
-        <p:tooltip />
-
-        <h:form id="form">
+        <h:form>
             <h:inputHidden value="#{controlBean.param}" />
+        </h:form>
 
+        <h:form id="form" rendered="#{controlBean.userRightSewobe}">
+            <p:tooltip />
             <p:dataTable id="persons" 
                          var="mitglied" 
                          value="#{mglView.allMgl}" 

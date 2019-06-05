@@ -28,6 +28,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import static net.ruesse.idc.control.FileService.getDocumentsDir;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -72,20 +73,16 @@ public class DocumentView {
      */
     public String getParam() {
         String document = null;
-        
-        //TODO: das hier muss noch eimal überprüft werden, 
-        // die Unterscheidung zwischen Druck-ausgabe und Printausgabe
-        // scheint nicht 100%ig OK zu sein
+        String printname = null;
 
         FacesContext context = FacesContext.getCurrentInstance();
         Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
 
         if (paramMap != null) {
             document = paramMap.get("document");
+            printname = paramMap.get("printname");
             if (document == null || document.isEmpty()) {
-                document = paramMap.get("printname");
-                if (document == null || document.isEmpty()) {
-                     printeroutput = false;
+                if (printname == null || printname.isEmpty()) {
                 } else {
                     printeroutput = true;
                 }
@@ -93,12 +90,13 @@ public class DocumentView {
                 printeroutput = false;
             }
         }
-        if (document == null || document.isEmpty()) {
-            LOGGER.log(Level.INFO, "Kein Dokument gefunden");
+        if ((document == null || document.isEmpty()) && (printname == null || printname.isEmpty())) {
+            LOGGER.log(Level.INFO, "Kein Dokument gefunden printeroutput = " + printeroutput);
             return "";
         } else {
-            LOGGER.log(Level.INFO, "document={0}", document);
-            return document;
+            LOGGER.log(Level.INFO, printeroutput ? "printer={0}" : "document={0}", printeroutput ? printname : document);
+            //PrimeFaces.current().executeScript("location.reload();");
+            return printeroutput ? printname : document;
         }
     }
 
@@ -153,6 +151,16 @@ public class DocumentView {
     }
 
     /**
+     * Caching ist nicht erlaubt bei Anzeige von Druckausgaben
+     * ansonsten kann es sein, dass gecachte Ausgaben angezeigt werden
+     * 
+     * @return
+     */
+    public boolean getCaching() {
+        return !printeroutput;
+    }
+
+    /**
      *
      * @return
      */
@@ -194,7 +202,7 @@ public class DocumentView {
         } else {
             file = path.resolve(fileName).toFile();
         }
-        LOGGER.log(Level.INFO, "document={0}", file.toString());
+        LOGGER.log(Level.INFO, "File={0}", file.toString());
         try {
             fis = new FileInputStream(file);
         } catch (FileNotFoundException ex) {
@@ -202,7 +210,7 @@ public class DocumentView {
         }
 
         if (fis != null) {
-            LOGGER.log(Level.INFO, "document={0}", fis.toString());
+            LOGGER.log(Level.INFO, "FileInputStream ={0}", fis.toString());
             return new DefaultStreamedContent(fis, type, fn);
         } else {
             LOGGER.log(Level.INFO, "Hier sollte ich eigentlich nicht sein");

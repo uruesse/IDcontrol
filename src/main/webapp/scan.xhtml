@@ -10,18 +10,20 @@
     </ui:define>
 
     <ui:define name="head">
-        <f:metadata>
-            <f:viewParam name="mnr" value="#{controlBean.mnr}" />
-        </f:metadata>
+
     </ui:define>
 
     <ui:define name="description">
-        #{msg['scan.headdescription']}
+        #{controlBean.userRightEinlass ? msg['scan.headdescription'] : 'Sie haben keine Berechtigung für diese Seite'}
+
     </ui:define>
 
     <ui:define name="implementation">
         <h:form>
             <h:inputHidden value="#{controlBean.param}" />
+        </h:form>
+        <h:form rendered="#{controlBean.userRightEinlass}">
+
             <p:messages id="AppControlMessage" escape="false" showDetail="true" closable="false">
                 <p:autoUpdate />
             </p:messages>

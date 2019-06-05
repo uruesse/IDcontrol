@@ -27,8 +27,10 @@
 
             <h:panelGrid id="display" columns="3" cellpadding="5">
                 <p:outputLabel for="mitgliednummer" value="#{msg['scan.mitgliedsnummer']}:" />
-                <p:inputMask id="mitgliednummer" value="#{controlBean.mnrLogin}" mask="#{msg['scan.mnr_mask']}"/>
-                <p:commandButton value="#{msg['button.send']}" id="send" action="#{controlBean.startSession}" update="display"/>
+                <p:inputText id="mitgliednummer" value="#{controlBean.mnrLogin}" autocomplete="off" maxlength="15">
+                    <f:validateRegex pattern="^[ 0-9]+$"  />
+                </p:inputText>
+                <p:commandButton value="#{msg['button.send']}" id="send"  action="#{controlBean.startSession}" update="display"/>
             </h:panelGrid>
 
             <p:separator/>

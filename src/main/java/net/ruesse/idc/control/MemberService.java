@@ -44,13 +44,6 @@ public class MemberService {
     @PostConstruct
     public void init() {
         refreshAction();
-        /*
-        members = new ArrayList<>();
-        members.add(new Member(0, "0920000700153", "0920000 7 00153 - Ulrich Rüße", "0920000700153 ulrich rüße"));
-        members.add(new Member(1, "0920000700154", "0920000 7 00154 - Annette Rüße", "0920000700154 annette rüße"));
-        members.add(new Member(2, "0920000700155", "0920000 7 00155 - Sebastian Rüße", "0920000700155 sebastian rüße"));
-        members.add(new Member(3, "0920000700156", "0920000 7 00156 - Cynthia Rüße", "0920000700156 cynthia rüße"));
-         */
     }
 
     public List<Member> getMembers() {
@@ -72,8 +65,9 @@ public class MemberService {
     }
 
     public Member findMemberByMglnr(String strMglnr) {
-// Es kann nur ein Ergebnis geben
+        // Es kann nur ein Ergebnis geben
         LOGGER.log(Level.INFO, "Suche Mglnr: " + strMglnr);
+        
 
         for (Member m : members) {
             if (m.getMglnr().equals(strMglnr)) {

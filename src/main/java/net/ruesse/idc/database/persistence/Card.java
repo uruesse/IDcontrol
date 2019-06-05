@@ -20,14 +20,13 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -38,35 +37,29 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(catalog = "", schema = "IDCLOCAL")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Scanlog.findAll", query = "SELECT s FROM Scanlog s")
-    , @NamedQuery(name = "Scanlog.findById", query = "SELECT s FROM Scanlog s WHERE s.id = :id")
-    , @NamedQuery(name = "Scanlog.findByMglnr", query = "SELECT s FROM Scanlog s WHERE s.mglnr = :mglnr")
-    , @NamedQuery(name = "Scanlog.findByScantime", query = "SELECT s FROM Scanlog s WHERE s.scantime = :scantime")})
-public class Scanlog implements Serializable {
+    @NamedQuery(name = "Card.findAll", query = "SELECT c FROM Card c")
+    , @NamedQuery(name = "Card.findByMglnr", query = "SELECT c FROM Card c WHERE c.mglnr = :mglnr")
+    , @NamedQuery(name = "Card.findByDateofissue", query = "SELECT c FROM Card c WHERE c.dateofissue = :dateofissue")
+    , @NamedQuery(name = "Card.findByPrfmglnr", query = "SELECT c FROM Card c WHERE c.prfmglnr = :prfmglnr")
+    , @NamedQuery(name = "Card.findByIssue", query = "SELECT c FROM Card c WHERE c.issue = :issue")})
+public class Card implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @NotNull
     @Column(nullable = false)
-    private Long id;
     private Long mglnr;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date scantime;
+    @Temporal(TemporalType.DATE)
+    private Date dateofissue;
+    private Long prfmglnr;
+    private Integer issue;
 
-    public Scanlog() {
+    public Card() {
     }
 
-    public Scanlog(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public Card(Long mglnr) {
+        this.mglnr = mglnr;
     }
 
     public Long getMglnr() {
@@ -77,29 +70,45 @@ public class Scanlog implements Serializable {
         this.mglnr = mglnr;
     }
 
-    public Date getScantime() {
-        return scantime;
+    public Date getDateofissue() {
+        return dateofissue;
     }
 
-    public void setScantime(Date scantime) {
-        this.scantime = scantime;
+    public void setDateofissue(Date dateofissue) {
+        this.dateofissue = dateofissue;
+    }
+
+    public Long getPrfmglnr() {
+        return prfmglnr;
+    }
+
+    public void setPrfmglnr(Long prfmglnr) {
+        this.prfmglnr = prfmglnr;
+    }
+
+    public Integer getIssue() {
+        return issue;
+    }
+
+    public void setIssue(Integer issue) {
+        this.issue = issue;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (mglnr != null ? mglnr.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Scanlog)) {
+        if (!(object instanceof Card)) {
             return false;
         }
-        Scanlog other = (Scanlog) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        Card other = (Card) object;
+        if ((this.mglnr == null && other.mglnr != null) || (this.mglnr != null && !this.mglnr.equals(other.mglnr))) {
             return false;
         }
         return true;
@@ -107,7 +116,7 @@ public class Scanlog implements Serializable {
 
     @Override
     public String toString() {
-        return "net.ruesse.idc.database.persistence.Scanlog[ id=" + id + " ]";
+        return "net.ruesse.idc.database.persistence.Card[ mglnr=" + mglnr + " ]";
     }
     
 }

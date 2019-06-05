@@ -15,6 +15,9 @@
  */
 package net.ruesse.idc.database.persistence.service;
 
+import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -30,6 +33,7 @@ import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParame
 import net.ruesse.idc.control.Constants;
 import net.ruesse.idc.control.ControlBean;
 import net.ruesse.idc.database.persistence.Beitrag;
+import net.ruesse.idc.database.persistence.Card;
 import net.ruesse.idc.database.persistence.Cv;
 import net.ruesse.idc.database.persistence.Family;
 import net.ruesse.idc.database.persistence.Offenerechnungen;
@@ -49,26 +53,93 @@ public class PersonExt {
     static final long MSPERYEAR = ((long) 365 * 24 * 60 * 60 * 1000);
 
     public Person person;
+    public Card card = null;
 
     private boolean mitarbeiter;
+    private int userstatus = 0;
     private boolean wassergeld;
 
+    /**
+     *
+     * @return
+     */
+    public Card getCard() {
+        // Lazy load
+        if (card == null) {
+            readCard();
+        }
+        return card;
+    }
+
+    /**
+     *
+     * @param card
+     */
+    public void setCard(Card card) {
+        this.card = card;
+    }
+
+    /**
+     * Quick and Dirty TODO umfassend überarbeiten!
+     */
+    private void readCard() {
+        Card c;
+        try {
+            c = (Card) em.createNamedQuery("Card.findByMglnr")
+                    .setParameter("mglnr", person.getMglnr())
+                    .getSingleResult();
+            LOGGER.info ("Cardinfo: "+c.getPrfmglnr());
+        } catch (NoResultException e) {
+            // einfach einen leeren Datensatz erzeugen, wenn nix gefunden wird
+            c = new Card();
+        }
+        setCard(c);
+    }
+
+    /**
+     *
+     * @return
+     */
     public boolean isMitarbeiter() {
         return mitarbeiter;
     }
 
+    /**
+     *
+     * @param mitarbeiter
+     */
     public void setMitarbeiter(boolean mitarbeiter) {
         this.mitarbeiter = mitarbeiter;
     }
 
+    public int getUserstatus() {
+        return userstatus;
+    }
+
+    public void setUserstatus(int userstatus) {
+        this.userstatus = userstatus;
+    }
+
+    /**
+     *
+     * @return
+     */
     public boolean isWassergeld() {
         return wassergeld;
     }
 
+    /**
+     *
+     * @param wassergeld
+     */
     public void setWassergeld(boolean wassergeld) {
         this.wassergeld = wassergeld;
     }
 
+    /**
+     *
+     * @param person
+     */
     public PersonExt(Person person) {
         this.person = person;
         LOGGER.setLevel(Level.INFO);
@@ -78,32 +149,61 @@ public class PersonExt {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public Person getPerson() {
         return this.person;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFullname() {
         return person.getVorname() + " " + person.getNachname();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStrMglnr() {
         return String.format("%013d", person.getMglnr());
     }
 
+    /**
+     *
+     * @param mglnr
+     * @return
+     */
     public String formatMglnr(long mglnr) {
         String str = String.format("%013d", mglnr);
         return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
     }
 
+    /**
+     *
+     * @return
+     */
     public String formatMglnr() {
         String str = getStrMglnr();
         return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStrFMglnr() {
         return formatMglnr(person.getMglnr().longValue());
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStrFNr() {
         Collection<Person> family;
         if (person.getFnr() != null) {
@@ -113,16 +213,28 @@ public class PersonExt {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isAustritt() {
         return person.getAustritt() != null;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isRechnung() {
         Collection<Offenerechnungen> or;
         or = person.getOffenerechnungenCollection();
         return !or.isEmpty();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isBeitrag() {
         Collection<Beitrag> be;
         be = person.getBeitragCollection();
@@ -141,10 +253,18 @@ public class PersonExt {
         return (int) ((now.getTime() - d.getTime()) / MSPERYEAR);
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isGeburtsdatum() {
         return person.getGeburtsdatum() != null;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getAge() {
         long age = 0;
         if (person.getGeburtsdatum() != null) {
@@ -154,6 +274,10 @@ public class PersonExt {
         return (int) age;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSortAge() {
         //Irgendwann mal die führenden nullen durch &nbsp; ersetzten. Das wird aber per default angeszeigt und ansonsten nicht richtig sortiert.
 
@@ -163,6 +287,10 @@ public class PersonExt {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStrAge() {
         if (person.getGeburtsdatum() != null) {
             return String.format("%d", calcAge(person.getGeburtsdatum()));
@@ -170,18 +298,33 @@ public class PersonExt {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isBemerkung() {
         return person.getBemerkung() != null;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isFamilie() {
         return person.getFnr() != null;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isLastschrift() {
         return "Lastschrift".equals(person.getZahlungsmodus());
     }
 
+    /**
+     *
+     */
     private void checkMitarbeiterStatus() {
         LOGGER.log(Level.FINE, "Status: {0}", person.getStatus());
         if ("Aktiv".equals(person.getStatus())) {
@@ -194,6 +337,24 @@ public class PersonExt {
                     if ("Funktionen".equals(c.getCvkey())) {
                         if (now.after(c.getValidfrom()) && (c.getValidto() == null || now.before(c.getValidto()))) {
                             setMitarbeiter(true);
+                            if (c.getCvvalue().toLowerCase().equals("mitgliederverwaltung")) {
+                                setUserstatus(1);
+                                String txt = c.getKurztext().toLowerCase();
+                                if (txt.contains("einlasskontrolle")) {
+                                    setUserstatus(2);
+                                }
+                                if (txt.contains("sewobe")) {
+                                    setUserstatus(3);
+                                }
+                                if (txt.contains("admin")) {
+                                    setUserstatus(4);
+                                }
+                                if (txt.contains("dev")) {
+                                    setUserstatus(5);
+                                }
+                            }
+                            LOGGER.log(Level.INFO, "Mitarbeiterstatus=true: Userstatus={0} CV: {1} {2} {3} {4} {5}", new Object[]{getUserstatus(), c.getCvkey(), c.getCvvalue(), c.getKurztext(), c.getValidfrom(), c.getValidto()});
+
                         }
                     }
                 }
@@ -202,6 +363,9 @@ public class PersonExt {
         }
     }
 
+    /**
+     *
+     */
     private void checkWassergeldStatus() {
         Date now = new Date();
         Collection<Beitrag> be = person.getBeitragCollection();
@@ -215,6 +379,10 @@ public class PersonExt {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getState() {
         LOGGER.log(Level.FINE, "Status: {0}", person.getStatus());
         if (isMitarbeiter()) {
@@ -226,6 +394,10 @@ public class PersonExt {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public Person getFremdzahlerPerson() {
 
         Person fz;
@@ -241,6 +413,10 @@ public class PersonExt {
         return fz;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFremdzahlerInfo() {
         String str = "Fremdzahler unbekannt";
         Person fz = getFremdzahlerPerson();
@@ -252,6 +428,10 @@ public class PersonExt {
         return str;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getOpenbills() {
         String str = "";
         int summe = 0;

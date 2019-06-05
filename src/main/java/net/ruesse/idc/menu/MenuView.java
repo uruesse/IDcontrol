@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import static net.ruesse.idc.control.ApplicationControlBean.getLoginMglUserRights;
 import static net.ruesse.idc.control.FileService.getDocumentsDir;
 import net.ruesse.idc.control.VereinService;
 import net.ruesse.idc.documentation.DocumentView;
@@ -68,6 +69,7 @@ public class MenuView {
         item.setIcon("pi pi-cog");
         item.setOutcome("settings");
         item.setTitle("grundsätzliche Programmeinstellungen vornehmen");
+        item.setDisabled(!(getLoginMglUserRights() > 0));
         model.addElement(item);
         model.addElement(new DefaultSeparator());
 
@@ -75,6 +77,7 @@ public class MenuView {
         item.setIcon("pi pi-user-plus");
         item.setOutcome("scan");
         item.setTitle("Einlasskontrolle durch Scannen der Ausweise");
+        item.setDisabled(!(getLoginMglUserRights() > 1));
         model.addElement(item);
 
         //<p:menuitem process="@this" value="Scanlog zurücksetzten" action="#{applicationControlBean.resetScanLog}" icon="pi pi-users"/>
@@ -82,12 +85,15 @@ public class MenuView {
         item.setIcon("pi pi-user-minus");
         item.setCommand("#{applicationControlBean.resetScanLog}");
         item.setTitle("Log der gescannten Ausweise wird komplett geleert");
+        item.setDisabled(!(getLoginMglUserRights() > 1));
         model.addElement(item);
 
         item = new DefaultMenuItem("Mitgliederinfo");
         item.setIcon("pi pi-users");
         item.setOutcome("mglinfo");
         item.setTitle("Recherche von Mitgliederdaten");
+        item.setDisabled(!(getLoginMglUserRights() > 2));
+
         model.addElement(item);
         model.addElement(new DefaultSeparator());
 
@@ -102,6 +108,7 @@ public class MenuView {
         item.setTarget("_blank");
         item.setUrl(URI);
         item.setTitle("Mitgliederverwaltung öffenet in einem neuen Browserfenster");
+        item.setDisabled(!(getLoginMglUserRights() > 2));
         model.addElement(item);
         model.addElement(new DefaultSeparator());
 

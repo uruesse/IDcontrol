@@ -16,7 +16,6 @@
 package net.ruesse.idc.database.persistence;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -68,7 +67,7 @@ public class Person implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(nullable = false)
-    private BigInteger mglnr;
+    private Long mglnr;
     @Size(max = 128)
     @Column(length = 128)
     private String firma;
@@ -102,7 +101,7 @@ public class Person implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date kuendigung;
     private Boolean abweichenderzahler;
-    private BigInteger fremdzahler;
+    private Long fremdzahler;
     @Size(max = 128)
     @Column(length = 128)
     private String zahlungsmodus;
@@ -127,15 +126,15 @@ public class Person implements Serializable {
     public Person() {
     }
 
-    public Person(BigInteger mglnr) {
+    public Person(Long mglnr) {
         this.mglnr = mglnr;
     }
 
-    public BigInteger getMglnr() {
+    public Long getMglnr() {
         return mglnr;
     }
 
-    public void setMglnr(BigInteger mglnr) {
+    public void setMglnr(Long mglnr) {
         this.mglnr = mglnr;
     }
 
@@ -243,11 +242,11 @@ public class Person implements Serializable {
         this.abweichenderzahler = abweichenderzahler;
     }
 
-    public BigInteger getFremdzahler() {
+    public Long getFremdzahler() {
         return fremdzahler;
     }
 
-    public void setFremdzahler(BigInteger fremdzahler) {
+    public void setFremdzahler(Long fremdzahler) {
         this.fremdzahler = fremdzahler;
     }
 

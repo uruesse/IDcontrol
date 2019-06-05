@@ -164,6 +164,15 @@ public class ApplicationControlBean implements Serializable {
         return loginMgl;
     }
 
+    public static int getLoginMglUserRights() {
+        if (loginMgl != null) {
+            if (loginMgl.isMitarbeiter()) {
+                return loginMgl.getUserstatus(); 
+            } 
+        } 
+        return 0;
+    }
+
     public static void setLoginMgl(PersonExt loginMgl) {
         ApplicationControlBean.loginMgl = loginMgl;
     }

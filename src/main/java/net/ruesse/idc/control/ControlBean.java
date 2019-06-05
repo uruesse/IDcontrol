@@ -51,6 +51,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.swing.text.MaskFormatter;
+import static net.ruesse.idc.control.ApplicationControlBean.getLoginMglUserRights;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import static net.ruesse.idc.control.ApplicationControlBean.setLoginMgl;
 import net.ruesse.idc.database.persistence.Person;
@@ -104,7 +105,7 @@ public class ControlBean implements Serializable {
             if (userId == null || userId.isEmpty()) {
             } else {
                 LOGGER.log(Level.FINE, "projectId={0}", userId);
-                startSession(userId);
+                startSession(userId, null);
                 return userId;
             }
         }
@@ -133,13 +134,42 @@ public class ControlBean implements Serializable {
         this.member = null;
     }
 
+    private String scanCode;
+
+    public String getScanCode() {
+        return scanCode;
+    }
+
+    public void setScanCode(String scanCode) {
+        this.scanCode = scanCode;
+    }
+
     @ManagedProperty("#{memberService}")
     private MemberService memberSrv;
 
     public List<Member> completeMember(String query) {
+
         List<Member> allMembers = memberSrv.getMembers();
         List<Member> filteredMembers = new ArrayList<>();
-        LOGGER.log(Level.INFO, "Query-String: " + query);
+
+        LOGGER.log(Level.INFO, "Query-String: {0}", query);
+
+        // Bei gescannten QR-codes ist der query string 15 ziffern lang
+        // für diesen Fall werden die beiden Prüfziffern zur Mitgliedersuche entfernt
+        // und das mitglied direkt gesucht
+        if (query.length() == 15 && query.matches("\\d+")) {
+            setScanCode(query);
+            query = query.substring(2, 15);
+            for (int i = 0; i < allMembers.size(); i++) {
+                Member aktMember = allMembers.get(i);
+                if (aktMember.getMglnr().equals(query)) {
+                    setMember(aktMember);
+                    return new ArrayList<>();
+                }
+            }
+        } else {
+            setScanCode(null);
+        }
 
         for (int i = 0; i < allMembers.size(); i++) {
             Member aktMember = allMembers.get(i);
@@ -208,68 +238,84 @@ public class ControlBean implements Serializable {
         return mgl;
     }
 
-    public void startSession(String strLogin) {
-        LOGGER.log(Level.FINE, "mnrLogin={0}", strLogin);
+    /**
+     * Aufruf über die URL oder weitergeleitet von der Login-Maske
+     * @param strLogin
+     * @param redirect 
+     */
+    public void startSession(String strLogin, String redirect) {
+        LOGGER.log(Level.INFO, "mnrLogin={0}", strLogin);
 
-        //Query q = em.createQuery("SELECT p FROM Person p WHERE p.mglnr = :mglnr");
-        Query q = em.createNamedQuery("Person.findByMglnr");
-        q.setParameter("mglnr", Mgl2Long(strLogin));
-        Person person;
-        try {
-            person = (Person) q.getSingleResult();
-        } catch (javax.persistence.NoResultException e) {
-            person = null;
+        Person person = null;
+        if (strLogin != null) {
+
+            strLogin = strLogin.replaceAll(" ", "");
+
+            if (strLogin.length() == 15 && strLogin.matches("\\d+")) {
+                strLogin = strLogin.substring(2, 15);
+            }
+
+            if (strLogin.length() == 13 && strLogin.matches("\\d+")) {
+                //Query q = em.createQuery("SELECT p FROM Person p WHERE p.mglnr = :mglnr");
+                Query q = em.createNamedQuery("Person.findByMglnr");
+                q.setParameter("mglnr", Mgl2Long(strLogin));
+
+                try {
+                    person = (Person) q.getSingleResult();
+                } catch (javax.persistence.NoResultException e) {
+                    person = null;
+                }
+            }
         }
 
         if (person != null) {
             loginPerson = new PersonExt(person);
-            setLoginMgl(loginPerson);
-        } else {
-            // Im Fehlerfall zur loginseite springen
-            try {
-                // Das funktioniert hier so nicht!!
-                FacesContext.getCurrentInstance().getExternalContext().redirect("login.xhtml");
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+            if (loginPerson.getUserstatus() > 1) {
+                setLoginMgl(loginPerson);
+                setMnrLogin(null);
+                if (redirect != null) {
+                    try {
+                        FacesContext.getCurrentInstance().getExternalContext().redirect(redirect);
+                    } catch (IOException ex) {
+                        LOGGER.log(Level.SEVERE, null, ex);
+                    }
+                }
+            } else {
+                showAccessMessage(accesstype.deny, "Sie haben leider nicht die nötigen Zugriffsrechte");
+                setMnrLogin(null);
             }
+        } else {
+            setMnrLogin(null);
         }
+
     }
 
     /**
-     *
+     * Aufruf aus der Login-Maske 
      */
     public void startSession() {
-        LOGGER.log(Level.FINE, "mnrLogin={0}", this.mnrLogin);
+        LOGGER.log(Level.INFO, "mnrLogin={0}", this.mnrLogin);
+        startSession(this.mnrLogin, "scan.xhtml");
+    }
 
-        //Query q = em.createQuery("SELECT p FROM Person p WHERE p.mglnr = :mglnr");
-        Query q = em.createNamedQuery("Person.findByMglnr");
-        q.setParameter("mglnr", Mgl2Long(this.mnrLogin));
-        Person person;
-        try {
-            person = (Person) q.getSingleResult();
-        } catch (javax.persistence.NoResultException e) {
-            person = null;
-        }
+    public boolean getUserRightMin() {
+        return getLoginMglUserRights() == 1;
+    }
 
-        if (person != null) {
-            loginPerson = new PersonExt(person);
-            setLoginMgl(loginPerson);
-            try {
-                /*
-                if (request.getRequestURI().startsWith(request.getContextPath() + ResourceHandler.RESOURCE_IDENTIFIER)) {
-                chain.doFilter(request, response);
-                } else {
-                response.sendRedirect(request.getContextPath() + "/scan.xhtml");
-                }
-                 */
-                FacesContext.getCurrentInstance().getExternalContext().redirect("scan.xhtml");
-                //return "scan?facesRedirect=true";
-            } catch (IOException ex) {
-                Logger.getLogger(ControlBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            //return "";
-        }
+    public boolean getUserRightEinlass() {
+        return getLoginMglUserRights() > 1;
+    }
+
+    public boolean getUserRightSewobe() {
+        return getLoginMglUserRights() > 2;
+    }
+
+    public boolean getUserRightAdmin() {
+        return getLoginMglUserRights() > 3;
+    }
+
+    public boolean getUserRightDev() {
+        return getLoginMglUserRights() > 4;
     }
 
     /**
@@ -386,6 +432,26 @@ public class ControlBean implements Serializable {
             em.getTransaction().begin();
             em.persist(sl);
             em.getTransaction().commit();
+
+            LOGGER.info("Scancode = " + scanCode);
+            if (scanCode != null && scanCode.length() == 15) {
+                if (!pe.getCard().getPrfmglnr().toString().equals(scanCode)) {
+                    atype = accesstype.deny;
+                    showAccessMessage(atype, "Der eingescannte Ausweis ist ungültig!");
+                }
+            } else {
+                atype = accesstype.doubt;
+                showAccessMessage(atype, "Es wurde kein Ausweis eingescannt");
+            }
+
+            if (!pe.person.getHauptkategorie().equals("Mitglied")) {
+                atype = accesstype.deny;
+                showAccessMessage(atype, "" + pe.getFullname(), " ist kein Mitglied sondern " + pe.person.getHauptkategorie() + " mit Status="+pe.getState()+".");
+                if (pe.person.getBemerkung() != null) {
+                    showAccessMessage(atype, "Bemerkung: ", pe.person.getBemerkung());
+                }
+                return;
+            }
 
             atype = accesstype.access;
 

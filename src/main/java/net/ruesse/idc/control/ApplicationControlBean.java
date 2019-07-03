@@ -33,17 +33,18 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import static net.ruesse.idc.control.FileService.getDatabaseBaseDir;
 import static net.ruesse.idc.control.FileService.getLogoDir;
 import static net.ruesse.idc.control.FileService.getWorkingDir;
-import net.ruesse.idc.database.persistence.service.PersonExt;
+import net.ruesse.idc.database.persistence.service.PersonUser;
 import net.ruesse.idc.database.sql.SqlSupport;
 import net.ruesse.idc.report.PrintSupport;
 import static net.ruesse.idc.report.PrintSupport.availablePrinters;
@@ -58,27 +59,31 @@ import org.primefaces.model.StreamedContent;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ApplicationScoped
-@ManagedBean
+@SessionScoped
+@Named
 public class ApplicationControlBean implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationControlBean.class.getName());
 
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
+    
+    private static final long serialVersionUID = 1L;
 
     static private boolean isDemo;
     static private boolean isPDF;
     static private boolean isDruckerdialog;
     static private boolean isBackupAvailable;
     static private boolean isDevelopment = false;
-    static private String kartendrucker;
     static private Map persistenceParameters = null;
-    static private PersonExt loginMgl;
+    static private PersonUser loginMgl;
     static boolean screenResolution = false;
     static int AnzahlDrucke = 1;
 
     private List<String> printers;
 
+    /**
+     *
+     */
     public ApplicationControlBean() {
 
         LOGGER.setLevel(Level.INFO);
@@ -96,118 +101,249 @@ public class ApplicationControlBean implements Serializable {
 
         isDevelopment = false;
         isBackupAvailable = false;
-        kartendrucker = "PDF";
 
         //options
         printers = availablePrinters();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isIsDemo() {
         LOGGER.log(Level.FINE, "isDemo={0}", isDemo);
         return isDemo;
     }
 
+    /**
+     *
+     * @param isDemo
+     */
     public void setIsDemo(boolean isDemo) {
         LOGGER.log(Level.FINE, "isDemo={0}", isDemo);
         ApplicationControlBean.isDemo = isDemo;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isIsPDF() {
         return isPDF;
     }
 
+    /**
+     *
+     * @return
+     */
     static public boolean isPDF() {
         return isPDF;
     }
 
+    /**
+     *
+     * @param isPDF
+     */
     public void setIsPDF(boolean isPDF) {
         ApplicationControlBean.isPDF = isPDF;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isValidDruckerdialog() {
         return screenResolution == false;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isIsDruckerdialog() {
         return isDruckerdialog;
     }
 
+    /**
+     *
+     * @param isDruckerdialog
+     */
     public void setIsDruckerdialog(boolean isDruckerdialog) {
         ApplicationControlBean.isDruckerdialog = isDruckerdialog;
     }
 
+    /**
+     *
+     * @return
+     */
     public static boolean isDruckerdialog() {
         return isDruckerdialog;
     }
 
+    /**
+     *
+     * @return
+     */
     public static boolean isIsDevelopment() {
         return isDevelopment;
     }
 
+    /**
+     *
+     * @return
+     */
     public static boolean isIsBackupAvailable() {
         return isBackupAvailable;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isBackupAvailable() {
         return isBackupAvailable;
     }
 
+    /**
+     *
+     * @param isBackupAvailable
+     */
     public static void setIsBackupAvailable(boolean isBackupAvailable) {
         ApplicationControlBean.isBackupAvailable = isBackupAvailable;
     }
 
+    /**
+     *
+     * @param isDevelopment
+     */
     public static void setIsDevelopment(boolean isDevelopment) {
         ApplicationControlBean.isDevelopment = isDevelopment;
     }
 
-    public static PersonExt getLoginMgl() {
+    /**
+     *
+     * @return
+     */
+    public static PersonUser getLoginMgl() {
         return loginMgl;
     }
 
+    /**
+     *
+     * @return
+     */
     public static int getLoginMglUserRights() {
+        // !! BEI PROBLEMEN mit der Datenbank
+        // return 5; 
         if (loginMgl != null) {
-            if (loginMgl.isMitarbeiter()) {
-                return loginMgl.getUserstatus(); 
-            } 
-        } 
+            return loginMgl.getUserRights();
+        }
         return 0;
     }
 
-    public static void setLoginMgl(PersonExt loginMgl) {
+    /**
+     *
+     * @param loginMgl
+     */
+    public static void setLoginMgl(PersonUser loginMgl) {
         ApplicationControlBean.loginMgl = loginMgl;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getKartendrucker() {
-        LOGGER.info(kartendrucker);
-        return kartendrucker;
+        return loginMgl.getPrinter();
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getStaticKartendrucker() {
-        LOGGER.info(kartendrucker);
-        return kartendrucker;
+        return loginMgl.getPrinter();
     }
 
+    /**
+     *
+     * @param kartendrucker
+     */
     public void setKartendrucker(String kartendrucker) {
         LOGGER.info(kartendrucker);
-        ApplicationControlBean.kartendrucker = kartendrucker;
+        loginMgl.setPrinter(kartendrucker);
     }
 
+    /**
+     *
+     * @return
+     */
     public int getAnzahlDrucke() {
         return AnzahlDrucke;
     }
 
+    /**
+     *
+     * @param AnzahlDrucke
+     */
     public void setAnzahlDrucke(int AnzahlDrucke) {
         ApplicationControlBean.AnzahlDrucke = AnzahlDrucke;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getPrinters() {
         return printers;
     }
 
+    /**
+     *
+     * @param printers
+     */
     public void setPrinters(List<String> printers) {
         this.printers = printers;
     }
 
+    /**
+     *
+     * @return
+     */
+    public String getWebDavUser() {
+        LOGGER.log(Level.INFO, "WebDavUser={0}", loginMgl.getWebDavUser());
+        return loginMgl.getWebDavUser();
+    }
+
+    /**
+     *
+     * @param WebDavUser
+     */
+    public void setWebDavUser(String WebDavUser) {
+        LOGGER.log(Level.INFO, "WebDavUser={0}", WebDavUser);
+        loginMgl.setWebDavUser(WebDavUser);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getWebDavPassword() {
+        return loginMgl.getWebDavPassword();
+    }
+
+    /**
+     *
+     * @param WebDavPassword
+     */
+    public void setWebDavPassword(String WebDavPassword) {
+        loginMgl.setWebDavPassword(WebDavPassword);
+    }
+
+    /**
+     *
+     * @return
+     */
     public String getBuildInfo() {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = null;
@@ -238,10 +374,31 @@ public class ApplicationControlBean implements Serializable {
         return "";
     }
 
+    /**
+     *
+     * @return
+     */
     public String getWorkingDirInfo() {
         return getWorkingDir().toString();
     }
 
+    /**
+     *
+     * @return
+     */
+    public String getWebserviceInfo() {
+        VereinService vs = new VereinService();
+        if (vs != null) {
+            return vs.aktVerein.getUridav();
+        } else {
+            return "Kein Webservice verfügbar!";
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
     public String getBackupInfo() {
         String strResult;
         try {
@@ -280,6 +437,10 @@ public class ApplicationControlBean implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLastBackup() {
         if (isIsBackupAvailable()) {
             return "Datenstand vom " + getBackupInfo() + " laden";
@@ -288,6 +449,9 @@ public class ApplicationControlBean implements Serializable {
         }
     }
 
+    /**
+     *
+     */
     public void uploadLastBackup() {
         if (isIsBackupAvailable()) {
             String strResult;
@@ -312,53 +476,72 @@ public class ApplicationControlBean implements Serializable {
         addMessageFail("Fehler", "Datenstand vom " + getBackupInfo() + " konnte nicht in die Datenbank kopiert werden. Siehe Log-File ausgabe.");
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCATALINA_HOME() {
         return System.getProperty("catalina.base");
     }
 
+    /**
+     *
+     */
     public void printActionRS() {
         String REPORT = "IDCard-back";
 
         if (AnzahlDrucke >= 1) {
-            PrintSupport.printReport(REPORT, em, AnzahlDrucke, kartendrucker);
+            PrintSupport.printReport(REPORT, em, AnzahlDrucke, loginMgl.getPrinter());
             addMessage("Fertig", "Druckauftrag erledigt");
         } else {
             addMessageFail("KEIN Druck!", "Mindestens eine Kopie erforderlich");
         }
     }
-
-    public void printActionAL() {
-        String REPORT = "Anwesenheitsliste";
-        PrintSupport.printReport(REPORT, em, AnzahlDrucke, "PDF");
-    }
-
+    
+    /**
+     *
+     */
     public void resetScanLog() {
         em.getTransaction().begin();
         em.createNativeQuery("DELETE FROM IDCLOCAL.SCANLOG").executeUpdate();
         em.getTransaction().commit();
     }
 
+    /**
+     *
+     */
     public void addEntenhauusen() {
         SqlSupport sp = new SqlSupport();
         sp.executeSQLScript("demo/entenhausenadd.sql");
         addMessage("Fertig", "Demodaten in die Datenbank kopiert");
     }
 
+    /**
+     *
+     */
     public void dropEntenhauusen() {
         SqlSupport sp = new SqlSupport();
         sp.executeSQLScript("demo/entenhausendrop.sql");
         addMessage("Fertig", "Demodaten aus der Datenbank entfernt");
     }
 
+    /**
+     *
+     */
     public void onlyEntenhauusen() {
         SqlSupport sp = new SqlSupport();
         sp.executeSQLScript("createdb.sql");
         sp.executeSQLScript("createverein.sql");
         sp.executeSQLScript("demo/entenhausenersv.sql");
         sp.executeSQLScript("demo/entenhausenadd.sql");
-        addMessage("Fertig", "Datenbank aus Demodaten aus erstellt");
+        addMessage("Fertig", "Datenbank aus Demodaten erstellt");
+        Cache cache = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).getCache();
+        cache.evictAll();
     }
 
+    /**
+     *
+     */
     public void exportTables() {
         SqlSupport sp = new SqlSupport();
 
@@ -380,18 +563,32 @@ public class ApplicationControlBean implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param summary
+     * @param detail
+     */
     public void addMessage(String summary, String detail) {
         LOGGER.log(Level.INFO, "{0} {1}", new Object[]{summary, detail});
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
         FacesContext.getCurrentInstance().addMessage("AppControl", message);
     }
 
+    /**
+     *
+     * @param summary
+     * @param detail
+     */
     public void addMessageFail(String summary, String detail) {
         LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{summary, detail});
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
         FacesContext.getCurrentInstance().addMessage("AppControl", message);
     }
 
+    /**
+     *
+     * @return
+     */
     public StreamedContent getLogoImage() {
         FacesContext context = FacesContext.getCurrentInstance();
         StreamedContent img = null;
@@ -410,6 +607,10 @@ public class ApplicationControlBean implements Serializable {
         return (img);
     }
 
+    /**
+     *
+     * @return
+     */
     public static Map getPersistenceParameters() {
         if (persistenceParameters == null) {
             // unbedingt hier aufrufen: in getDataBaseDir wird der Diemo-modus ermittelt

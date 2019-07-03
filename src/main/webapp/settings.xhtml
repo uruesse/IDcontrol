@@ -19,8 +19,6 @@
 
     <ui:define name="implementation">
         <h:form id="AppControl">
-            <h:inputHidden value="#{controlBean.param}" />
-            
             <p:growl id="growlmessage" for="AppControl" showDetail="true" />
             <p:messages id="AppControlMessage" for="AppControl" escape="false" showDetail="true" closable="true">
                 <p:autoUpdate />
@@ -49,6 +47,14 @@
 
                 <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
                 <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary" disabled="#{!controlBean.userRightSewobe}"/>
+
+                <p:separator/><p:separator/>
+
+                <h:outputLabel for="WebDav" value="WebDav user/password" />
+                <h:panelGrid id="WebDav" columns="4" cellpadding="2">
+                    <p:inputText immediate="true" value="#{applicationControlBean.webDavUser}" />/<p:password  immediate="true" value="#{applicationControlBean.webDavPassword}"  /> 
+                    <p:commandButton update="WebDav" value="sichern"/>
+                </h:panelGrid>
 
                 <p:separator/><p:separator/>
                 <h:outputText value="NUR FÜR TESTZWECKE:" />

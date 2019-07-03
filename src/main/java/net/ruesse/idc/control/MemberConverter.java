@@ -17,12 +17,13 @@ package net.ruesse.idc.control;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.FacesMessage;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.ConverterException;
+import javax.inject.Named;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
 /**
  *
@@ -33,6 +34,13 @@ public class MemberConverter implements Converter {
 
     private final static Logger LOGGER = Logger.getLogger(MemberConverter.class.getName());
 
+    /**
+     *
+     * @param fc
+     * @param uic
+     * @param value
+     * @return
+     */
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String value) {
         if (value != null && value.trim().length() == 13) {
@@ -40,8 +48,16 @@ public class MemberConverter implements Converter {
 
             long l = Long.parseLong(value);
             if (l > 0) {
-                MemberService service = (MemberService) fc.getExternalContext().getApplicationMap().get("memberService");
-                return service.findMemberByMglnr(value);
+
+                //ohne CDI: MemberService service = (MemberService) fc.getExternalContext().getApplicationMap().get("memberService");
+                //Mit CDI https://www.oipapio.com/question-2982180
+                MemberService service;
+                service = CDI.current().select(MemberService.class).get();
+                if (service == null) {
+                    return null;
+                } else {
+                    return service.findMemberByMglnr(value);
+                }
             }
 
         }
@@ -65,6 +81,13 @@ public class MemberConverter implements Converter {
          */
     }
 
+    /**
+     *
+     * @param fc
+     * @param uic
+     * @param object
+     * @return
+     */
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object object) {
         if (object != null) {

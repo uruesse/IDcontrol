@@ -15,25 +15,41 @@
  */
 package net.ruesse.idc.control;
 
+import java.io.Serializable;
 import javax.faces.FacesException;
 import javax.faces.application.ViewExpiredException;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.inject.Named;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 
-@ManagedBean
+/**
+ * 
+ * @author Ulrich Rüße <ulrich@ruesse.net>
+ */
 @RequestScoped
-public class ExceptionHandlerView {
+@Named
+public class ExceptionHandlerView implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * 
+     */
     public void throwNullPointerException() {
         throw new NullPointerException("A NullPointerException!");
     }
 
+    /**
+     * 
+     */
     public void throwWrappedIllegalStateException() {
         Throwable t = new IllegalStateException("A wrapped IllegalStateException!");
         throw new FacesException(t);
     }
 
+    /**
+     * 
+     */
     public void throwViewExpiredException() {
         throw new ViewExpiredException("A ViewExpiredException!",
                 FacesContext.getCurrentInstance().getViewRoot().getViewId());

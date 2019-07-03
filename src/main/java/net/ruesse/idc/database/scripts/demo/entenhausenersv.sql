@@ -18,6 +18,7 @@ INSERT INTO IDCREMOTE.VEREIN (
   URI,
   URIMGV,
   PWD,
+  URIDAV,
   DATATIME) 
 VALUES (
   1122333,
@@ -31,4 +32,5 @@ VALUES (
   'www.entenhausener-sv.us',
   'http://www.entenhausener-sv.us',
   'pass@123',
+  '',
   '2000-01-01 00:00:00.000');

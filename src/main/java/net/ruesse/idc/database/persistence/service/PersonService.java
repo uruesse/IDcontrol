@@ -21,12 +21,13 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ApplicationScoped;
+import javax.inject.Named;
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
+import net.ruesse.idc.control.Constants;
 import net.ruesse.idc.database.persistence.Person;
 
 /**
@@ -34,12 +35,12 @@ import net.ruesse.idc.database.persistence.Person;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @ApplicationScoped
-@ManagedBean
+@Named
 public class PersonService implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(PersonService.class.getName());
-    private static final String PERSISTENCE_UNIT_NAME = "net.ruesse.IDControl.PU";
-    private static EntityManagerFactory factory;
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
+    private static final long serialVersionUID = 1L;
 
     /**
      *
@@ -63,9 +64,11 @@ public class PersonService implements Serializable {
         return pos >= 0 ? string.substring(pos + delimiter.length()) : "";
     }
 
+    /**
+     * 
+     * @return 
+     */
     public List<Person> createPersons() {
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        EntityManager em = factory.createEntityManager();
 
         LOGGER.log(Level.FINE, "Starte Query auf Personen");
         Query q = em.createNamedQuery("Person.findAll");
@@ -73,13 +76,13 @@ public class PersonService implements Serializable {
         /*
          pl.foreach((p) -> {
             LOGGER.log(Level.FINE, "mnr: {0}", p.getMglnr());
-            personlist.add(new PersonExt(p));
+            personlist.add(new PersonUser(p));
         })
 
         LOGGER.log(Level.FINE, "VorForEach");
         for (Person p : pl) {
             LOGGER.log(Level.FINE, "mnr: {0}", p.getMglnr());
-            personlist.add(new PersonExt(p));
+            personlist.add(new PersonUser(p));
         }
          */
         return personlist;

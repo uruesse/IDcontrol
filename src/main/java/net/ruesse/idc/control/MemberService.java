@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
@@ -32,24 +32,36 @@ import net.ruesse.idc.database.persistence.Person;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ManagedBean(name = "memberService", eager = true)
 @ApplicationScoped
+@Named("memberService")
 public class MemberService {
 
     private final static Logger LOGGER = Logger.getLogger(MemberService.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
-    private List<Member> members;
+    private List<Member> members = null;
 
+    /**
+     *
+     */
     @PostConstruct
     public void init() {
-        refreshAction();
+        //if (members == null) {
+            refreshAction();
+        //}
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Member> getMembers() {
         return members;
     }
 
+    /**
+     *
+     */
     public void refreshAction() {
         members = new ArrayList<>();
         int id = 0;
@@ -64,10 +76,14 @@ public class MemberService {
         }
     }
 
+    /**
+     *
+     * @param strMglnr
+     * @return
+     */
     public Member findMemberByMglnr(String strMglnr) {
         // Es kann nur ein Ergebnis geben
         LOGGER.log(Level.INFO, "Suche Mglnr: " + strMglnr);
-        
 
         for (Member m : members) {
             if (m.getMglnr().equals(strMglnr)) {

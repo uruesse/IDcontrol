@@ -1,11 +1,1 @@
-SELECT 
-                   "IDCREMOTE"."PERSON"."MGLNR",
-	           "IDCREMOTE"."PERSON"."VORNAME",
-	           "IDCREMOTE"."PERSON"."NACHNAME",
-                   "IDCREMOTE"."PERSON"."HAUPTKATEGORIE",
-                   "IDCLOCAL"."CARD"."PRFMGLNR"
-                   FROM "IDCREMOTE"."PERSON"  JOIN "IDCLOCAL"."CARD" 
-                   ON "IDCREMOTE"."PERSON"."MGLNR"="IDCLOCAL"."CARD"."MGLNR"
-                   WHERE 
-	             "IDCREMOTE"."PERSON"."STATUS" = 'Aktiv'
-	             
+SELECT * FROM SYS.SYSTABLES T, SYS.SYSSCHEMAS S WHERE T.TABLETYPE='T' AND S.SCHEMAID=T.SCHEMAID AND S.SCHEMANAME='IDCREMOTE' order by tableid	             

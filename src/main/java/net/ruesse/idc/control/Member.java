@@ -16,7 +16,7 @@
 package net.ruesse.idc.control;
 
 import net.ruesse.idc.database.persistence.Person;
-import net.ruesse.idc.database.persistence.service.PersonExt;
+import net.ruesse.idc.database.persistence.service.PersonMgl;
 
 /**
  *
@@ -29,9 +29,19 @@ public class Member {
     private String displayName;
     private String name;
 
+    /**
+     * 
+     */
     public Member() {
     }
 
+    /**
+     * 
+     * @param id
+     * @param mglnr
+     * @param displayName
+     * @param name 
+     */
     public Member(int id, String mglnr, String displayName, String name) {
         this.id = id;
         this.mglnr = mglnr;
@@ -39,46 +49,87 @@ public class Member {
         this.name = name;
     }
 
+    /**
+     * 
+     * @param id
+     * @param p 
+     */
     public Member(int id, Person p) {
         this.id = id;
-        PersonExt pe = new PersonExt(p);
+        PersonMgl pe = new PersonMgl(p);
         this.mglnr = pe.getStrMglnr();
         this.displayName = pe.formatMglnr() + " - " + pe.getFullname();
         this.name = pe.getStrMglnr() + " " + pe.getFullname().toLowerCase();
     }
 
+    /**
+     * 
+     * @return 
+     */
     public long getId() {
         return id;
     }
 
+    /**
+    * 
+    * @param id 
+    */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getMglnr() {
         return mglnr;
     }
 
+    /**
+     * 
+     * @param mglnr 
+     */
     public void setMglnr(String mglnr) {
         this.mglnr = mglnr;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /**
+     * 
+     * @param displayName 
+     */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @param name 
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * 
+     * @return 
+     */
     @Override
     public String toString() {
         return name;

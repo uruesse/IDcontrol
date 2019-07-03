@@ -15,13 +15,9 @@
 
     <ui:define name="description">
         #{controlBean.userRightEinlass ? msg['scan.headdescription'] : 'Sie haben keine Berechtigung für diese Seite'}
-
     </ui:define>
 
     <ui:define name="implementation">
-        <h:form>
-            <h:inputHidden value="#{controlBean.param}" />
-        </h:form>
         <h:form rendered="#{controlBean.userRightEinlass}">
 
             <p:messages id="AppControlMessage" escape="false" showDetail="true" closable="false">

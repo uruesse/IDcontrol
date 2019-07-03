@@ -20,9 +20,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,34 +30,42 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.enterprise.context.Dependent;
 import javax.faces.context.FacesContext;
 import static net.ruesse.idc.control.FileService.getLoggingDir;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.MenuModel;
 
 /**
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ManagedBean
-@RequestScoped
-public class ErrorHandler {
+@Dependent
+public class ErrorHandler implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(ErrorHandler.class.getName());
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * 
+     * @return 
+     */
     public String getStatusCode() {
         String val = String.valueOf((Integer) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.status_code"));
         return val;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getMessage() {
         String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.message");
         return val;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getExceptionType() {
         String val;
         Object ex = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.exception_type");
@@ -69,6 +77,10 @@ public class ErrorHandler {
         }
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getException() {
         String val;
         Object ex = FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.exception");
@@ -80,10 +92,18 @@ public class ErrorHandler {
         return val;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getRequestURI() {
         return (String) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.request_uri");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getServletName() {
         return (String) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get("javax.servlet.error.servlet_name");
     }
@@ -97,15 +117,27 @@ public class ErrorHandler {
 
     public List<String> fileContent = new ArrayList<>();
 
+    /**
+     * 
+     * @return 
+     */
     public List<String> getFileContent() {
         return fileContent;
     }
 
+    /**
+     * 
+     * @param fileContent 
+     */
     public void setFileContent(List<String> fileContent) {
         this.fileContent = fileContent;
     }
 
-
+    /**
+     * 
+     * @param path
+     * @throws ParseException 
+     */
     public void loadFile(String path) throws ParseException {
         //String path = "/Users/ulrich/Documents/Entwicklung/apache-tomcat-9.0.16/logs/catalina.out";
         LOGGER.info("Lese Logdatei ein: " + path);
@@ -145,10 +177,18 @@ public class ErrorHandler {
     
     String logFile;
 
+    /**
+     * 
+     * @return 
+     */
     public String getLogFile() {
         return logFile;
     }
 
+    /**
+     * 
+     * @param logFile 
+     */
     public void setLogFile(String logFile) {
         this.logFile = logFile;
         try {
@@ -159,6 +199,10 @@ public class ErrorHandler {
     }
     
 
+    /**
+     * 
+     * @return 
+     */
     public List<String> getLogFileList() {
         List<String> result = null;
 

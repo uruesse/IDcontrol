@@ -18,17 +18,19 @@ package net.ruesse.idc.documentation;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import net.ruesse.idc.control.ApplicationControlBean;
 import static net.ruesse.idc.control.FileService.getDocumentsDir;
-import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -36,11 +38,13 @@ import org.primefaces.model.StreamedContent;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
+@Named
 @SessionScoped
-@ManagedBean
-public class DocumentView {
+//@RequestScoped -- das funktioniert nicht!!
+public class DocumentView implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(DocumentView.class.getName());
+    private static final long serialVersionUID = 1L;
 
     int screenhight;
     boolean printeroutput = false;
@@ -51,11 +55,21 @@ public class DocumentView {
      * @return
      */
     public int getScreenhight() {
-        if (screenhight < 300) {
-            return 1024;
+        LOGGER.info("Screenhight: N/A");
+        int ret;
+        if (ApplicationControlBean.getLoginMgl() == null) {
+            if (screenhight < 300) {
+                ret = 1024;
+            } else {
+                ret = screenhight;
+            }
+        } else if (ApplicationControlBean.getLoginMgl().getPdfHight() < 300) {
+            ret = 1024;
         } else {
-            return screenhight;
+            ret = ApplicationControlBean.getLoginMgl().getPdfHight();
         }
+        LOGGER.info("Screenhight: " + ret);
+        return ret;
     }
 
     /**
@@ -64,7 +78,11 @@ public class DocumentView {
      */
     public void setScreenhight(int screenhight) {
         LOGGER.info("Screenhight: " + screenhight);
-        this.screenhight = screenhight;
+        if (ApplicationControlBean.getLoginMgl() == null) {
+            this.screenhight = screenhight;
+        } else {
+            ApplicationControlBean.getLoginMgl().setPdfHight(screenhight);
+        }
     }
 
     /**
@@ -151,13 +169,17 @@ public class DocumentView {
     }
 
     /**
-     * Caching ist nicht erlaubt bei Anzeige von Druckausgaben
-     * ansonsten kann es sein, dass gecachte Ausgaben angezeigt werden
-     * 
+     * Caching ist nicht erlaubt bei Anzeige von Druckausgaben ansonsten kann es
+     * sein, dass gecachte Ausgaben angezeigt werden
+     *
+     * Caching macht im Chrome-Browser grundsätzlich Probleme, deshalb aktuell
+     * abgeschaltet
+     *
      * @return
      */
     public boolean getCaching() {
-        return !printeroutput;
+        return false;
+        //return !printeroutput;
     }
 
     /**

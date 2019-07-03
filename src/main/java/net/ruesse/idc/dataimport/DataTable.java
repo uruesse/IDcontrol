@@ -26,6 +26,14 @@ public class DataTable {
     private long csv;
     private long failure;
 
+    
+    /**
+     * 
+     * @param tablename
+     * @param items
+     * @param csv
+     * @param failure 
+     */
     public DataTable(String tablename, long items, long csv, long failure) {
         this.tablename = tablename;
         this.items = items;
@@ -33,38 +41,74 @@ public class DataTable {
         this.failure = failure;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getTablename() {
         return tablename;
     }
 
+    /**
+     * 
+     * @param tablename 
+     */
     public void setTablename(String tablename) {
         this.tablename = tablename;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public long getItems() {
         return items;
     }
 
+    /**
+     * 
+     * @param items 
+     */
     public void setItems(long items) {
         this.items = items;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public long getCsv() {
         return csv;
     }
 
+    /**
+     * 
+     * @param csv 
+     */
     public void setCsv(long csv) {
         this.csv = csv;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public long getFailure() {
         return failure;
     }
 
+    /**
+     * 
+     * @param failure 
+     */
     public void setFailure(long failure) {
         this.failure = failure;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public boolean getShowFailure() {
         return failure == 0;
     }

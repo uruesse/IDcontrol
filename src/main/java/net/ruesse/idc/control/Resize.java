@@ -18,39 +18,35 @@ package net.ruesse.idc.control;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.inject.Named;
-import static net.ruesse.idc.control.ApplicationControlBean.getLoginMgl;
-import net.ruesse.idc.database.persistence.service.PersonUser;
+import org.primefaces.event.ResizeEvent;
 
 /**
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Named
-public class FooterView implements Serializable {
+public class Resize implements Serializable {
+    
+    // siehe https://stackoverflow.com/questions/18733626/handling-resize-event-when-layout-unit-is-resized-in-primefaces
+               // <p:ajax event="resize" listener="#{resize.handleResize}" />
 
-    private static final Logger LOGGER = Logger.getLogger(FooterView.class.getName());
+    private static final Logger LOG = Logger.getLogger(Resize.class.getName());
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 
-     * @return 
-     */
-    public String getFileInfo() {
-        LOGGER.info("Lese letztes Aktualisierungsdatum ein");
-        VereinService vs = new VereinService();
-        return vs.getFileInfo();
+    private long width;
+    private long height;
+
+    public void handleResize(ResizeEvent event) {
+        width = event.getWidth();
+        height = event.getWidth();
+        LOG.info("in resize width=" + width + " height=" + height);
     }
 
-    /**
-     * 
-     * @return 
-     */
-    public String getUserInfo() {
-        PersonUser pe = getLoginMgl();
-        if (pe != null) {
-            return pe.getPersonMgl().getFullname();
-        } else {
-            return "";
-        }
+    public long getWidth() {
+        return this.width;
+    }
+
+    public long getHeight() {
+        return this.height;
     }
 }

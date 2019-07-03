@@ -944,3 +944,100 @@ filteredValue="#{errorHandler.filteredFileContent}"
 </html>
 
                 <p:inputMask id="mitgliednummer" value="#{controlBean.mnrLogin}" mask="999999999999999" maxlength="15"  slotChar=" "/>
+
+
+        <!-- CDI required APIs -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-atinject_1.0_spec</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jcdi_2.0_spec</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-interceptor_1.2_spec</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.3_spec</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+
+
+
+        <!-- CDI Impl -->
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-impl</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-web</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openwebbeans</groupId>
+            <artifactId>openwebbeans-jsf</artifactId>
+            <version>2.0.10</version>
+        </dependency>
+
+        <!-- FeedReader -->
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+
+        <!-- Twitter API -->
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>3.0.5</version>
+        </dependency>
+
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlFiles>
+                                <wsdlFile>localhost_12345/IDC/fileService.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <packageName>net.ruesse.idc.webclient</packageName>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                            <wsdlLocation>http://localhost:12345/IDC/fileService?wsdl</wsdlLocation>
+                            <staleFile>${project.build.directory}/jaxws/stale/fileService.stale</staleFile>
+                        </configuration>
+                        <id>wsimport-generate-fileService</id>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml</groupId>
+                        <artifactId>webservices-api</artifactId>
+                        <version>2.0</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <sourceDestDir>${project.build.directory}/generated-sources/jaxws-wsimport</sourceDestDir>
+                    <xnocompile>true</xnocompile>
+                    <verbose>true</verbose>
+                    <extension>true</extension>
+                    <catalog>${basedir}/src/jax-ws-catalog.xml</catalog>
+                </configuration>
+            </plugin>

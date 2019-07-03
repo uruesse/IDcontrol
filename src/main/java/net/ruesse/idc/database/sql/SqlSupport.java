@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
@@ -101,16 +102,26 @@ public class SqlSupport {
         return count;
     }
 
+    /**
+     *
+     */
     public void beginTransaction() {
         em.getTransaction().begin();
     }
 
+    /**
+     *
+     */
     public void commitTransaction() {
         em.getTransaction().commit();
     }
 
+    /**
+     *
+     * @return
+     */
     private String getPassword() {
-        VereinService vs=new VereinService();
+        VereinService vs = new VereinService();
         return vs.getAktVerein().getPwd();
     }
 
@@ -162,6 +173,11 @@ public class SqlSupport {
 
     }
 
+    /**
+     *
+     * @param sourcePath
+     * @return
+     */
     private Path unCompressPasswordProtectedFiles(Path sourcePath) {
 
         Path destPath = sourcePath.getParent();
@@ -187,14 +203,25 @@ public class SqlSupport {
         return Paths.get(fn.substring(0, lastIndex));
     }
 
+    /**
+     *
+     * @param schema
+     * @param importZip
+     */
     public void importSchema(String schema, Path importZip) {
         Path path = unCompressPasswordProtectedFiles(importZip);
 
         executeSQLScript("createdb.sql");
         executeSQLScript("createverein.sql");
 
+        importTable(schema, "FAMILY", path);
+        importTable(schema, "PERSON", path);
+
         getTables(schema).forEach((table) -> {
-            importTable(schema, table, path);
+            if (!(table.toUpperCase().equals("FAMILY") || 
+                  table.toUpperCase().equals("PERSON"))) {
+                importTable(schema, table, path);
+            }
         });
 
         LOGGER.log(Level.INFO, "Destination for file.zip  {0}", getVereinBaseDir().toString());
@@ -222,6 +249,11 @@ public class SqlSupport {
         ** folgt der explizite Refresh auf die Vereinssuche als Workaround
          */
         em.clear();
+
+        // prüfen, ob das hier klappt.
+        // siehe: https://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Caching/Cache_API
+        Cache cache = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).getCache();
+        cache.evictAll();
         // --- BEGINN WORKAROUND
         Query q = em.createNamedQuery("Verein.findAll", Verein.class);
         q.setHint("eclipselink.refresh", "true");
@@ -236,6 +268,12 @@ public class SqlSupport {
         }
     }
 
+    /**
+     *
+     * @param schema
+     * @param table
+     * @param importPath
+     */
     public void importTable(String schema, String table, Path importPath) {
 
         Path importFile = importPath.resolve(table.toLowerCase() + ".dat");
@@ -265,6 +303,12 @@ public class SqlSupport {
         }
     }
 
+    /**
+     *
+     * @param schema
+     * @param table
+     * @param exportPath
+     */
     public void exportTable(String schema, String table, Path exportPath) {
 
         em.getTransaction().begin();
@@ -370,5 +414,4 @@ public class SqlSupport {
             sqle = sqle.getNextException();
         }
     }
-
 }

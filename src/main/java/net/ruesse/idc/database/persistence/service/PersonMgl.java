@@ -15,23 +15,17 @@
  */
 package net.ruesse.idc.database.persistence.service;
 
-import java.math.BigInteger;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.control.Constants;
-import net.ruesse.idc.control.ControlBean;
 import net.ruesse.idc.database.persistence.Beitrag;
 import net.ruesse.idc.database.persistence.Card;
 import net.ruesse.idc.database.persistence.Cv;
@@ -43,11 +37,9 @@ import net.ruesse.idc.database.persistence.Person;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ManagedBean
-@ViewScoped
-public class PersonExt {
+public class PersonMgl {
 
-    private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(PersonMgl.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     static final long MSPERYEAR = ((long) 365 * 24 * 60 * 60 * 1000);
@@ -88,7 +80,7 @@ public class PersonExt {
             c = (Card) em.createNamedQuery("Card.findByMglnr")
                     .setParameter("mglnr", person.getMglnr())
                     .getSingleResult();
-            LOGGER.info ("Cardinfo: "+c.getPrfmglnr());
+            LOGGER.info("Cardinfo: " + c.getPrfmglnr());
         } catch (NoResultException e) {
             // einfach einen leeren Datensatz erzeugen, wenn nix gefunden wird
             c = new Card();
@@ -112,10 +104,18 @@ public class PersonExt {
         this.mitarbeiter = mitarbeiter;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getUserstatus() {
         return userstatus;
     }
 
+    /**
+     *
+     * @param userstatus
+     */
     public void setUserstatus(int userstatus) {
         this.userstatus = userstatus;
     }
@@ -140,7 +140,7 @@ public class PersonExt {
      *
      * @param person
      */
-    public PersonExt(Person person) {
+    public PersonMgl(Person person) {
         this.person = person;
         LOGGER.setLevel(Level.INFO);
         if (person != null) {

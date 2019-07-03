@@ -77,7 +77,7 @@ public class PrintSupport {
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
     public PrintSupport() {
-        LOGGER.setLevel(Level.INFO);
+        LOGGER.setLevel(Level.FINE);
     }
 
     /**
@@ -110,10 +110,10 @@ public class PrintSupport {
     }
 
     /**
-     * 
+     *
      * @param jasperPrint
      * @param report
-     * @throws JRException 
+     * @throws JRException
      */
     private static void PrintReportToPDF(JasperPrint jasperPrint, String report) throws JRException {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
@@ -122,11 +122,11 @@ public class PrintSupport {
     }
 
     /**
-     * 
+     *
      * @param jasperPrint
      * @param selectedPrinter
      * @param anzahlDrucke
-     * @throws JRException 
+     * @throws JRException
      */
     private static void PrintReportToPrinter(JasperPrint jasperPrint, String selectedPrinter, int anzahlDrucke) throws JRException {
         // Info zum Setzen der Media-Size
@@ -137,9 +137,9 @@ public class PrintSupport {
         //http://jasperreports.sourceforge.net/sample.reference/batchexport/index.html
         //http://jasperreports.sourceforge.net/sample.reference/printservice/index.html
         //https://github.com/eugenp/tutorials/blob/master/spring-all/src/main/java/org/baeldung/jasperreports/SimpleReportExporter.java
-        
+
         PrintService selectedService = findPrintService(selectedPrinter);
-        
+
         if (selectedService != null) {
             //Set the printing settings
             PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();
@@ -162,14 +162,14 @@ public class PrintSupport {
             }
             PrintServiceAttributeSet printServiceAttributeSet = new HashPrintServiceAttributeSet();
             printServiceAttributeSet.add(new PrinterName(selectedPrinter, null));
-            
+
             SimplePrintServiceExporterConfiguration configuration = new SimplePrintServiceExporterConfiguration();
             configuration.setPrintService(selectedService);
             configuration.setPrintRequestAttributeSet(printRequestAttributeSet);
             configuration.setPrintServiceAttributeSet(printServiceAttributeSet);
             configuration.setDisplayPageDialog(false);
             configuration.setDisplayPrintDialog(ApplicationControlBean.isDruckerdialog());
-            
+
             JRPrintServiceExporter exporter = new JRPrintServiceExporter();
             exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
             exporter.setConfiguration(configuration);
@@ -288,7 +288,7 @@ public class PrintSupport {
     public static void printReport(String report, EntityManager em, int anzahlDrucke, String drucker) {
         JasperReport jasperReport;
         JasperPrint jasperPrint;
-
+        LOGGER.log(Level.INFO, "Report={0} Drucker={1} AnzahlDrucke={2}", new Object[]{report, drucker, anzahlDrucke});
         LOGGER.fine("vor Compile Report");
         jasperReport = getReport(report);
         LOGGER.fine("Nach Compile Report");
@@ -301,7 +301,7 @@ public class PrintSupport {
             if (jasperReport != null) {
                 em.getTransaction().begin();
 
-                LOGGER.fine("jasperReport ist ungleich null");
+                LOGGER.log(Level.FINE, "Report={0} Drucker={1} AnzahlDrucke={2}", new Object[]{report, drucker, anzahlDrucke});
                 java.sql.Connection conn = em.unwrap(java.sql.Connection.class);
                 //java.sql.Connection conn = new SqlSupport().getSqlConnection();
                 jasperPrint = JasperFillManager.fillReport(jasperReport, parameter, conn);
@@ -315,7 +315,7 @@ public class PrintSupport {
                     FacesContext context = FacesContext.getCurrentInstance();
                     HttpServletRequest origRequest = (HttpServletRequest) context.getExternalContext().getRequest();
                     String contextPath = origRequest.getContextPath();
-
+                    LOGGER.log(Level.FINE, "Redirect to /faces/document.xhtml?printname={0}", new Object[]{report});
                     try {
                         FacesContext.getCurrentInstance().getExternalContext().redirect(contextPath + "/faces/document.xhtml?printname=" + report);
                     } catch (IOException ex) {

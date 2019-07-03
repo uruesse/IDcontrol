@@ -20,11 +20,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.faces.context.FacesContext;
 import static net.ruesse.idc.control.FileService.getTempDir;
 import net.ruesse.idc.database.sql.SqlSupport;
@@ -35,21 +36,33 @@ import org.primefaces.model.UploadedFile;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ManagedBean
-public class FileUploadView {
+@Named
+public class FileUploadView implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = Logger.getLogger(FileUploadView.class.getName());
 
     private UploadedFile file;
 
+    /**
+     * 
+     * @return 
+     */
     public UploadedFile getFile() {
         return file;
     }
 
+    /**
+     * 
+     * @param file 
+     */
     public void setFile(UploadedFile file) {
         this.file = file;
     }
 
+    /**
+     * 
+     */
     public void upload() {
         if (file != null) {
             FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
@@ -57,6 +70,10 @@ public class FileUploadView {
         }
     }
 
+    /**
+     * 
+     * @param event 
+     */
     public void handleFileUpload(FileUploadEvent event) {
 
         String fn=event.getFile().getFileName();
@@ -76,6 +93,11 @@ public class FileUploadView {
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
+    /**
+     * 
+     * @param pDest
+     * @param in 
+     */
     public void copyFile(Path pDest, InputStream in) {
 
         OutputStream out = null;

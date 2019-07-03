@@ -272,8 +272,7 @@ body {
     padding: 0px; }
   .layout-wrapper .layout-content .content-implementation {
     padding: 32px;
-    background-color: #ffffff;
-    border: solid 1px #e1e7e8; }
+    background-color: #ffffff; }
     .layout-wrapper .layout-content .content-implementation > h3 {
       font-weight: bold;
       margin: 14px 0;

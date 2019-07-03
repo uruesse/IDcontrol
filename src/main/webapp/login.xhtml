@@ -18,6 +18,9 @@
     </ui:define>
 
     <ui:define name="implementation">
+        <h:form>
+            <h:inputHidden value="#{controlBean.param}" />
+        </h:form>
         <h:form id="loginsheet">        
             <p:messages id="loginmessages" escape="false" showDetail="true" closable="false">
                 <p:autoUpdate />

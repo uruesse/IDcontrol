@@ -24,7 +24,12 @@ import java.util.ResourceBundle;
 public class MsgBundle {
 
     private static final ResourceBundle MSG = ResourceBundle.getBundle("net/ruesse/idc/ressources/message");
-
+    
+    /**
+     * 
+     * @param strVar
+     * @return 
+     */
     public static String getMessage(String strVar) {
         String retString;
 

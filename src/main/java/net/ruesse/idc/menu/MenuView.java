@@ -16,19 +16,25 @@
 package net.ruesse.idc.menu;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import static net.ruesse.idc.control.ApplicationControlBean.getLoginMglUserRights;
+import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
+import net.ruesse.idc.control.Constants;
 import static net.ruesse.idc.control.FileService.getDocumentsDir;
 import net.ruesse.idc.control.VereinService;
 import net.ruesse.idc.documentation.DocumentView;
+import net.ruesse.idc.report.PrintSupport;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSeparator;
@@ -40,10 +46,12 @@ import org.primefaces.model.menu.MenuModel;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ManagedBean
-public class MenuView {
+@Named
+public class MenuView implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(MenuView.class.getName());
+    EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
+    private static final long serialVersionUID = 1L;
 
     private MenuModel model;
 
@@ -61,6 +69,12 @@ public class MenuView {
         item.setIcon("pi pi-info");
         item.setOutcome("index");
         item.setTitle("Informationen zu Copyright und Systemvariable");
+        model.addElement(item);
+        //<p:menuitem value="Login" outcome="login" icon="pi pi-sign-in"/>
+        item = new DefaultMenuItem("Login");
+        item.setIcon("pi pi-sign-in");
+        item.setOutcome("login");
+        item.setTitle("Login");
         model.addElement(item);
         model.addElement(new DefaultSeparator());
 
@@ -147,15 +161,18 @@ public class MenuView {
         item.setIcon("pi pi-print");
         item.setOutcome("idcardback");
         item.setTitle("Drucken der statischen Ausweisrückseite");
+        item.setDisabled(!(getLoginMglUserRights() > 1));
         firstLevelSubmenu.addElement(item);
 
         //<p:menuitem process="@this" value="Anwesenheitsliste" action="#{applicationControlBean.printActionAL}" icon="pi pi-users"/>
         item = new DefaultMenuItem("Anwesenheitsliste");
         item.setIcon("pi pi-users");
-        item.setCommand("#{applicationControlBean.printActionAL}");
+        // das nächste funktioniert nicht 100%ig
+        item.setCommand("#{printService.prAn}");
+        //item.setOutcome("anwesenheitsliste");
         item.setTitle("Report Anwesenheitsliste ausgeben");
+        item.setDisabled(!(getLoginMglUserRights() > 1));
         firstLevelSubmenu.addElement(item);
-
         model.addElement(firstLevelSubmenu);
 
         model.addElement(new DefaultSeparator());
@@ -164,7 +181,14 @@ public class MenuView {
         item.setIcon("pi pi-power-off");
         item.setCommand("#{menuView.logout}");
         item.setTitle("Beenden der aktuellen Sitzung");
+
         model.addElement(item);
+
+        // unbedingt nötig wenn setCommand verwendet wird! 
+        // irgendwann hat der Menuaufruf Anwesenheitsliste eine NumberFormatException verursacht!! 
+        // Die Fehlersuche hat dann etawas länge gedauert
+        // siehe https://stackoverflow.com/questions/38642939/using-prettyfaces-action-programatically-on-pmenuitem
+        model.generateUniqueIds();
     }
 
     /**
@@ -198,6 +222,12 @@ public class MenuView {
     public void logout() throws IOException {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         externalContext.redirect("http://closekiosk");
+    }
+
+    public void prAn() {
+        LOGGER.info("Print Anwesenheitsliste ohne ActionEvent");
+        String REPORT = "Anwesenheitsliste";
+        PrintSupport.printReport(REPORT, em, 1, "PDF");
     }
 
 }

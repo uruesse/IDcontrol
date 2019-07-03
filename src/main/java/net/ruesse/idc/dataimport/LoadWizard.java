@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
@@ -35,12 +34,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
@@ -58,30 +58,47 @@ import org.primefaces.event.FlowEvent;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ManagedBean
-@ViewScoped
+@Named
+@SessionScoped
 public class LoadWizard implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(LoadWizard.class.getName());
 
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
+    private static final long serialVersionUID = 1L;
 
     private boolean skip;
     List<DataTable> DataTableList;
 
+    /**
+     *
+     */
     @PostConstruct
     public void init() {
         DataTableList = createDataTable();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isSkip() {
         return skip;
     }
 
+    /**
+     *
+     * @param skip
+     */
     public void setSkip(boolean skip) {
         this.skip = skip;
     }
 
+    /**
+     *
+     * @param event
+     * @return
+     */
     public String onFlowProcess(FlowEvent event) {
         if (skip) {
             skip = false;   //reset in case user goes back
@@ -91,26 +108,50 @@ public class LoadWizard implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCreatestagedbHint() {
         return "Der Datenimport erfolgt über mehrere Stufen.<br/>Zunächst werden die Daten aus SEWOBE unverändert in eine tempräre Datenbank, der Staging-Datenbank geladen. Dann wird zunächst deren Itegrität geprüft und die Daten für die Anwendung ID-Control aufbereitet. Anschließend werden die Daten aus der Staging Datenbank in die ID-Control Datenbank kopiert. Zum Schluss wird die Staging Datenbank gelöscht.<br/><br/>Dieser Schritt initialisiert die Staging-Datenbank und kann nicht rückgängig gemacht werden.";
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLoadcsvHint() {
         return "In diesem Schritt werden die exportierten .csv-Dateien aus der SEWOBE-Datenbank hochgeladen und in die Stage-Datenbank importiert.<br/>Dabei muss der Dateiname der SEWOBE-Export-Datei (ohne die Enndung .csv) dem Tabellennamen in der Stage-Datenbank entsprechen, wobei großgeschriebene Dateinamen UTF-8 kodiert, alle anderen ISO-8859-1 kodiert eingelesen weden. Dateien mit falschem Namen werden ignoriert.<br/>Bei fehlerhaften Datensätzen versucht das Programm so viele Daten wie möglich zu laden und gibt über die fehlerhaften Datensätze ein Fehlerprotokoll heraus. Kann der Import bereits die Kopfzeile der .csv-Datei nicht auflösen, bricht der Import sofort ab.<br/>Eine Anleitung zum Export der Dateien aus SWEOBE findet sich im Handbuch für die Mitgliederverwaltung";
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLoadStage2ProdHint() {
         return "In diesen Schritt werden die Daten in der Staging Datenbank zunächst validiert, dann überarbeitet und anschließend in die ID-Control Datenbank übertragen. Fehler werden weitestgehend ignoriert.";
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLoadFinalizeHint() {
         return "Schließt die Datenübernahme ab, löscht temporäre Dateien und springt in die Mitgliederübersicht. Hier können die übertragenen Daten kontrolliert werden. Im Anschluss daran sollte ein Datenexport stattfinden, mit dem die anderen Instanzen cvon ID-Control befüllt werden können.";
     }
 
+    /**
+     *
+     * @return
+     */
     public List<DataTable> getDataTableList() {
         return DataTableList;
     }
 
+    /**
+     *
+     * @param DataTableList
+     */
     public void setDataTableList(List<DataTable> DataTableList) {
         this.DataTableList = DataTableList;
     }
@@ -119,6 +160,9 @@ public class LoadWizard implements Serializable {
     private boolean step3done = false;
     private boolean stepxdone = false;
 
+    /**
+     *
+     */
     public void stageCreate() {
         SqlSupport sp = new SqlSupport();
 
@@ -128,12 +172,26 @@ public class LoadWizard implements Serializable {
         DataTableList = createDataTable();
     }
 
+    /**
+     *
+     * @param context
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
     public void validateStep1(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (!step1done) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_WARN, "Die Datenbank wurde noch nicht initialisiert.", "Bitte zuerst die Datenbank initialisieren"));
         }
     }
 
+    /**
+     *
+     * @param context
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
     public void validateStep2(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         boolean nextstep = true;
         for (DataTable dt : DataTableList) {
@@ -146,28 +204,56 @@ public class LoadWizard implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param context
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
     public void validateStep3(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (!step3done) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_WARN, "", ""));
         }
     }
 
+    /**
+     *
+     * @param context
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
     public void validateStep(FacesContext context, UIComponent component, Object value) throws ValidatorException {
         if (!stepxdone) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_WARN, "", ""));
         }
     }
 
+    /**
+     *
+     * @param summary
+     * @param detail
+     */
     public void addMessage(String summary, String detail) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
 
+    /**
+     *
+     * @param summary
+     * @param detail
+     */
     public void addMessageFail(String summary, String detail) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleFileUpload(FileUploadEvent event) {
 
         String fn = event.getFile().getFileName();
@@ -183,6 +269,11 @@ public class LoadWizard implements Serializable {
 
     }
 
+    /**
+     *
+     * @param pDest
+     * @param in
+     */
     public void copyFile(Path pDest, InputStream in) {
 
         OutputStream out = null;
@@ -428,6 +519,9 @@ public class LoadWizard implements Serializable {
                 "Fertig", "Die Datei " + filepath.getFileName().toString() + " wurde erfolgreich hochgeladen und in die Datenbank importiert.");
     }
 
+    /**
+     *
+     */
     public void stageToProd() {
         SqlSupport sp = new SqlSupport();
         sp.executeSQLScript("createdb.sql");
@@ -436,6 +530,9 @@ public class LoadWizard implements Serializable {
         addMessage("Fertig", "Die Datenbank wurde erfolgreich kopiert");
     }
 
+    /**
+     *
+     */
     public void finalizeImport() {
 
         SqlSupport sp = new SqlSupport();
@@ -452,6 +549,8 @@ public class LoadWizard implements Serializable {
         ** folgt der explizite Refresh auf die Vereinssuche als Workaround
          */
         em.clear();
+        Cache cache = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).getCache();
+        cache.evictAll();
         // --- BEGINN WORKAROUND
         Query q = em.createNamedQuery("Verein.findAll", Verein.class
         );
@@ -459,7 +558,7 @@ public class LoadWizard implements Serializable {
         try {
             Verein v = (Verein) q.getSingleResult();
         } catch (NoResultException e) {
-              //nix tun
+            //nix tun
         }
         // --- ENDE WORKAROUND
 
@@ -471,6 +570,10 @@ public class LoadWizard implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<DataTable> createDataTable() {
         SqlSupport sp = new SqlSupport();
         List<String> tables = sp.getTables("IDCSTAGE");

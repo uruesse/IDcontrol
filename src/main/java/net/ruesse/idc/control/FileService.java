@@ -36,6 +36,10 @@ public class FileService {
 
     private static final Logger LOGGER = Logger.getLogger(FileService.class.getName());
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getWorkingDir() {
         Path AppPath;
         String strAppPath = System.getenv("IDC_HOME");
@@ -51,6 +55,10 @@ public class FileService {
         return AppPath;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getLoggingDir() {
         Path AppPath = null;
         String strAppPath = System.getProperty("catalina.base");
@@ -64,14 +72,26 @@ public class FileService {
         return AppPath;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getDatabaseDir() {
         return getWorkingDir().resolve("DB");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getExportsDir() {
         return getWorkingDir().resolve("Exports");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getDocumentsDir() {
         Path p = getWorkingDir().resolve("Dokumente");
         if (Files.notExists(p)) {
@@ -80,6 +100,10 @@ public class FileService {
         return p;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getImportsDir() {
         Path p = getWorkingDir().resolve("Imports");
         if (Files.notExists(p)) {
@@ -88,17 +112,29 @@ public class FileService {
         return p;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static String getCurrentLocalDateTimeStamp() {
         return LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static String getExpFileName() {
         VereinService vs = new VereinService();
 
         return vs.getExpFileName();
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path createDatedExportsDir() {
         Path exp = getWorkingDir().resolve("Exports");
         exp = exp.resolve(getExpFileName());
@@ -112,6 +148,10 @@ public class FileService {
         return exp;
     }
 
+    /**
+     * 
+     * @param path 
+     */
     public static void deleteDirectoryStream(Path path) {
         try {
             Files.walk(path)
@@ -123,31 +163,59 @@ public class FileService {
         }
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getSewobeExportDir() {
         return getExportsDir().resolve("Sewobe");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getVereinBaseDir() {
         return getWorkingDir().resolve("Verein");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getVereinDir() {
         VereinService vs = new VereinService();
         return getVereinBaseDir().resolve(vs.getVereinId());
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getDatabaseBaseDir() {
         return getWorkingDir().resolve("DB");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getLogoDir() {
         return getVereinDir().resolve("Logo");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getReportTemplatesDir() {
         return getVereinDir().resolve("Reporttemplates");
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getReportsDir() {
         Path p = getWorkingDir().resolve("Reports");
         if (Files.notExists(p)) {
@@ -156,6 +224,10 @@ public class FileService {
         return p;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public static Path getTempDir() {
         Path p = getWorkingDir().resolve("Tmp");
         if (Files.notExists(p)) {
@@ -164,6 +236,10 @@ public class FileService {
         return p;
     }
 
+    /**
+     * 
+     * @param p 
+     */
     private static void createPath(Path p) {
         LOGGER.log(Level.INFO, "Zielpfad \"{0}\" wird angelegt.", p.toString());
         try {

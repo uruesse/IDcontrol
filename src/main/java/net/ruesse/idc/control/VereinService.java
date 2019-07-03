@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.control;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -22,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
@@ -32,13 +34,18 @@ import net.ruesse.idc.database.persistence.Verein;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-public class VereinService {
+@Named
+public class VereinService implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(VereinService.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
+    private static final long serialVersionUID = 1L;
 
     Verein aktVerein;
 
+    /**
+     * 
+     */
     public VereinService() {
         try {
             aktVerein = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
@@ -47,10 +54,18 @@ public class VereinService {
         }
     }
 
+    /**
+     * 
+     * @return 
+     */
     public Verein getAktVerein() {
         return aktVerein;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getExpFileName() {
         //Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
 
@@ -63,6 +78,10 @@ public class VereinService {
         return expName;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getVereinId() {
         //Verein v = em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
         String str = String.format("%07d", aktVerein.getMglnr());
@@ -71,6 +90,10 @@ public class VereinService {
         return str;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String getFileInfo() {
         //Verein v= em.createNamedQuery("Verein.findAll", Verein.class).getSingleResult();
 

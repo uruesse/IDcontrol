@@ -44,6 +44,9 @@
             <h:outputLabel for="apspath" value="Applikationsserver:" />
             <h:outputText id="apspath" value="#{applicationControlBean.CATALINA_HOME}" />
 
+            <h:outputLabel for="WebDav" value="Webservice:" />
+            <h:outputText id="WebDav" value="#{applicationControlBean.webserviceInfo}" />
+
             <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
             <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
 

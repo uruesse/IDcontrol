@@ -38,15 +38,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.FileImageOutputStream;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
@@ -56,8 +60,9 @@ import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParame
 import static net.ruesse.idc.control.ApplicationControlBean.setLoginMgl;
 import net.ruesse.idc.database.persistence.Person;
 import net.ruesse.idc.database.persistence.Scanlog;
-import net.ruesse.idc.database.persistence.service.PersonExt;
+import net.ruesse.idc.database.persistence.service.PersonMgl;
 import net.ruesse.idc.database.persistence.service.PersonService;
+import net.ruesse.idc.database.persistence.service.PersonUser;
 import static net.ruesse.idc.ressources.MsgBundle.getMessage;
 import org.primefaces.event.CaptureEvent;
 
@@ -65,13 +70,13 @@ import org.primefaces.event.CaptureEvent;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-@ManagedBean
-@ViewScoped
-//@RequestScoped
+@Named
+@RequestScoped
 public class ControlBean implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(ControlBean.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
+    private static final long serialVersionUID = 1L;
 
     /**
      *
@@ -82,12 +87,12 @@ public class ControlBean implements Serializable {
 
     PersonService ps = new PersonService();
 
-    //@ManagedProperty("#(param.mnr)")
     private String mnr;
     private String mnrLogin;
     private static String decodermessage;
-    private static PersonExt loginPerson;
+    private static PersonUser loginPerson;
     private Member member;
+    private String scanCode;
 
     private enum accesstype {
         access, doubt, deny, error
@@ -102,21 +107,34 @@ public class ControlBean implements Serializable {
         Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
         if (paramMap != null) {
             String userId = paramMap.get("user");
+            String startApp = paramMap.get("start");
             if (userId == null || userId.isEmpty()) {
             } else {
-                LOGGER.log(Level.FINE, "projectId={0}", userId);
-                startSession(userId, null);
+                if (startApp == null || startApp.isEmpty()) {
+                    startSession(userId, "scan.xhtml");
+                } else {
+                    LOGGER.log(Level.FINE, "projectId={0}", userId);
+                    startSession(userId, startApp+".xhtml");
+                }
                 return userId;
             }
         }
         return "";
     }
 
+    /**
+     *
+     * @param strParam
+     */
     public void setParam(String strParam) {
         // nix Tun, die Routine muss nur vorhanden sein -- sonst gibt es eine
         // javax.el.PropretyNotWritableException 
     }
 
+    /**
+     *
+     * @return
+     */
     public Member getMember() {
         if (member != null) {
             LOGGER.log(Level.INFO, "mnr={0}", member.getDisplayName());
@@ -124,6 +142,10 @@ public class ControlBean implements Serializable {
         return member;
     }
 
+    /**
+     *
+     * @param member
+     */
     public void setMember(Member member) {
         if (member != null) {
             LOGGER.log(Level.INFO, "strmnr={0}", member.getDisplayName());
@@ -134,19 +156,30 @@ public class ControlBean implements Serializable {
         this.member = null;
     }
 
-    private String scanCode;
-
+    /**
+     *
+     * @return
+     */
     public String getScanCode() {
         return scanCode;
     }
 
+    /**
+     *
+     * @param scanCode
+     */
     public void setScanCode(String scanCode) {
         this.scanCode = scanCode;
     }
 
-    @ManagedProperty("#{memberService}")
+    @Inject
     private MemberService memberSrv;
 
+    /**
+     *
+     * @param query
+     * @return
+     */
     public List<Member> completeMember(String query) {
 
         List<Member> allMembers = memberSrv.getMembers();
@@ -189,6 +222,10 @@ public class ControlBean implements Serializable {
         return filteredMembers;
     }
 
+    /**
+     *
+     * @param memberSrv
+     */
     public void setMemberSrv(MemberService memberSrv) {
         this.memberSrv = memberSrv;
     }
@@ -211,22 +248,43 @@ public class ControlBean implements Serializable {
         this.mnr = strmnr;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getMnrLogin() {
         return mnrLogin;
     }
 
+    /**
+     *
+     * @param mnrLogin
+     */
     public void setMnrLogin(String mnrLogin) {
         this.mnrLogin = mnrLogin;
     }
 
-    public static PersonExt getLoginPerson() {
+    /**
+     *
+     * @return
+     */
+    public static PersonUser getLoginPerson() {
         return loginPerson;
     }
 
-    public static void setLoginPerson(PersonExt loginPerson) {
+    /**
+     *
+     * @param loginPerson
+     */
+    public static void setLoginPerson(PersonUser loginPerson) {
         ControlBean.loginPerson = loginPerson;
     }
 
+    /**
+     *
+     * @param text
+     * @return
+     */
     private long Mgl2Long(String text) {
         long mgl = 0;
         String strlong = text.replaceAll(" ", "");
@@ -240,8 +298,9 @@ public class ControlBean implements Serializable {
 
     /**
      * Aufruf über die URL oder weitergeleitet von der Login-Maske
+     *
      * @param strLogin
-     * @param redirect 
+     * @param redirect
      */
     public void startSession(String strLogin, String redirect) {
         LOGGER.log(Level.INFO, "mnrLogin={0}", strLogin);
@@ -269,8 +328,8 @@ public class ControlBean implements Serializable {
         }
 
         if (person != null) {
-            loginPerson = new PersonExt(person);
-            if (loginPerson.getUserstatus() > 1) {
+            loginPerson = new PersonUser(person);
+            if (loginPerson.getPersonMgl().getUserstatus() > 1) {
                 setLoginMgl(loginPerson);
                 setMnrLogin(null);
                 if (redirect != null) {
@@ -291,29 +350,49 @@ public class ControlBean implements Serializable {
     }
 
     /**
-     * Aufruf aus der Login-Maske 
+     * Aufruf aus der Login-Maske
      */
     public void startSession() {
         LOGGER.log(Level.INFO, "mnrLogin={0}", this.mnrLogin);
         startSession(this.mnrLogin, "scan.xhtml");
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getUserRightMin() {
         return getLoginMglUserRights() == 1;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getUserRightEinlass() {
         return getLoginMglUserRights() > 1;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getUserRightSewobe() {
         return getLoginMglUserRights() > 2;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getUserRightAdmin() {
         return getLoginMglUserRights() > 3;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean getUserRightDev() {
         return getLoginMglUserRights() > 4;
     }
@@ -334,7 +413,7 @@ public class ControlBean implements Serializable {
             person = null;
         }
 
-        showPersonStatus(new PersonExt(person));
+        showPersonStatus(new PersonMgl(person));
 
     }
 
@@ -400,7 +479,7 @@ public class ControlBean implements Serializable {
      *
      * @param pe
      */
-    public void showPersonStatus(PersonExt pe) {
+    public void showPersonStatus(PersonMgl pe) {
         DateFormat df;
         df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.GERMANY);
 
@@ -446,7 +525,7 @@ public class ControlBean implements Serializable {
 
             if (!pe.person.getHauptkategorie().equals("Mitglied")) {
                 atype = accesstype.deny;
-                showAccessMessage(atype, "" + pe.getFullname(), " ist kein Mitglied sondern " + pe.person.getHauptkategorie() + " mit Status="+pe.getState()+".");
+                showAccessMessage(atype, "" + pe.getFullname(), " ist kein Mitglied sondern " + pe.person.getHauptkategorie() + " mit Status=" + pe.getState() + ".");
                 if (pe.person.getBemerkung() != null) {
                     showAccessMessage(atype, "Bemerkung: ", pe.person.getBemerkung());
                 }
@@ -593,6 +672,6 @@ public class ControlBean implements Serializable {
             LOGGER.fine(decodermessage);
         }
 
-        showPersonStatus(new PersonExt(ps.findPerson(decodermessage)));
+        showPersonStatus(new PersonMgl(ps.findPerson(decodermessage)));
     }
 }

@@ -30,6 +30,10 @@ public class Constants {
     public static final String REPORT_SRC = ".jrxml";
     public static final String REPORT_DST = ".jasper";
 
+    /**
+     * 
+     * @return 
+     */
     public static String getPERSISTENCE_UNIT_NAME() {
         return PERSISTENCE_UNIT_NAME;
     }

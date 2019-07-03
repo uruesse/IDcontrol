@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/maintemplate.xhtml">
+
+    <ui:define name="title">
+        Anwesenheitsliste
+    </ui:define>
+
+    <ui:define name="head">
+
+    </ui:define>
+
+    <ui:define name="description">
+        #{controlBean.userRightEinlass ? 'Anwesenheitsliste' : 'Sie haben keine Berechtigung für diese Seite'}  
+    </ui:define>
+
+    <ui:define name="implementation">
+        <h:form rendered="#{controlBean.userRightEinlass}">
+
+            <p:growl id="growlmessage" showDetail="true" />
+
+            Das is ein Dummy für spätere Erweiterungen. <br />
+            Die Software loggt den Scanvorgang mit und könnte anhand dieser Daten verschiedene Auswertungen vornehmen.<br />
+            Über diese Sete wird das gesteuert.<br />
+            Die Anwesenheitsliste ist eine Quick- und Dirty Implementation als Platzhalter für die eigentliche Entwicklung.<br />
+
+            <h:panelGrid id="display" columns="2" cellpadding="5"> 
+
+                <h:outputLabel for="anwesenheitsliste" value="Anwesenheitsliste" />
+                <p:commandButton id="anwesenheitsliste" process="@this" icon="pi pi-print" value="Anwesenheitsliste drucken" action="#{printService.printAnweseheitsliste}" update="growlmessage"/>
+
+            </h:panelGrid>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

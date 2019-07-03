@@ -48,9 +48,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Verein.findByRegister", query = "SELECT v FROM Verein v WHERE v.register = :register")
     , @NamedQuery(name = "Verein.findByEmail", query = "SELECT v FROM Verein v WHERE v.email = :email")
     , @NamedQuery(name = "Verein.findByUri", query = "SELECT v FROM Verein v WHERE v.uri = :uri")
-    , @NamedQuery(name = "Verein.findByDatatime", query = "SELECT v FROM Verein v WHERE v.datatime = :datatime")
     , @NamedQuery(name = "Verein.findByUrimgv", query = "SELECT v FROM Verein v WHERE v.urimgv = :urimgv")
-    , @NamedQuery(name = "Verein.findByPwd", query = "SELECT v FROM Verein v WHERE v.pwd = :pwd")})
+    , @NamedQuery(name = "Verein.findByPwd", query = "SELECT v FROM Verein v WHERE v.pwd = :pwd")
+    , @NamedQuery(name = "Verein.findByUridav", query = "SELECT v FROM Verein v WHERE v.uridav = :uridav")
+    , @NamedQuery(name = "Verein.findByDatatime", query = "SELECT v FROM Verein v WHERE v.datatime = :datatime")})
 public class Verein implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -84,14 +85,17 @@ public class Verein implements Serializable {
     @Size(max = 128)
     @Column(length = 128)
     private String uri;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date datatime;
     @Size(max = 128)
     @Column(length = 128)
     private String urimgv;
     @Size(max = 128)
     @Column(length = 128)
     private String pwd;
+    @Size(max = 256)
+    @Column(length = 256)
+    private String uridav;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date datatime;
 
     public Verein() {
     }
@@ -172,14 +176,6 @@ public class Verein implements Serializable {
         this.uri = uri;
     }
 
-    public Date getDatatime() {
-        return datatime;
-    }
-
-    public void setDatatime(Date datatime) {
-        this.datatime = datatime;
-    }
-
     public String getUrimgv() {
         return urimgv;
     }
@@ -194,6 +190,22 @@ public class Verein implements Serializable {
 
     public void setPwd(String pwd) {
         this.pwd = pwd;
+    }
+
+    public String getUridav() {
+        return uridav;
+    }
+
+    public void setUridav(String uridav) {
+        this.uridav = uridav;
+    }
+
+    public Date getDatatime() {
+        return datatime;
+    }
+
+    public void setDatatime(Date datatime) {
+        this.datatime = datatime;
     }
 
     @Override

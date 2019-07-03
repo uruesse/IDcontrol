@@ -24,7 +24,7 @@ INSERT INTO IDCREMOTE.PERSON (MGLNR,FNR,FIRMA,ANREDE,TITEL,NACHNAME,VORNAME,HAUP
 (1122333700004,999,null,'Herr',null,'Duck','Tick','Mitglied','2004-11-05','Bitte Kopie Führungszeugnis einsammeln.','Aktiv','1970-01-01',null,null,false,'Lastschrift'),
 (1122333700005,999,null,'Herr',null,'Duck','Trick','Mitglied','2004-11-05',null,'Aktiv','1970-01-01',null,null,false,'Lastschrift'),
 (1122333700006,999,null,'Herr',null,'Duck','Track','Mitglied','2004-11-05',null,'Aktiv','1970-01-01',null,null,false,'Lastschrift'),
-(1122333700007,null,null,'Herr',null,'Gans','Gustav','Ex Mitglied','1955-11-05',null,'Gekündigt','1970-01-01','2018-12-31','2018-12-31',false,'Lastschrift'),
+(1122333700007,null,null,'Herr',null,'Gans','Gustav','Ex-Mitglied','1955-11-05',null,'Gekündigt','1970-01-01','2018-12-31','2018-12-31',false,'Lastschrift'),
 (1122333100001,null,null,'Herr',null,'Maus','Mickey','Geschäftspartner','1955-11-05',null,'Aktiv','1970-01-01',null,null,false,'Lastschrift');
 
 INSERT INTO IDCREMOTE.ADDRESS (MGLNR,STRASSE,PLZ,ORT,LAND) VALUES 

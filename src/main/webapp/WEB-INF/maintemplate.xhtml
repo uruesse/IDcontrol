@@ -44,6 +44,7 @@
                 <ui:insert name="content">
                     <div class="content-section content-introduction">
                         <b><ui:insert name="title"></ui:insert></b>  <i class="pi pi-chevron-right"></i> <ui:insert name="description"></ui:insert>
+                        <div style="float: right;font-size:10px;" class="footer-info-right">#{footerView.userInfo} | #{footerView.fileInfo}</div>
                         <ui:insert name="headimplementation"></ui:insert>
                     </div>
                     <div class="content-section content-implementation {'dark-content'}">
@@ -51,9 +52,7 @@
                     </div>
                 </ui:insert>
             </div>
-
-            <ui:include src="./footer.xhtml"></ui:include>
-
+            <!--ui:include src="./footer.xhtml"></ui:include-->
         </div>
 
         <ui:insert name="status">

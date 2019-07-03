@@ -38,7 +38,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Userpref.findAll", query = "SELECT u FROM Userpref u")
     , @NamedQuery(name = "Userpref.findByMglnr", query = "SELECT u FROM Userpref u WHERE u.mglnr = :mglnr")
     , @NamedQuery(name = "Userpref.findByPrinter", query = "SELECT u FROM Userpref u WHERE u.printer = :printer")
-    , @NamedQuery(name = "Userpref.findByPdfheight", query = "SELECT u FROM Userpref u WHERE u.pdfheight = :pdfheight")})
+    , @NamedQuery(name = "Userpref.findByPdfheight", query = "SELECT u FROM Userpref u WHERE u.pdfheight = :pdfheight")
+    , @NamedQuery(name = "Userpref.findByWebdavuser", query = "SELECT u FROM Userpref u WHERE u.webdavuser = :webdavuser")
+    , @NamedQuery(name = "Userpref.findByWebdavpwd", query = "SELECT u FROM Userpref u WHERE u.webdavpwd = :webdavpwd")})
 public class Userpref implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,6 +53,12 @@ public class Userpref implements Serializable {
     @Column(length = 128)
     private String printer;
     private Integer pdfheight;
+    @Size(max = 128)
+    @Column(length = 128)
+    private String webdavuser;
+    @Size(max = 128)
+    @Column(length = 128)
+    private String webdavpwd;
 
     public Userpref() {
     }
@@ -81,6 +89,22 @@ public class Userpref implements Serializable {
 
     public void setPdfheight(Integer pdfheight) {
         this.pdfheight = pdfheight;
+    }
+
+    public String getWebdavuser() {
+        return webdavuser;
+    }
+
+    public void setWebdavuser(String webdavuser) {
+        this.webdavuser = webdavuser;
+    }
+
+    public String getWebdavpwd() {
+        return webdavpwd;
+    }
+
+    public void setWebdavpwd(String webdavpwd) {
+        this.webdavpwd = webdavpwd;
     }
 
     @Override

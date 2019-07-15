@@ -53,7 +53,7 @@ public class FileServiceWebDav {
         public DropFile(String myURL) {
             super();
             sardine = SardineFactory.begin();
-            sardine.setCredentials("ulrichru", "mej7oq");
+            sardine.setCredentials("xxx", "yyyy");
 
             this.myUrl = myURL;
         }

@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
@@ -40,15 +41,16 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
-import net.ruesse.idc.control.Constants;
+import net.ruesse.idc.application.Constants;
 import static net.ruesse.idc.control.FileService.createDatedExportsDir;
 import static net.ruesse.idc.control.FileService.deleteDirectoryStream;
 import static net.ruesse.idc.control.FileService.getExportsDir;
 import static net.ruesse.idc.control.FileService.getReportsDir;
 import static net.ruesse.idc.control.FileService.getVereinBaseDir;
 import static net.ruesse.idc.control.FileService.getVereinDir;
-import net.ruesse.idc.control.VereinService;
+import net.ruesse.idc.database.persistence.service.VereinService;
 import net.ruesse.idc.database.persistence.Verein;
+import net.ruesse.idc.database.persistence.service.PersonCache;
 
 /**
  *
@@ -218,8 +220,8 @@ public class SqlSupport {
         importTable(schema, "PERSON", path);
 
         getTables(schema).forEach((table) -> {
-            if (!(table.toUpperCase().equals("FAMILY") || 
-                  table.toUpperCase().equals("PERSON"))) {
+            if (!(table.toUpperCase().equals("FAMILY")
+                    || table.toUpperCase().equals("PERSON"))) {
                 importTable(schema, table, path);
             }
         });
@@ -248,17 +250,17 @@ public class SqlSupport {
         ** deswegen
         ** folgt der explizite Refresh auf die Vereinssuche als Workaround
          */
-        em.clear();
-
+        //em.clear();
         // prüfen, ob das hier klappt.
         // siehe: https://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Caching/Cache_API
-        Cache cache = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).getCache();
-        cache.evictAll();
+        //Cache cache = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).getCache();
+        //cache.evictAll();
         // --- BEGINN WORKAROUND
-        Query q = em.createNamedQuery("Verein.findAll", Verein.class);
-        q.setHint("eclipselink.refresh", "true");
-        Verein v = (Verein) q.getSingleResult();
-        // --- ENDE WORKAROUND
+        //  Query q = em.createNamedQuery("Verein.findAll", Verein.class);
+        //q.setHint("eclipselink.refresh", "true");
+        //Verein v = (Verein) q.getSingleResult();
+        // --- ENDE WORKAROUND      
+        new PersonCache().invalidate();
 
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         try {

@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.control;
 
+import net.ruesse.idc.application.Constants;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
@@ -39,12 +40,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
 import javax.inject.Named;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -61,7 +58,6 @@ import static net.ruesse.idc.control.ApplicationControlBean.setLoginMgl;
 import net.ruesse.idc.database.persistence.Person;
 import net.ruesse.idc.database.persistence.Scanlog;
 import net.ruesse.idc.database.persistence.service.PersonMgl;
-import net.ruesse.idc.database.persistence.service.PersonService;
 import net.ruesse.idc.database.persistence.service.PersonUser;
 import static net.ruesse.idc.ressources.MsgBundle.getMessage;
 import org.primefaces.event.CaptureEvent;
@@ -85,7 +81,6 @@ public class ControlBean implements Serializable {
         LOGGER.setLevel(Level.INFO);
     }
 
-    PersonService ps = new PersonService();
 
     private String mnr;
     private String mnrLogin;
@@ -525,7 +520,7 @@ public class ControlBean implements Serializable {
 
             if (!pe.person.getHauptkategorie().equals("Mitglied")) {
                 atype = accesstype.deny;
-                showAccessMessage(atype, "" + pe.getFullname(), " ist kein Mitglied sondern " + pe.person.getHauptkategorie() + " mit Status=" + pe.getState() + ".");
+                showAccessMessage(atype, "" + pe.getFullname(), " ist kein Mitglied sondern " + pe.person.getHauptkategorie() + " mit Status=" + pe.person.getStatus() + ".");
                 if (pe.person.getBemerkung() != null) {
                     showAccessMessage(atype, "Bemerkung: ", pe.person.getBemerkung());
                 }
@@ -587,91 +582,5 @@ public class ControlBean implements Serializable {
                     showAccessMessage(accesstype.deny, getMessage("control.wasseregeld"), status);
             }
         }
-    }
-
-    /*
-    **
-    ** Nachfolgender code = Softwarescanner
-    **
-     */
-    private String filename;
-
-    /**
-     *
-     * @param qrCodeimage
-     * @return
-     * @throws IOException
-     */
-    private static String decodeQRCode(File qrCodeimage) throws IOException {
-        BufferedImage bufferedImage = ImageIO.read(qrCodeimage);
-        LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
-        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-        try {
-            Result result = new MultiFormatReader().decode(bitmap);
-            return result.getText();
-        } catch (NotFoundException e) {
-            LOGGER.fine("There is no QR code in the image");
-            return null;
-        }
-    }
-
-    /**
-     *
-     * @return
-     */
-    private String getRandomImageName() {
-        int i = (int) (Math.random() * 10000000);
-
-        return String.valueOf(i);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getFilename() {
-        return filename;
-    }
-
-    /**
-     *
-     * @param captureEvent
-     */
-    public void oncapture(CaptureEvent captureEvent) {
-        filename = getRandomImageName();
-        byte[] data = captureEvent.getData();
-
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        String newFileName = externalContext.getRealPath("") + File.separator + "resources" + File.separator + "files"
-                + File.separator + "images" + File.separator + "photocam" + File.separator + filename + ".jpeg";
-
-        FileImageOutputStream imageOutput;
-        File imageFile;
-        try {
-            imageFile = new File(newFileName);
-            imageOutput = new FileImageOutputStream(imageFile);
-            imageOutput.write(data, 0, data.length);
-            imageOutput.close();
-        } catch (IOException e) {
-            throw new FacesException("Error in writing captured image.", e);
-        }
-
-        try {
-            String decodedText = decodeQRCode(imageFile);
-            if (decodedText == null) {
-                LOGGER.fine("Kein QR-Code im eingescannten Bild gefunden");
-                decodermessage = getMessage("control.qrcodenotfound");
-            } else {
-                LOGGER.log(Level.FINE, "Decoded text = {0}", decodedText);
-                decodermessage = decodedText;
-                mnr = decodedText;
-            }
-        } catch (IOException e) {
-            decodermessage = "Konnte QR Code nicht entschlüsseln, IOException: " + e.getMessage();
-            LOGGER.fine(decodermessage);
-        }
-
-        showPersonStatus(new PersonMgl(ps.findPerson(decodermessage)));
     }
 }

@@ -4,6 +4,12 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets" 
                 xmlns:p="http://primefaces.org/ui">
 
+    <p:notificationBar position="top"  effect="slide" styleClass="top-notification" widgetVar="bar">
+        <h:form  >
+            <p:commandLink style="float: right;" onclick="PF('bar').hide()" styleClass="pi pi-times"/>
+        </h:form>
+        <h:outputText value="#{msg['notification.hint']}" escape="false" style="font-size:12px;font-weight:bold;" />
+    </p:notificationBar>
     <div class="layout-topbar">
         <style>
             ul.ui-menu-child
@@ -23,7 +29,7 @@
                 <f:ajax />
             </p:commandButton>
             <p:tooltip id="forScanButton" for="scanButton" value="Einlasskontrolle - Scannen der Mitgliedsausweise" position="top" />
-            
+
             <p:commandButton id="mglinfoButton" type="button" action="mglinfo?faces-redirect=true" icon="pi pi-users" rendered="#{controlBean.userRightSewobe}" >
                 <f:ajax />
             </p:commandButton>

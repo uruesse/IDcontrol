@@ -61,7 +61,7 @@
     </ui:define>
 
     <ui:define name="implementation">
-         <h:form id="form" rendered="#{controlBean.userRightSewobe}">
+        <h:form id="form" rendered="#{controlBean.userRightSewobe}">
             <p:tooltip />
             <p:dataTable id="persons" 
                          var="mitglied" 
@@ -74,7 +74,8 @@
                          scrollable="true" 
                          scrollHeight="100%"
                          emptyMessage="Person mit Suchkriterium nicht gefunden" 
-                         filteredValue="#{mglView.filteredMgl}">
+                         filteredValue="#{mglView.filteredMgl}"
+                          >
 
                 <f:facet name="header">
                     <p:growl id="growlmessage" showDetail="true" />
@@ -103,7 +104,7 @@
                         </f:facet>
 
                         <f:facet name="right">
-                            <p:commandButton id="refresh" process="persons" action="#{mglView.refreshAction}" icon="pi pi-refresh" disabled="false" onclick="PF('mglTable').clearFilters()"/>
+                            <p:commandButton id="refresh" process="persons" action="#{mglView.reloadAction}" icon="pi pi-refresh" disabled="false" onclick="PF('mglTable').clearFilters()"/>
                             <p:tooltip id="forRefresh" for="refresh" value="Löscht alle Filter und liest die Datentabelle neu ein."  position="top"/>
                             <p:commandButton id="toggler" type="button" value="Spalten" style="float:right" icon="pi pi-align-justify" />                
                             <p:tooltip id="forToggler" for="toggler" value="Ermöglicht das Ein- und Ausblenden von Tabellenspalten." position="top"/>
@@ -114,7 +115,6 @@
                 </f:facet>
 
                 <p:column filterBy="#{mitglied.strFMglnr}" headerText="MitgliedsNr" style="width:120px;text-align: center" sortBy="#{mitglied.strFMglnr}" filterMatchMode="contains">
-                    <!-- footerText="MitgliedsNr" -->
                     <h:outputText value="#{mitglied.strFMglnr}" />
                 </p:column>
 
@@ -180,26 +180,18 @@
                     <h:outputText value="#{mitglied.person.bemerkung}" />
                 </p:column>      
 
-
                 <p:column selectionMode="multiple" style="width:16px;text-align:center">
                     <f:facet name="header">
                         <h:outputText id="keyColumnId" value="✔" title="Auswahl" />
-                        <!-- ToDo:
-                             Aktivierung der nachfolgenden Zeile erzeugt einen korrekten Tooltip.
-                             Die Aktivierung hat aber einen unangenehmen Seiteneffekt auf den Spaltentoggler
-                             dieser Zeigt dann nicht mehr nur den Spaltennamen an, stattdessen zusätzlich diesen Tooltip gefolgt von einer Java-Script Funktion
-                             das ist dann eine ziemlich lange Zeile
-                             deshalb bis zur Ursachenklärung abgeschaltet
-                        -->
-                        <!--p:tooltip value="AUSWAHL: Wählen Sie hier die Mitglieder für weitere Optionen aus" for="keyColumnId" /-->
                     </f:facet>
-                </p:column>/>
+                </p:column>
 
                 <p:column headerText="Info" style="width:32px;text-align: center">
-                    <p:commandButton update=":form:mitgliedDetail" oncomplete="PF('mitgliedDialog').show()" icon="pi pi-search" title="Detailansicht über das Mitglied">
-                        <f:setPropertyActionListener value="#{mitglied}" target="#{mglView.selectedPerson}" />
+                    <p:commandButton  update=":form:mitgliedDetail"  oncomplete="PF('mitgliedDialog').show()" icon="pi pi-search" title="Detailansicht über das Mitglied">
+                        <f:setPropertyActionListener value="#{mitglied}" target="#{mglDetailView.selectedPerson}" />
                     </p:commandButton>
                 </p:column>
+                
             </p:dataTable>
 
             <p:dialog header="Mitgliedsinformationen" widgetVar="mitgliedDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
@@ -441,11 +433,11 @@
 
             <p:dialog header="Ausgewählte Mitglieder" widgetVar="multiMglDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="true" width="400">
                 <p:outputPanel id="multiMglDetail" style="text-align:center;">
-                    <h:form id="dialogform">
+
                         <ui:repeat value="#{mglView.selectedMgl}" var="mgl">
                             <h:outputText value="#{mgl.strFMglnr} - #{mgl.person.vorname} #{mgl.person.nachname}" style="display:block"/>
                         </ui:repeat>
-                    </h:form>
+
                 </p:outputPanel>
             </p:dialog>
         </h:form>

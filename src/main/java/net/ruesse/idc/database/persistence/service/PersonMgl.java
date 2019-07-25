@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.database.persistence.service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,7 +26,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
-import net.ruesse.idc.control.Constants;
+import net.ruesse.idc.application.Constants;
 import net.ruesse.idc.database.persistence.Beitrag;
 import net.ruesse.idc.database.persistence.Card;
 import net.ruesse.idc.database.persistence.Cv;
@@ -37,12 +38,12 @@ import net.ruesse.idc.database.persistence.Person;
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
-public class PersonMgl {
+public class PersonMgl implements Serializable {
 
     private final static Logger LOGGER = Logger.getLogger(PersonMgl.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
-    static final long MSPERYEAR = ((long) 365 * 24 * 60 * 60 * 1000);
+    private static final long serialVersionUID = 1L;
 
     public Person person;
     public Card card = null;
@@ -138,6 +139,14 @@ public class PersonMgl {
 
     /**
      *
+     */
+    public PersonMgl() {
+        this.person = null;
+        LOGGER.setLevel(Level.INFO);
+    }
+
+    /**
+     *
      * @param person
      */
     public PersonMgl(Person person) {
@@ -162,7 +171,11 @@ public class PersonMgl {
      * @return
      */
     public String getFullname() {
-        return person.getVorname() + " " + person.getNachname();
+        if (person == null) {
+            return "";
+        } else {
+            return person.getVorname() + " " + person.getNachname();
+        }
     }
 
     /**
@@ -170,7 +183,11 @@ public class PersonMgl {
      * @return
      */
     public String getStrMglnr() {
-        return String.format("%013d", person.getMglnr());
+        if (person == null) {
+            return "";
+        } else {
+            return String.format("%013d", person.getMglnr());
+        }
     }
 
     /**
@@ -179,8 +196,12 @@ public class PersonMgl {
      * @return
      */
     public String formatMglnr(long mglnr) {
-        String str = String.format("%013d", mglnr);
-        return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
+        if (person == null) {
+            return "";
+        } else {
+            String str = String.format("%013d", mglnr);
+            return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
+        }
     }
 
     /**
@@ -188,8 +209,12 @@ public class PersonMgl {
      * @return
      */
     public String formatMglnr() {
-        String str = getStrMglnr();
-        return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
+        if (person == null) {
+            return "";
+        } else {
+            String str = getStrMglnr();
+            return str.substring(0, 7) + " " + str.substring(7, 8) + " " + str.substring(8, 13);
+        }
     }
 
     /**
@@ -197,7 +222,11 @@ public class PersonMgl {
      * @return
      */
     public String getStrFMglnr() {
-        return formatMglnr(person.getMglnr().longValue());
+        if (person == null) {
+            return "";
+        } else {
+            return formatMglnr(person.getMglnr());
+        }
     }
 
     /**
@@ -250,7 +279,7 @@ public class PersonMgl {
      */
     private int calcAge(Date d) {
         Date now = new Date();
-        return (int) ((now.getTime() - d.getTime()) / MSPERYEAR);
+        return (int) ((now.getTime() - d.getTime()) / Constants.MSPERYEAR);
     }
 
     /**
@@ -353,7 +382,7 @@ public class PersonMgl {
                                     setUserstatus(5);
                                 }
                             }
-                            LOGGER.log(Level.INFO, "Mitarbeiterstatus=true: Userstatus={0} CV: {1} {2} {3} {4} {5}", new Object[]{getUserstatus(), c.getCvkey(), c.getCvvalue(), c.getKurztext(), c.getValidfrom(), c.getValidto()});
+                            LOGGER.log(Level.INFO, "{6} Mitarbeiterstatus=true: Userstatus={0} CV: {1} {2} {3} {4} {5}", new Object[]{getUserstatus(), c.getCvkey(), c.getCvvalue(), c.getKurztext(), c.getValidfrom(), c.getValidto(), getFullname()});
 
                         }
                     }

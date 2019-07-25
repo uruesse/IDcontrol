@@ -1,0 +1,350 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de">
+    <head id="j_idt2">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link type="text/css" rel="stylesheet" href="/IDControl/faces/javax.faces.resource/theme.css?ln=primefaces-nova-light" />
+        <link type="text/css" rel="stylesheet" href="/IDControl/faces/javax.faces.resource/css/sh.css;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=main" />
+        <link type="text/css" rel="stylesheet" href="/IDControl/faces/javax.faces.resource/css/primeflex.css;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=main" />
+        <link type="text/css" rel="stylesheet" href="/IDControl/faces/javax.faces.resource/primeicons/primeicons.css;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=primefaces&amp;v=7.0" />
+        <link type="text/css" rel="stylesheet" href="/IDControl/faces/javax.faces.resource/components.css;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=primefaces&amp;v=7.0" />
+        <script type="text/javascript" src="/IDControl/faces/javax.faces.resource/jquery/jquery.js;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=primefaces&amp;v=7.0"></script>
+        <script type="text/javascript" src="/IDControl/faces/javax.faces.resource/core.js;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=primefaces&amp;v=7.0"></script>
+        <script type="text/javascript" src="/IDControl/faces/javax.faces.resource/components.js;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=primefaces&amp;v=7.0"></script>
+        <script type="text/javascript" src="/IDControl/faces/javax.faces.resource/jquery/jquery-plugins.js;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=primefaces&amp;v=7.0"></script>
+        <script type="text/javascript" src="/IDControl/faces/javax.faces.resource/jsf.js;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=javax.faces&amp;stage=Development"></script>
+        <link type="text/css" rel="stylesheet" href="/IDControl/faces/javax.faces.resource/css/layout.css;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=main" />
+        <script type="text/javascript">if (window.PrimeFaces){PrimeFaces.settings.locale = 'de'; PrimeFaces.settings.projectStage = 'Development'; }</script>
+        <title>ID Control</title>
+
+        <!-- For Community Themes except 'Luna' and 'Nova' theme -->
+        <!--h:outputScript name="script/layout.js" library="main"/-->
+        <style type="text/css">         
+            /*demo*/
+            .ui-dataview-list .ui-dataview-row {
+                border-bottom: 1px solid #A8A8A8;
+                padding: 25px 10px;
+                /* with the exported variables from Nova and Luna Themes*/
+                border-bottom-color: var(--input-border-color, #A8A8A8);
+            }
+
+            .logo {
+                width: 5%;
+            }
+            .detail {
+                width: 85%;
+                padding-left: 25px;
+            }
+
+            .ui-datatable .ui-datatable-header {
+                text-align: right !important;
+            }
+
+            .ui-button-text-only .ui-button-text {
+                padding: 0.3em 0.4em;
+            }
+
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                visibility: hidden;
+            }
+
+            .ui-filter-column .ui-column-customfilter .custom-filter {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .year-spinner input {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .no-border {
+                border-style: hidden !important ; /* or none */
+                padding:0px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="layout-wrapper">
+            <div id="j_idt15" class="ui-notificationbar ui-widget ui-widget-content top-notification">
+                <form id="j_idt16" name="j_idt16" method="post" action="/IDControl/faces/mglinfo.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="j_idt16" value="j_idt16" />
+                    <a id="j_idt16:j_idt17" href="#" class="ui-commandlink ui-widget pi pi-times" onclick="PF('bar').hide(); PrimeFaces.ab({s: & quot; j_idt16:j_idt17 & quot; , f: & quot; j_idt16 & quot; }); return false;" style="float: right;"></a>
+                    <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0" value="-1371833055657131284:-1089435650124914582" autocomplete="off" />
+                </form>
+                <span style="font-size:12px;font-weight:bold;">Hinweisfläche für zukünftige Verwendung.<br/>Diese Hinweisfläche wird zukünftig für Informationen des Webservices zum Datenaustausch genutzt werden.<br/>Der Webservice ist z.Zt. noch in der Entwicklung, daher ist diese Hinweisfläche momentan ohne Bedeutung. Zukünftig wird diese Hinweisfläche programmgesteuert bzw. automatisch erscheinen. Die Hinweisfläch soll die aktuelle Tätigkeit des jeweiligen Benutzers nicht unterbrechen.Der lange Text ist ein Fülltext, um das Layout in der Test- und Entwicklungsphase des Projektes beurteilen zu können.<br/>Die Hinweisfläche kann jederzeit durch Klick auf den blauen Button mit Kreuz rechts oben geschlossen werden.
+                </span>
+            </div>
+            <script id="j_idt15_s" type="text/javascript">$(function(){PrimeFaces.cw("NotificationBar", "bar", {id:"j_idt15", position:"top", effect:"slide", effectSpeed:"normal"}); });</script>
+            <div class="layout-topbar">
+                <style>
+                    ul.ui-menu-child
+                    {
+                        width: 500px !important;
+                    }
+                </style>
+                <label class="logo-container">
+                    <img id="j_idt21" src="/IDControl/faces/javax.faces.resource/dynamiccontent.properties;jsessionid=010E52CB752FE9A9A1518CD78942029B?ln=primefaces&amp;v=7.0&amp;pfdrid=700fefd2013a20678dfa8a902d3269&amp;pfdrt=sc&amp;pfdrid_c=true" alt="" />
+                </label>
+                <form id="j_idt22" name="j_idt22" method="post" action="/IDControl/faces/mglinfo.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B" class="layout-topbar-menu" enctype="application/x-www-form-urlencoded" style="padding-top: 12px">
+                    <input type="hidden" name="j_idt22" value="j_idt22" />
+                    <button id="j_idt22:j_idt23" name="j_idt22:j_idt23" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="PF('bar').show()" style="color:red;background-color: grey;" type="button">
+                        <span class="ui-button-icon-left ui-icon ui-c pi pi-info"></span>
+                        <span class="ui-button-text ui-c">ui-button</span>
+                    </button>
+                    <script id="j_idt22:j_idt23_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_j_idt22_j_idt23", {id:"j_idt22:j_idt23"}); });</script>
+                    <button id="j_idt22:scanButton" name="j_idt22:scanButton" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="mojarra.ab('j_idt22:scanButton', event, 'click', 0, 0)" type="button">
+                        <span class="ui-button-icon-left ui-icon ui-c pi pi-user-plus"></span>
+                        <span class="ui-button-text ui-c">ui-button</span>
+                    </button>
+                    <script id="j_idt22:scanButton_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_j_idt22_scanButton", {id:"j_idt22:scanButton", behaviors:{click:function(ext, event) {mojarra.ab('j_idt22:scanButton', event, 'click', 0, 0, {'params':{'CLIENT_BEHAVIOR_RENDERING_MODE':'UNOBSTRUSIVE'}})}}}); });</script>
+                    <div id="j_idt22:forScanButton" class="ui-tooltip ui-widget ui-tooltip-top">
+                        <div class="ui-tooltip-arrow"></div>
+                        <div class="ui-tooltip-text ui-shadow ui-corner-all">Einlasskontrolle - Scannen der Mitgliedsausweise</div>
+
+                    </div>
+                    <script id="j_idt22:forScanButton_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_j_idt22_forScanButton", {id:"j_idt22:forScanButton", showEffect:"fade", hideEffect:"fade", target:"j_idt22:scanButton", position:"top"}); });</script>
+                    <button id="j_idt22:mglinfoButton" name="j_idt22:mglinfoButton" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="mojarra.ab('j_idt22:mglinfoButton', event, 'click', 0, 0)" type="button"><span class="ui-button-icon-left ui-icon ui-c pi pi-users"></span>
+                        <span class="ui-button-text ui-c">ui-button</span>
+                    </button>
+                    <script id="j_idt22:mglinfoButton_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_j_idt22_mglinfoButton", {id:"j_idt22:mglinfoButton", behaviors:{click:function(ext, event) {mojarra.ab('j_idt22:mglinfoButton', event, 'click', 0, 0, {'params':{'CLIENT_BEHAVIOR_RENDERING_MODE':'UNOBSTRUSIVE'}})}}}); });</script>
+                    <div id="j_idt22:forMglinfoButton" class="ui-tooltip ui-widget ui-tooltip-top">
+                        <div class="ui-tooltip-arrow"></div>
+                        <div class="ui-tooltip-text ui-shadow ui-corner-all">Mitgliederinfo - Übersichtstabelle mit Detailinformationen zum Mitglied</div>
+
+                    </div>
+                    <script id="j_idt22:forMglinfoButton_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_j_idt22_forMglinfoButton", {id:"j_idt22:forMglinfoButton", showEffect:"fade", hideEffect:"fade", target:"j_idt22:mglinfoButton", position:"top"}); });</script>
+                    <button id="j_idt22:dynaButton" name="j_idt22:dynaButton" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" type="button">
+                        <span class="ui-button-icon-left ui-icon ui-c pi pi-bars"></span>
+                        <span class="ui-button-text ui-c">ui-button</span>
+                    </button>
+                    <script id="j_idt22:dynaButton_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_j_idt22_dynaButton", {id:"j_idt22:dynaButton"}); });</script>
+                    <div id="j_idt22:forDynaButton" class="ui-tooltip ui-widget ui-tooltip-top">
+                        <div class="ui-tooltip-arrow"></div>
+                        <div class="ui-tooltip-text ui-shadow ui-corner-all">Hauptmenü.</div>
+
+                    </div>
+                    <script id="j_idt22:forDynaButton_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_j_idt22_forDynaButton", {id:"j_idt22:forDynaButton", showEffect:"fade", hideEffect:"fade", target:"j_idt22:dynaButton", position:"top"}); });</script>
+                    <div id="j_idt22:j_idt24" class="ui-menu ui-tieredmenu ui-menu-dynamic ui-widget ui-widget-content ui-corner-all ui-helper-clearfix ui-shadow" style="width:200px" role="menubar">
+                        <div tabindex="0" class="ui-helper-hidden-accessible"></div>
+                        <ul class="ui-menu-list ui-helper-reset">
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Informationen zu Copyright und Systemvariable" class="ui-menuitem-link ui-corner-all" href="/IDControl/faces/index.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B"><span class="ui-menuitem-icon ui-icon pi pi-info"></span><span class="ui-menuitem-text">Über IDControl</span></a></li>
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Login" class="ui-menuitem-link ui-corner-all" href="/IDControl/faces/login.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B"><span class="ui-menuitem-icon ui-icon pi pi-sign-in"></span><span class="ui-menuitem-text">Login</span></a></li>
+                            <li class="ui-separator ui-state-default"></li>
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="grundsätzliche Programmeinstellungen vornehmen" class="ui-menuitem-link ui-corner-all" href="/IDControl/faces/settings.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B"><span class="ui-menuitem-icon ui-icon pi pi-cog"></span><span class="ui-menuitem-text">Einstellungen</span></a></li>
+                            <li class="ui-separator ui-state-default"></li>
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Einlasskontrolle durch Scannen der Ausweise" class="ui-menuitem-link ui-corner-all" href="/IDControl/faces/scan.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B"><span class="ui-menuitem-icon ui-icon pi pi-user-plus"></span>
+                                    <span class="ui-menuitem-text">Einlasskontrolle</span></a>
+                            </li>
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Log der gescannten Ausweise wird komplett geleert" class="ui-menuitem-link ui-corner-all" href="#" onclick="PrimeFaces.ab({s: & quot; j_idt22:j_idt24 & quot; , f: & quot; j_idt22 & quot; , g:false, pa:[{name: & quot; j_idt22:j_idt24_menuid & quot; , value: & quot; 6 & quot; }]}); return false;"><span class="ui-menuitem-icon ui-icon pi pi-user-minus"></span><span class="ui-menuitem-text">Scanlog zurücksetzten</span></a></li>
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Recherche von Mitgliederdaten" class="ui-menuitem-link ui-corner-all" href="/IDControl/faces/mglinfo.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B"><span class="ui-menuitem-icon ui-icon pi pi-users"></span><span class="ui-menuitem-text">Mitgliederinfo</span></a></li>
+                            <li class="ui-separator ui-state-default"></li>
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Mitgliederverwaltung öffenet in einem neuen Browserfenster" class="ui-menuitem-link ui-corner-all" href="https://dlrg-mv.sewobe.de/" target="_blank"><span class="ui-menuitem-icon ui-icon pi pi-external-link"></span><span class="ui-menuitem-text">Mitgliederverwaltung</span></a></li>
+                            <li class="ui-separator ui-state-default"></li>
+                            <li class="ui-widget ui-menuitem ui-corner-all ui-menu-parent" role="menuitem" aria-haspopup="true"><a href="#" tabindex="-1" class="ui-menuitem-link ui-submenu-link ui-corner-all"><span class="ui-menuitem-text">Anleitungen</span><span class="ui-icon ui-icon-triangle-1-e"></span></a><ul class="ui-widget-content ui-menu-list ui-corner-all ui-helper-clearfix ui-menu-child ui-shadow" role="menu">
+                                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all" style="width:500px" href="/IDControl/faces/document.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B?document=Deutsche_Pruefungsordnung_Schwimmen_Rettungsschwimmen.pdf"><span class="ui-menuitem-icon ui-icon pi pi-file"></span><span class="ui-menuitem-text">Deutsche Pruefungsordnung Schwimmen Rettungsschwimmen</span></a></li>
+                                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all" style="width:500px" href="/IDControl/faces/document.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B?document=DLRG_Handbuch_zur_Mitgliederverwaltung.pdf"><span class="ui-menuitem-icon ui-icon pi pi-file"></span><span class="ui-menuitem-text">DLRG Handbuch zur Mitgliederverwaltung</span></a></li>
+                                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all" style="width:500px" href="/IDControl/faces/document.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B?document=Handbuch_Vereinsmanager.pdf"><span class="ui-menuitem-icon ui-icon pi pi-file"></span><span class="ui-menuitem-text">Handbuch Vereinsmanager</span></a></li>
+                                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all" style="width:500px" href="/IDControl/faces/document.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B?document=Kartendrucker_ZXP_Series_1_Benutzerhandbuch.pdf"><span class="ui-menuitem-icon ui-icon pi pi-file"></span><span class="ui-menuitem-text">Kartendrucker ZXP Series 1 Benutzerhandbuch</span></a></li>
+                                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" class="ui-menuitem-link ui-corner-all" style="width:500px" href="/IDControl/faces/document.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B?document=Scanner-DS457_Quick_Reference_Guide.pdf"><span class="ui-menuitem-icon ui-icon pi pi-file"></span><span class="ui-menuitem-text">Scanner-DS457 Quick Reference Guide</span></a></li></ul></li>
+                            <li class="ui-widget ui-menuitem ui-corner-all ui-menu-parent" role="menuitem" aria-haspopup="true"><a href="#" tabindex="-1" class="ui-menuitem-link ui-submenu-link ui-corner-all"><span class="ui-menuitem-text">Drucken</span><span class="ui-icon ui-icon-triangle-1-e"></span></a><ul class="ui-widget-content ui-menu-list ui-corner-all ui-helper-clearfix ui-menu-child ui-shadow" role="menu">
+                                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Drucken der statischen Ausweisrückseite" class="ui-menuitem-link ui-corner-all" href="/IDControl/faces/idcardback.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B"><span class="ui-menuitem-icon ui-icon pi pi-print"></span><span class="ui-menuitem-text">Ausweisrückseite</span></a></li>
+                                    <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem"><a tabindex="-1" title="Report Anwesenheitsliste ausgeben" class="ui-menuitem-link ui-corner-all" href="#" onclick="PrimeFaces.ab({s: & quot; j_idt22:j_idt24 & quot; , f: & quot; j_idt22 & quot; , g:false, pa:[{name: & quot; j_idt22:j_idt24_menuid & quot; , value: & quot; 12_1 & quot; }]}); return false;"><span class="ui-menuitem-icon ui-icon pi pi-users"></span><span class="ui-menuitem-text">Anwesenheitsliste</span></a></li></ul></li>
+                            <li class="ui-separator ui-state-default"></li>
+                            <li class="ui-menuitem ui-widget ui-corner-all" role="menuitem">
+                                <a tabindex="-1" title="Beenden der aktuellen Sitzung" class="ui-menuitem-link ui-corner-all" href="#" onclick="PrimeFaces.ab({s: & quot; j_idt22:j_idt24 & quot; , f: & quot; j_idt22 & quot; , g:false, pa:[{name: & quot; j_idt22:j_idt24_menuid & quot; , value: & quot; 14 & quot; }]}); return false;">
+                                    <span class="ui-menuitem-icon ui-icon pi pi-power-off"></span>
+                                    <span class="ui-menuitem-text">Beenden</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <script id="j_idt22:j_idt24_s" type="text/javascript">$(function(){PrimeFaces.cw("TieredMenu", "widget_j_idt22_j_idt24", {id:"j_idt22:j_idt24", autoDisplay:true, overlay:true, my:"right top", at:"right bottom", trigger:"j_idt22:dynaButton", triggerEvent:"click"}); });</script>
+                    <button id="j_idt22:exitButton" name="j_idt22:exitButton" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="mojarra.ab('j_idt22:exitButton', event, 'click', 0, 0)" type="button"><span class="ui-button-icon-left ui-icon ui-c pi pi-power-off"></span>
+                        <span class="ui-button-text ui-c">ui-button</span>
+                    </button>
+                    <script id="j_idt22:exitButton_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_j_idt22_exitButton", {id:"j_idt22:exitButton", behaviors:{click:function(ext, event) {mojarra.ab('j_idt22:exitButton', event, 'click', 0, 0, {'params':{'CLIENT_BEHAVIOR_RENDERING_MODE':'UNOBSTRUSIVE'}})}}}); });</script>
+                    <div id="j_idt22:forExitButton" class="ui-tooltip ui-widget ui-tooltip-top"><div class="ui-tooltip-arrow"></div><div class="ui-tooltip-text ui-shadow ui-corner-all">Programm beenden</div>
+
+                    </div>
+                    <script id="j_idt22:forExitButton_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_j_idt22_forExitButton", {id:"j_idt22:forExitButton", showEffect:"fade", hideEffect:"fade", target:"j_idt22:exitButton", position:"top"}); });</script>
+                    <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:1" value="-1371833055657131284:-1089435650124914582" autocomplete="off" />
+                </form>
+
+
+            </div>
+
+            <div class="layout-content">
+                <div class="content-section content-introduction">
+                    <b>
+                        Mitgliederinfo
+                    </b>  <i class="pi pi-chevron-right"></i>
+                    Übersicht über die aktuellen Mitglieder
+
+                    <div style="float: right;font-size:10px;">Ulrich Rüße<br />DLRG Remscheid e.V., Dienstag, 2. Juli 2019 09:16:14</div>
+                </div>
+                <div class="content-section content-implementation {'dark-content'}">
+                    <form id="form" name="form" method="post" action="/IDControl/faces/mglinfo.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B" enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="form" value="form" />
+                        <script id="form:j_idt33_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_form_j_idt33", {id:"form:j_idt33", showEffect:"fade", hideEffect:"fade"}); });</script>
+                        <div id="form:persons" class="ui-datatable ui-widget ui-datatable-scrollable ui-datatable-resizable"><div class="ui-datatable-header ui-widget-header ui-corner-top">
+                                <span id="form:persons:growlmessage"></span>
+                                <script id="form:persons:growlmessage_s" type="text/javascript">$(function(){PrimeFaces.cw("Growl", "widget_form_persons_growlmessage", {id:"form:persons:growlmessage", sticky:false, life:6000, escape:true, keepAlive:false, msgs:[]}); });</script>
+                                <div id="form:persons:j_idt34" class="ui-toolbar ui-widget ui-widget-header ui-corner-all ui-helper-clearfix" role="toolbar">
+                                    <div class="ui-toolbar-group-left">Durchsuche alle Felder: <input id="form:persons:globalFilter" name="form:persons:globalFilter" type="text" style="width:250px" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" placeholder="Suchwort eingeben" onkeyup="PF('mglTable').filter()" />
+                                        <script id="form:persons:globalFilter_s" type="text/javascript">$(function(){PrimeFaces.cw("InputText", "widget_form_persons_globalFilter", {id:"form:persons:globalFilter", maxlength: - 2147483648}); });</script>
+                                        <div id="form:persons:forGlobalFilter" class="ui-tooltip ui-widget ui-tooltip-top">
+                                            <div class="ui-tooltip-arrow"></div>
+                                            <div class="ui-tooltip-text ui-shadow ui-corner-all">Durchsucht alle Felder nach dem hier eingegebenen Wert!</div>
+
+                                        </div>
+                                        <script id="form:persons:forGlobalFilter_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_form_persons_forGlobalFilter", {id:"form:persons:forGlobalFilter", showEffect:"fade", hideEffect:"fade", target:"form:persons:globalFilter", position:"top"}); });</script>
+                                        <span class="ui-separator">
+                                            <span class="ui-icon pi pi-ellipsis-v"></span>
+                                        </span>
+                                        <button id="form:persons:ausweis" name="form:persons:ausweis" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left" data-pfconfirmcommand="PrimeFaces.bcn(this,event,[function(event){PrimeFaces.ab({s:&quot;form:persons:ausweis&quot;,f:&quot;form&quot;,p:&quot;form:persons&quot;,u:&quot;form:persons:growlmessage&quot;});return false;}]);" onclick="PrimeFaces.confirm({source: & quot; form:persons:ausweis & quot; , escape:true, header: & quot; Bestätigung erforderlich & quot; , message: & quot; Es werden nur Ausweise für Mitglieder gedruckt, deren Status Aktiv ist! Jetzt drucken? & quot; , icon: & quot; pi pi - exclamation - triangle & quot; , beforeShow: & quot; & quot; }); return false;" type="submit">
+                                            <span class="ui-button-icon-left ui-icon ui-c pi pi-print"></span>
+                                            <span class="ui-button-text ui-c">Ausweis drucken</span>
+                                        </button>
+                                        <script id="form:persons:ausweis_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_form_persons_ausweis", {id:"form:persons:ausweis", behaviors:{click:function(ext, event) {}}}); });</script>
+
+                                        <div id="form:persons:forAusweis" class="ui-tooltip ui-widget ui-tooltip-top">
+                                            <div class="ui-tooltip-arrow"></div>
+                                            <div class="ui-tooltip-text ui-shadow ui-corner-all">Druckt Ausweise für die ausgewählten Mitglieder.</div>
+
+                                        </div>
+                                        <script id="form:persons:forAusweis_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_form_persons_forAusweis", {id:"form:persons:forAusweis", showEffect:"fade", hideEffect:"fade", target:"form:persons:ausweis", position:"top"}); });</script>
+                                        <button id="form:persons:j_idt37" name="form:persons:j_idt37" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left" onclick="PrimeFaces.ab({s: & quot; form:persons:j_idt37 & quot; , f: & quot; form & quot; , p: & quot; form:persons & quot; , u: & quot; form:multiMglDetail & quot; , onco:function(xhr, status, args){PF('multiMglDialog').show(); }}); return false;" type="submit">
+                                            <span class="ui-button-icon-left ui-icon ui-c pi pi-sign-out"></span>
+                                            <span class="ui-button-text ui-c">Wassergeld kündigen</span>
+                                        </button>
+                                        <script id="form:persons:j_idt37_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_form_persons_j_idt37", {id:"form:persons:j_idt37"}); });</script>
+                                        <button id="form:persons:j_idt38" name="form:persons:j_idt38" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left ui-state-disabled" onclick="PrimeFaces.ab({s: & quot; form:persons:j_idt38 & quot; , f: & quot; form & quot; , p: & quot; form:persons & quot; , u: & quot; form:multiMglDetail & quot; , onco:function(xhr, status, args){PF('multiMglDialog').show(); }}); return false;" type="submit" disabled="disabled">
+                                            <span class="ui-button-icon-left ui-icon ui-c pi pi-sign-in"></span>
+                                            <span class="ui-button-text ui-c">Wassergeld berechnen</span>
+                                        </button>
+                                        <script id="form:persons:j_idt38_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_form_persons_j_idt38", {id:"form:persons:j_idt38"}); });</script>
+                                        <div id="form:persons:j_idt39" class="ui-confirm-dialog ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container">
+                                            <div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top">
+                                                <span id="form:persons:j_idt39_title" class="ui-dialog-title"></span>
+                                                <a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close">
+                                                    <span class="ui-icon ui-icon-closethick"></span>
+                                                </a>
+                                            </div>
+                                            <div class="ui-dialog-content ui-widget-content" id="form:persons:j_idt39_content">
+                                                <span class="ui-icon ui-confirm-dialog-severity"></span>
+                                                <span class="ui-confirm-dialog-message"></span>
+                                            </div>
+                                            <div class="ui-dialog-buttonpane ui-dialog-footer ui-widget-content ui-helper-clearfix">
+                                                <button id="form:persons:j_idt40" name="form:persons:j_idt40" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left ui-confirmdialog-yes" type="button"><span class="ui-button-icon-left ui-icon ui-c pi pi-check"></span>
+                                                    <span class="ui-button-text ui-c">Ja</span>
+                                                </button>
+                                                <script id="form:persons:j_idt40_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_form_persons_j_idt40", {id:"form:persons:j_idt40"}); });</script>
+                                                <button id="form:persons:j_idt41" name="form:persons:j_idt41" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left ui-confirmdialog-no" type="button">
+                                                    <span class="ui-button-icon-left ui-icon ui-c pi pi-times"></span>
+                                                    <span class="ui-button-text ui-c">Nein</span>
+                                                </button>
+                                                <script id="form:persons:j_idt41_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_form_persons_j_idt41", {id:"form:persons:j_idt41"}); });</script>
+                                            </div>
+                                        </div>
+                                        <script id="form:persons:j_idt39_s" type="text/javascript">$(function(){PrimeFaces.cw("ConfirmDialog", "widget_form_persons_j_idt39", {id:"form:persons:j_idt39", showEffect:"fade", hideEffect:"fade", global:true}); });</script></div><div class="ui-toolbar-group-right">
+                                        <button id="form:persons:refresh" name="form:persons:refresh" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="PrimeFaces.bcn(this, event, [function(event){PF('mglTable').clearFilters()}, function(event){PrimeFaces.ab({s: & quot; form:persons:refresh & quot; , f: & quot; form & quot; , p: & quot; form:persons & quot; }); return false; }]);" type="submit">
+                                            <span class="ui-button-icon-left ui-icon ui-c pi pi-refresh"></span>
+                                            <span class="ui-button-text ui-c">ui-button</span>
+                                        </button>
+                                        <script id="form:persons:refresh_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_form_persons_refresh", {id:"form:persons:refresh"}); });</script>
+                                        <div id="form:persons:forRefresh" class="ui-tooltip ui-widget ui-tooltip-top">
+                                            <div class="ui-tooltip-arrow"></div>
+                                            <div class="ui-tooltip-text ui-shadow ui-corner-all">Löscht alle Filter und liest die Datentabelle neu ein.</div>
+
+                                        </div>
+                                        <script id="form:persons:forRefresh_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_form_persons_forRefresh", {id:"form:persons:forRefresh", showEffect:"fade", hideEffect:"fade", target:"form:persons:refresh", position:"top"}); });</script>
+                                        <button id="form:persons:toggler" name="form:persons:toggler" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left" style="float:right" type="button">
+                                            <span class="ui-button-icon-left ui-icon ui-c pi pi-align-justify"></span>
+                                            <span class="ui-button-text ui-c">Spalten</span>
+                                        </button>
+                                        <script id="form:persons:toggler_s" type="text/javascript">$(function(){PrimeFaces.cw("CommandButton", "widget_form_persons_toggler", {id:"form:persons:toggler"}); });</script>
+                                        <div id="form:persons:forToggler" class="ui-tooltip ui-widget ui-tooltip-top">
+                                            <div class="ui-tooltip-arrow"></div>
+                                            <div class="ui-tooltip-text ui-shadow ui-corner-all">Ermöglicht das Ein- und Ausblenden von Tabellenspalten.</div>
+
+                                        </div>
+                                        <script id="form:persons:forToggler_s" type="text/javascript">$(function(){PrimeFaces.cw("Tooltip", "widget_form_persons_forToggler", {id:"form:persons:forToggler", showEffect:"fade", hideEffect:"fade", target:"form:persons:toggler", position:"top"}); });</script>
+                                        <div id="form:persons:j_idt42"></div>
+                                        <script id="form:persons:j_idt42_s" type="text/javascript">$(function(){PrimeFaces.cw("ColumnToggler", "widget_form_persons_j_idt42", {id:"form:persons:j_idt42", trigger:"form:persons:toggler", datasource:"form:persons"}); });</script>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-widget-header ui-datatable-scrollable-header">
+                                <div class="ui-datatable-scrollable-header-box">
+                                    <table role="grid"><thead id="form:persons_head"><tr role="row"><th id="form:persons:j_idt43" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="MitgliedsNr" scope="col" style="width:120px;text-align: center"><span class="ui-column-title">MitgliedsNr</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><label id="form:persons:j_idt43:filter_label" for="form:persons:j_idt43:filter" class="ui-helper-hidden">Filter by MitgliedsNr</label><input id="form:persons:j_idt43:filter" name="form:persons:j_idt43:filter" class="ui-column-filter ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" value="" autocomplete="off" aria-labelledby="form:persons:j_idt43:filter_label" /></th><th id="form:persons:j_idt45" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="FNr" scope="col" style="width:35px;text-align: center"><span class="ui-column-title">FNr</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><label id="form:persons:j_idt45:filter_label" for="form:persons:j_idt45:filter" class="ui-helper-hidden">Filter by FNr</label><input id="form:persons:j_idt45:filter" name="form:persons:j_idt45:filter" class="ui-column-filter ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" value="" autocomplete="off" aria-labelledby="form:persons:j_idt45:filter_label" /></th><th id="form:persons:j_idt47" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="Nachname" scope="col" style="text-align: left"><span class="ui-column-title">Nachname</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><label id="form:persons:j_idt47:filter_label" for="form:persons:j_idt47:filter" class="ui-helper-hidden">Filter by Nachname</label><input id="form:persons:j_idt47:filter" name="form:persons:j_idt47:filter" class="ui-column-filter ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" value="" autocomplete="off" aria-labelledby="form:persons:j_idt47:filter_label" /></th><th id="form:persons:j_idt49" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="Vorname" scope="col" style="text-align: left"><span class="ui-column-title">Vorname</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><label id="form:persons:j_idt49:filter_label" for="form:persons:j_idt49:filter" class="ui-helper-hidden">Filter by Vorname</label><input id="form:persons:j_idt49:filter" name="form:persons:j_idt49:filter" class="ui-column-filter ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" value="" autocomplete="off" aria-labelledby="form:persons:j_idt49:filter_label" /></th><th id="form:persons:j_idt51" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="Alter" scope="col" style="width:40px;text-align: center"><span class="ui-column-title">Alter</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><label id="form:persons:j_idt51:filter_label" for="form:persons:j_idt51:filter" class="ui-helper-hidden">Filter by Alter</label><input id="form:persons:j_idt51:filter" name="form:persons:j_idt51:filter" class="ui-column-filter ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" value="" autocomplete="off" aria-labelledby="form:persons:j_idt51:filter_label" /></th><th id="form:persons:j_idt53" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="Typ" scope="col" style="width:100px;text-align: center"><span class="ui-column-title">Typ</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><div class="ui-column-customfilter"><div id="form:persons:j_idt54" class="ui-selectcheckboxmenu ui-widget ui-state-default ui-corner-all" role="combobox" aria-haspopup="true" aria-expanded="false"><div class="ui-helper-hidden-accessible"><input id="form:persons:j_idt54_focus" name="form:persons:j_idt54_focus" type="text" readonly="readonly" /></div><div class="ui-helper-hidden"><input id="form:persons:j_idt54:0" name="form:persons:j_idt54" type="checkbox" value="Ex-Mitglied" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt54:0">Ex-Mitglied</label><input id="form:persons:j_idt54:1" name="form:persons:j_idt54" type="checkbox" value="Fremdzahler" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt54:1">Fremdzahler</label><input id="form:persons:j_idt54:2" name="form:persons:j_idt54" type="checkbox" value="Geschäftspartner" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt54:2">Geschäftspartner</label><input id="form:persons:j_idt54:3" name="form:persons:j_idt54" type="checkbox" value="Gliederung" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt54:3">Gliederung</label><input id="form:persons:j_idt54:4" name="form:persons:j_idt54" type="checkbox" value="Mitglied" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt54:4">Mitglied</label></div><span class="ui-selectcheckboxmenu-label-container"><label class="ui-selectcheckboxmenu-label ui-corner-all">Typ</label></span><div class="ui-selectcheckboxmenu-trigger ui-state-default ui-corner-right"><span class="ui-icon ui-icon-triangle-1-s"></span></div></div><script id="form:persons:j_idt54_s" type="text/javascript">$(function(){PrimeFaces.cw("SelectCheckboxMenu", "widget_form_persons_j_idt54", {id:"form:persons:j_idt54", onChange:function(){PF('mglTable').filter()}, appendTo:"@(body)"}); });</script></div></th><th id="form:persons:j_idt57" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="Status" scope="col" style="width:100px;text-align: center"><span class="ui-column-title">Status</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><div class="ui-column-customfilter"><div id="form:persons:j_idt58" class="ui-selectcheckboxmenu ui-widget ui-state-default ui-corner-all" role="combobox" aria-haspopup="true" aria-expanded="false"><div class="ui-helper-hidden-accessible"><input id="form:persons:j_idt58_focus" name="form:persons:j_idt58_focus" type="text" readonly="readonly" /></div><div class="ui-helper-hidden"><input id="form:persons:j_idt58:0" name="form:persons:j_idt58" type="checkbox" value="Aktiv" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt58:0">Aktiv</label><input id="form:persons:j_idt58:1" name="form:persons:j_idt58" type="checkbox" value="Gekündigt" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt58:1">Gekündigt</label><input id="form:persons:j_idt58:2" name="form:persons:j_idt58" type="checkbox" value="Gekündigt (Verstorben)" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt58:2">Gekündigt (Verstorben)</label><input id="form:persons:j_idt58:3" name="form:persons:j_idt58" type="checkbox" value="Nur Zahler" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt58:3">Nur Zahler</label><input id="form:persons:j_idt58:4" name="form:persons:j_idt58" type="checkbox" value="Vorerfassung" data-escaped="true" onchange="PF('mglTable').filter()" /><label for="form:persons:j_idt58:4">Vorerfassung</label></div><span class="ui-selectcheckboxmenu-label-container"><label class="ui-selectcheckboxmenu-label ui-corner-all">Status</label></span><div class="ui-selectcheckboxmenu-trigger ui-state-default ui-corner-right"><span class="ui-icon ui-icon-triangle-1-s"></span></div></div><script id="form:persons:j_idt58_s" type="text/javascript">$(function(){PrimeFaces.cw("SelectCheckboxMenu", "widget_form_persons_j_idt58", {id:"form:persons:j_idt58", onChange:function(){PF('mglTable').filter()}, appendTo:"@(body)"}); });</script></div></th><th id="form:persons:j_idt61" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="Mitarbeiter" scope="col" style="width:100px;text-align: center"><span class="ui-column-title">Mitarbeiter</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><div class="ui-column-customfilter"><div id="form:persons:j_idt62" class="ui-selectmanybutton ui-buttonset ui-widget ui-corner-all ui-buttonset-2"><div class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-left"><input id="form:persons:j_idt62:0" name="form:persons:j_idt62" type="checkbox" value="true" class="ui-helper-hidden-accessible" onchange="PF('mglTable').filter()" /><span class="ui-button-text ui-c">✔</span></div><div class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-right"><input id="form:persons:j_idt62:1" name="form:persons:j_idt62" type="checkbox" value="false" class="ui-helper-hidden-accessible" onchange="PF('mglTable').filter()" /><span class="ui-button-text ui-c">✘</span></div></div><script id="form:persons:j_idt62_s" type="text/javascript">$(function(){PrimeFaces.cw("SelectManyButton", "widget_form_persons_j_idt62", {id:"form:persons:j_idt62"}); });</script></div></th><th id="form:persons:j_idt69" class="ui-state-default ui-sortable-column ui-filter-column ui-resizable-column" role="columnheader" aria-label="Wassergeld" scope="col" style="width:100px;text-align: center"><span class="ui-column-title">Wassergeld</span><span class="ui-sortable-column-icon ui-icon ui-icon-carat-2-n-s"></span><div class="ui-column-customfilter"><div id="form:persons:j_idt70" class="ui-selectmanybutton ui-buttonset ui-widget ui-corner-all ui-buttonset-2"><div class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-left"><input id="form:persons:j_idt70:0" name="form:persons:j_idt70" type="checkbox" value="true" class="ui-helper-hidden-accessible" onchange="PF('mglTable').filter()" /><span class="ui-button-text ui-c">✔</span></div><div class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-right"><input id="form:persons:j_idt70:1" name="form:persons:j_idt70" type="checkbox" value="false" class="ui-helper-hidden-accessible" onchange="PF('mglTable').filter()" /><span class="ui-button-text ui-c">✘</span></div></div><script id="form:persons:j_idt70_s" type="text/javascript">$(function(){PrimeFaces.cw("SelectManyButton", "widget_form_persons_j_idt70", {id:"form:persons:j_idt70"}); });</script></div></th><th id="form:persons:j_idt77" class="ui-state-default ui-filter-column ui-resizable-column" role="columnheader" aria-label="Bemerkung" scope="col" style="text-align: left"><span class="ui-column-title">Bemerkung</span><label id="form:persons:j_idt77:filter_label" for="form:persons:j_idt77:filter" class="ui-helper-hidden">Filter by Bemerkung</label><input id="form:persons:j_idt77:filter" name="form:persons:j_idt77:filter" class="ui-column-filter ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" value="" autocomplete="off" aria-labelledby="form:persons:j_idt77:filter_label" /></th><th id="form:persons:j_idt79" class="ui-state-default ui-selection-column ui-resizable-column" role="columnheader" aria-label="✔" scope="col" style="width:16px;text-align:center"><span class="ui-column-title"><span id="form:persons:keyColumnId" title="Auswahl">✔</span></span><div class="ui-chkbox ui-chkbox-all ui-widget"><div class="ui-helper-hidden-accessible"><input type="checkbox" name="form:persons_checkbox" aria-label="Select All" aria-checked="false" /></div><div class="ui-chkbox-box ui-widget ui-corner-all ui-state-default"><span class="ui-chkbox-icon ui-icon ui-icon-blank ui-c"></span></div></div></th><th id="form:persons:j_idt80" class="ui-state-default ui-resizable-column" role="columnheader" aria-label="Info" scope="col" style="width:32px;text-align: center"><span class="ui-column-title">Info</span></th></tr></thead></table>
+                                </div>
+                            </div>
+                            <div class="ui-datatable-scrollable-body" tabindex="-1">
+
+                                <!-- TABLE 2 -->
+
+                            </div>
+                            <div class="ui-widget-header ui-datatable-scrollable-footer">
+                                <div class="ui-datatable-scrollable-footer-box">
+                                    <table role="grid">
+
+                                    </table>
+                                </div>
+                            </div>
+                            <input type="hidden" id="form:persons_selection" name="form:persons_selection" autocomplete="off" value="" />
+                            <input type="hidden" id="form:persons_columnOrder" name="form:persons_columnOrder" autocomplete="off" />
+                            <input type="hidden" id="form:persons_scrollState" name="form:persons_scrollState" autocomplete="off" value="0,0" />
+                        </div>
+                        <script id="form:persons_s" type="text/javascript">$(function(){PrimeFaces.cw("DataTable", "mglTable", {id:"form:persons", selectionMode:"checkbox", filter:true, scrollable:true, liveScroll:false, scrollStep:0, scrollLimit:729, scrollHeight:"100%", liveScrollBuffer:0, virtualScroll:false, resizableColumns:true, draggableColumns:true, groupColumnIndexes:[], disableContextMenuIfEmpty:false}); });</script>
+                        <div id="form:j_idt82" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container">
+                            <div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top">
+                                <span id="form:j_idt82_title" class="ui-dialog-title">Mitgliedsinformationen</span>
+                                <a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close">
+                                    <span class="ui-icon ui-icon-closethick"></span>
+                                </a>
+                            </div>
+                            <div class="ui-dialog-content ui-widget-content" id="form:j_idt82_content">
+                                <div id="form:mitgliedDetail" class="ui-outputpanel ui-widget" style="text-align:center;">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <script id="form:j_idt82_s" type="text/javascript">$(function(){PrimeFaces.cw("Dialog", "mitgliedDialog", {id:"form:j_idt82", resizable:false, modal:true, showEffect:"fade", hideEffect:"fade"}); });</script>
+                        <div id="form:j_idt212" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container">
+                            <div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top">
+                                <span id="form:j_idt212_title" class="ui-dialog-title">Ausgewählte Mitglieder</span>
+                                <a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close"><span class="ui-icon ui-icon-closethick"></span>
+                                </a>
+                            </div>
+
+                            <div class="ui-dialog-content ui-widget-content" id="form:j_idt212_content">
+                                <div id="form:multiMglDetail" class="ui-outputpanel ui-widget" style="text-align:center;">
+                                    <form id="form:dialogform" name="form:dialogform" method="post" action="/IDControl/faces/mglinfo.xhtml;jsessionid=010E52CB752FE9A9A1518CD78942029B" enctype="application/x-www-form-urlencoded">
+                                        <input type="hidden" name="form:dialogform" value="form:dialogform" />
+                                        <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:2" value="-1371833055657131284:-1089435650124914582" autocomplete="off" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <script id="form:j_idt212_s" type="text/javascript">$(function(){PrimeFaces.cw("Dialog", "multiMglDialog", {id:"form:j_idt212", modal:true, width:"400", showEffect:"fade", hideEffect:"fade"}); });</script>
+                        <input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:3" value="-1371833055657131284:-1089435650124914582" autocomplete="off" />
+                    </form>
+                </div>
+            </div>
+            <!--ui:include src="./footer.xhtml"&gt;&lt;/ui:include-->
+        </div>
+        <!-- Das ist die Sanduhr bei l&auml;ngeren Operationen -->
+        <div id="j_idt218" style="width:64px;height:64px;position:fixed;right:5px;bottom:5px">
+            <div id="j_idt218_start" style="display:none">
+                <i class="pi pi-spin pi-spinner ajax-loader" aria-hidden="true"></i></div>
+            <div id="j_idt218_complete" style="display:none"></div></div>
+        <script id="j_idt218_s" type="text/javascript">$(function(){PrimeFaces.cw("AjaxStatus", "widget_j_idt218", {id:"j_idt218"}); });</script>
+        <script type="text/javascript" src="/IDControl/faces/javax.faces.resource/main/script/sh.js;jsessionid=010E52CB752FE9A9A1518CD78942029B"></script>
+    </body>
+
+</html>

@@ -4,7 +4,7 @@
 
     <groupId>net.ruesse</groupId>
     <artifactId>IDControl</artifactId>
-    <version>20190702</version>
+    <version>20190718</version>
     <packaging>war</packaging>
 
     <name>IDControl</name>
@@ -12,6 +12,7 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <owb.version>1.7.6</owb.version>
     </properties>
  
     
@@ -135,18 +136,15 @@
             <artifactId>batik-bridge</artifactId>
             <version>1.11</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>2.0.14</version>
-        </dependency>
 
+        <!-- CDI implementation -->
         <dependency>
             <groupId>org.jboss.weld.servlet</groupId>
             <artifactId>weld-servlet-shaded</artifactId>
-            <version>3.0.5.Final</version>
+            <version>3.1.1.Final</version>
         </dependency>
-
+       
+        
         <!-- Data Exporter -->
         <dependency>
             <groupId>org.apache.poi</groupId>

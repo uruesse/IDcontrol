@@ -21,21 +21,22 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
 import net.ruesse.idc.control.ApplicationControlBean;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
 import net.ruesse.idc.control.CardService;
 import net.ruesse.idc.database.persistence.Auswahl;
-import net.ruesse.idc.database.persistence.Person;
 import net.ruesse.idc.database.persistence.service.PersonMgl;
-import net.ruesse.idc.control.Constants;
+import net.ruesse.idc.application.Constants;
+import net.ruesse.idc.database.persistence.service.PersonCache;
 import net.ruesse.idc.report.PrintSupport;
 
 /**
@@ -49,14 +50,17 @@ public class MglView implements Serializable {
     private final static Logger LOGGER = Logger.getLogger(MglView.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    static private List<PersonMgl> allMgl = null;
-    static private List<PersonMgl> filteredMgl;
-    static private List<PersonMgl> selectedMgl;
+    @Inject
+    PersonCache pc;
 
-    static private String[] allStatus;
-    static private String[] allHauptkategorie;
+    private List<PersonMgl> allMgl = null;
+    private List<PersonMgl> filteredMgl;
+    private List<PersonMgl> selectedMgl;
+
+    private String[] allStatus;
+    private String[] allHauptkategorie;
 
     private PersonMgl selectedPerson;
 
@@ -64,7 +68,7 @@ public class MglView implements Serializable {
      *
      */
     public MglView() {
-        LOGGER.setLevel(Level.INFO);
+        LOGGER.setLevel(Level.FINE);
     }
 
     /**
@@ -77,16 +81,34 @@ public class MglView implements Serializable {
         }
     }
 
+    public void reloadAction() {
+        pc.invalidate();
+        refreshAction();
+    }
+
     /**
      *
      */
     public void refreshAction() {
+
+        filteredMgl = new ArrayList<>();
+        selectedMgl = new ArrayList<>();
+
+        //PersonCache pc = new PersonCache();
+        //pc.invalidate();
+        allMgl = pc.getAllMgl();
+
+        allStatus = pc.getAllStatus();
+        allHauptkategorie = pc.getAllHauptkategorie();
+
+        /*
         allMgl = new ArrayList<>();
         filteredMgl = new ArrayList<>();
         selectedMgl = new ArrayList<>();
 
+        Query q;
         LOGGER.log(Level.INFO, "Starte Query auf Personen");
-        Query q = em.createNamedQuery("Person.findAll");
+        q = em.createNamedQuery("Person.findAll");
         List<Person> personlist = q.getResultList();
 
         LOGGER.log(Level.FINE, "VorForEach");
@@ -96,7 +118,7 @@ public class MglView implements Serializable {
         }).forEachOrdered((p) -> {
             allMgl.add(new PersonMgl(p));
         });
-
+         
         q = em.createNativeQuery("SELECT DISTINCT STATUS FROM IDCREMOTE.PERSON  ORDER BY STATUS");
         List<String> list = q.getResultList();
         allStatus = list.stream().toArray(String[]::new);
@@ -104,6 +126,7 @@ public class MglView implements Serializable {
         q = em.createNativeQuery("SELECT DISTINCT HAUPTKATEGORIE FROM IDCREMOTE.PERSON  ORDER BY HAUPTKATEGORIE");
         list = q.getResultList();
         allHauptkategorie = list.stream().toArray(String[]::new);
+         */
     }
 
     /**
@@ -135,7 +158,7 @@ public class MglView implements Serializable {
      * @param selectedMgl
      */
     public void setSelectedMgl(List<PersonMgl> selectedMgl) {
-        MglView.selectedMgl = selectedMgl;
+        this.selectedMgl = selectedMgl;
     }
 
     /**
@@ -151,7 +174,7 @@ public class MglView implements Serializable {
      * @param filteredMgl
      */
     public void setFilteredMgl(List<PersonMgl> filteredMgl) {
-        MglView.filteredMgl = filteredMgl;
+        this.filteredMgl = filteredMgl;
     }
 
     /**
@@ -167,7 +190,7 @@ public class MglView implements Serializable {
      * @param allMgl
      */
     public void setAllMgl(List<PersonMgl> allMgl) {
-        MglView.allMgl = allMgl;
+        this.allMgl = allMgl;
     }
 
     /**
@@ -187,6 +210,15 @@ public class MglView implements Serializable {
         LOGGER.fine("aufgerufen");
         if (selectedPerson != null) {
             LOGGER.log(Level.FINE, "Mitgliedsnummer: {0}", selectedPerson.person.getMglnr());
+            return selectedPerson;
+        } else {
+            // Nur Notfall: weil setSelectedPerson momentan nicht aufgerufen wird.
+            for (PersonMgl sp : selectedMgl) {
+                if (sp != null) {
+                    LOGGER.log(Level.FINE, "Über selectedMgl-Mitgliedsnummer: {0}", sp.person.getMglnr());
+                    return sp;
+                }
+            }
         }
         return selectedPerson;
     }
@@ -204,6 +236,10 @@ public class MglView implements Serializable {
      * @param selectedPerson
      */
     public void setSelectedPerson(PersonMgl selectedPerson) {
+        LOGGER.fine("aufgerufen");
+        if (selectedPerson != null) {
+            LOGGER.log(Level.FINE, "Mitgliedsnummer: {0}", selectedPerson.person.getMglnr());
+        }
         this.selectedPerson = selectedPerson;
     }
 

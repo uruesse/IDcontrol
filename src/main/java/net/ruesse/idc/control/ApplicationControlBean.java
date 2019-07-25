@@ -15,6 +15,8 @@
  */
 package net.ruesse.idc.control;
 
+import net.ruesse.idc.database.persistence.service.VereinService;
+import net.ruesse.idc.application.Constants;
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayInputStream;
 import java.io.FileReader;
@@ -45,6 +47,7 @@ import static net.ruesse.idc.control.FileService.getDatabaseBaseDir;
 import static net.ruesse.idc.control.FileService.getLogoDir;
 import static net.ruesse.idc.control.FileService.getWorkingDir;
 import net.ruesse.idc.database.persistence.service.PersonUser;
+import net.ruesse.idc.database.persistence.service.WebDavService;
 import net.ruesse.idc.database.sql.SqlSupport;
 import net.ruesse.idc.report.PrintSupport;
 import static net.ruesse.idc.report.PrintSupport.availablePrinters;
@@ -66,11 +69,11 @@ public class ApplicationControlBean implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(ApplicationControlBean.class.getName());
 
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
-    
+
     private static final long serialVersionUID = 1L;
 
     static private boolean isDemo;
-    static private boolean isPDF;
+    //static private boolean isPDF;
     static private boolean isDruckerdialog;
     static private boolean isBackupAvailable;
     static private boolean isDevelopment = false;
@@ -89,7 +92,7 @@ public class ApplicationControlBean implements Serializable {
         LOGGER.setLevel(Level.INFO);
         LOGGER.fine("aufgerufen");
         isDemo = false;
-        isPDF = false;
+//        isPDF = false;
         isDruckerdialog = false;
 
         screenResolution = GraphicsEnvironment.isHeadless();
@@ -124,30 +127,20 @@ public class ApplicationControlBean implements Serializable {
         ApplicationControlBean.isDemo = isDemo;
     }
 
-    /**
-     *
-     * @return
-     */
-    public boolean isIsPDF() {
+    /*
+    static boolean isIsPDF() {
         return isPDF;
     }
 
-    /**
-     *
-     * @return
-     */
+
     static public boolean isPDF() {
         return isPDF;
     }
 
-    /**
-     *
-     * @param isPDF
-     */
     public void setIsPDF(boolean isPDF) {
         ApplicationControlBean.isPDF = isPDF;
     }
-
+     */
     /**
      *
      * @return
@@ -389,10 +382,14 @@ public class ApplicationControlBean implements Serializable {
     public String getWebserviceInfo() {
         VereinService vs = new VereinService();
         if (vs != null) {
-            return vs.aktVerein.getUridav();
+            return vs.getAktVerein().getUridav();
         } else {
             return "Kein Webservice verfügbar!";
         }
+    }
+
+    public String getWebserviceUser() {     
+        return new WebDavService().getWebserviceUser();
     }
 
     /**
@@ -497,7 +494,7 @@ public class ApplicationControlBean implements Serializable {
             addMessageFail("KEIN Druck!", "Mindestens eine Kopie erforderlich");
         }
     }
-    
+
     /**
      *
      */
@@ -543,6 +540,7 @@ public class ApplicationControlBean implements Serializable {
      *
      */
     public void exportTables() {
+        LOGGER.log(Level.INFO, "");
         SqlSupport sp = new SqlSupport();
 
         String exportFile = sp.exportSchema("idcremote");

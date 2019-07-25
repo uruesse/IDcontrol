@@ -25,6 +25,7 @@
     <class>net.ruesse.idc.database.persistence.Verein</class>
     <class>net.ruesse.idc.database.persistence.Userpref</class>
     <class>net.ruesse.idc.database.persistence.Card</class>
+    <class>net.ruesse.idc.database.persistence.Machinepref</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <!--property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />

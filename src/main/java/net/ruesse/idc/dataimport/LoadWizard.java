@@ -40,16 +40,17 @@ import javax.inject.Named;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
-import javax.persistence.Cache;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
-import net.ruesse.idc.control.Constants;
+import net.ruesse.idc.application.Constants;
 import static net.ruesse.idc.control.FileService.deleteDirectoryStream;
 import static net.ruesse.idc.control.FileService.getTempDir;
 import net.ruesse.idc.database.persistence.Verein;
+import net.ruesse.idc.database.persistence.service.PersonCache;
 import net.ruesse.idc.database.sql.SqlSupport;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -66,6 +67,9 @@ public class LoadWizard implements Serializable {
 
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
     private static final long serialVersionUID = 1L;
+
+    @Inject
+    PersonCache pc;
 
     private boolean skip;
     List<DataTable> DataTableList;
@@ -548,9 +552,10 @@ public class LoadWizard implements Serializable {
         ** deswegen
         ** folgt der explizite Refresh auf die Vereinssuche als Workaround
          */
-        em.clear();
-        Cache cache = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).getCache();
-        cache.evictAll();
+        //em.clear();
+        //Cache cache = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).getCache();
+        //cache.evictAll();
+        pc.invalidate();
         // --- BEGINN WORKAROUND
         Query q = em.createNamedQuery("Verein.findAll", Verein.class
         );

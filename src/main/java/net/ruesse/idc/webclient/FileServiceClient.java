@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.ruesse.idc.webclient;
 
 import java.io.BufferedInputStream;
@@ -31,30 +30,32 @@ import java.util.Collections;
 import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
 import javax.xml.bind.DatatypeConverter;
-import net.ruesse.idc.control.ApplicationControlBean;
 import static net.ruesse.idc.control.FileService.getImportsDir;
-import net.ruesse.idc.control.VereinService;
-
-
+import net.ruesse.idc.database.persistence.service.VereinService;
+import net.ruesse.idc.database.persistence.service.WebDavService;
 
 /**
  *
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
+@ViewScoped
 public class FileServiceClient {
 
     private static final Logger LOGGER = Logger.getLogger(FileServiceClient.class.getName());
-    
+
     String WebserviceURL = "";
     String WebserviceUser = "";
     String WebservicePassword = "";
+    boolean WebserviceAvailable = false;
 
-    
     /**
-     * 
+     *
      * @param bytes
-     * @return 
+     * @return
      */
     private byte[] calcChecksum(byte[] bytes) {
         byte[] checksum = null;
@@ -67,33 +68,47 @@ public class FileServiceClient {
     }
 
     /**
-     * 
+     *
      * @param bytes
-     * @return 
+     * @return
      */
     private String calcChecksumStr(byte[] bytes) {
         return DatatypeConverter.printHexBinary(calcChecksum(bytes));
     }
 
+    //@Inject
+    //WebDavService wds;
     /**
-     * 
+     *
      */
     public FileServiceClient() {
+        WebDavService wds = new WebDavService();
+        if (wds.isWebserviceAvailable()) {
+            WebserviceURL = wds.getWebserviceURL();
+            WebserviceUser = wds.getWebserviceUser();
+            WebservicePassword = wds.getWebservicePassword();
+            WebserviceAvailable = true;
+        }
+        /*
         VereinService vs = new VereinService();
         if (vs != null) {
             WebserviceURL = vs.getAktVerein().getUridav();
         } 
         WebserviceUser = ApplicationControlBean.getLoginMgl().getWebDavUser();
         WebservicePassword = ApplicationControlBean.getLoginMgl().getWebDavPassword();
+         */
     }
 
-    
     /**
      *
      * @param idcFile
      * @return
      */
     public Path downloadFile(String idcFile) {
+        if (!WebserviceAvailable) {
+            LOGGER.log(Level.INFO, "Webservice nicht verfügbar");
+            return null;
+        }
         FileServiceWebDav service = new FileServiceWebDav(WebserviceURL, WebserviceUser, WebservicePassword);
 
         File filePath = getImportsDir().resolve(idcFile).toFile();
@@ -126,6 +141,10 @@ public class FileServiceClient {
      * @param idcFile
      */
     public void uploadFile(String idcFile) {
+        if (!WebserviceAvailable) {
+            LOGGER.log(Level.INFO, "Webservice nicht verfügbar");
+            return;
+        }
         FileServiceWebDav service = new FileServiceWebDav(WebserviceURL, WebserviceUser, WebservicePassword);
 
         String strChecksumBytes;
@@ -159,10 +178,14 @@ public class FileServiceClient {
     }
 
     /**
-     * 
-     * @param idcFile 
+     *
+     * @param idcFile
      */
     public void deleteFile(String idcFile) {
+        if (!WebserviceAvailable) {
+            LOGGER.log(Level.INFO, "Webservice nicht verfügbar");
+            return;
+        }
         FileServiceWebDav service = new FileServiceWebDav(WebserviceURL, WebserviceUser, WebservicePassword);
 
         File file = new File(idcFile);
@@ -179,6 +202,10 @@ public class FileServiceClient {
      * @return
      */
     public ArrayList<String> listFiles() {
+        if (!WebserviceAvailable) {
+            LOGGER.log(Level.INFO, "Webservice nicht verfügbar");
+            return null;
+        }
         ArrayList<String> files;
         FileServiceWebDav service = new FileServiceWebDav(WebserviceURL, WebserviceUser, WebservicePassword);
         files = service.list(".IDC");
@@ -192,30 +219,32 @@ public class FileServiceClient {
     }
 
     /**
-     * 
-     * @return
-     * @throws Exception 
+     *
+     * @return @throws Exception
      */
     public String getLastBackup() throws Exception {
-
-        VereinService vereinService = new VereinService();
-        String vereinID = vereinService.getVereinId();
-        //String vereinID = "0920000";
-
         String strResult = "";
+        if (WebserviceAvailable) {
 
-        ArrayList<String> backups = listFiles();
-        for (ListIterator li = backups.listIterator(0); li.hasNext();) {
-            String tmp = li.next().toString();
-            LOGGER.info(tmp);
-            if (tmp.startsWith(vereinID)) {
-                strResult = tmp;
-                break;
+            VereinService vereinService = new VereinService();
+            String vereinID = vereinService.getVereinId();
+            //String vereinID = "0920000";
+
+            ArrayList<String> backups = listFiles();
+            for (ListIterator li = backups.listIterator(0); li.hasNext();) {
+                String tmp = li.next().toString();
+                LOGGER.info(tmp);
+                if (tmp.startsWith(vereinID)) {
+                    strResult = tmp;
+                    break;
+                }
+
             }
 
+            LOGGER.log(Level.INFO, "Letzter Backup: {0}", strResult);
+        } else {
+            LOGGER.log(Level.INFO, "Webservice nicht verfügbar");
         }
-
-        LOGGER.log(Level.INFO, "Letzter Backup: {0}", strResult);
 
         // TODO Das ist ein Provisorium -- eigene FileService Exceptions definieren
         if (strResult.isEmpty()) {
@@ -223,5 +252,15 @@ public class FileServiceClient {
         }
         return strResult;
     }
+
+    /**
+     *
+     * @return
+     */
+    public String getWebserviceUser() {
+        return WebserviceUser;
+    }
+    
+    
 
 }

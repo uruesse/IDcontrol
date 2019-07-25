@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.ruesse.idc.control;
+package net.ruesse.idc.application;
 
 import java.util.logging.Logger;
 
@@ -29,6 +29,7 @@ public class Constants {
 
     public static final String REPORT_SRC = ".jrxml";
     public static final String REPORT_DST = ".jasper";
+    public static final long MSPERYEAR = (long) 365 * 24 * 60 * 60 * 1000;
 
     /**
      * 

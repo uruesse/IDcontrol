@@ -18,70 +18,124 @@
     </ui:define>
 
     <ui:define name="implementation">
-        <h:form id="AppControl">
-            <p:growl id="growlmessage" for="AppControl" showDetail="true" />
-            <p:messages id="AppControlMessage" for="AppControl" escape="false" showDetail="true" closable="true">
-                <p:autoUpdate />
-            </p:messages>
+        <p:growl id="growlmessage" for="Allgemein" showDetail="true" />
+        <p:messages id="AllgemeinMessage" for="Allgemein" escape="false" showDetail="true" closable="true">
+            <p:autoUpdate />
+        </p:messages>
+        <p:tabView>
+            <p:tab title="Allgemein">
+                <h:form id="Allgemein">
 
-            <h:panelGrid id="display" columns="2" cellpadding="5">
+                    <h:panelGrid id="display" columns="2" cellpadding="5">
 
-                <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
-                <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
+                        <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
+                        <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
 
-                <h:outputLabel for="druckerauswahl" value="Kartendrucker auswählen:" />
-                <p:selectOneMenu id="druckerauswahl" value="#{applicationControlBean.kartendrucker}"  dynamic="true" style="width:250px">
-                    <p:ajax event="change" global="false" />
-                    <f:selectItem itemLabel="PDF-Ausgabe" itemValue="PDF" />
-                    <f:selectItems value="#{applicationControlBean.printers}" />
-                </p:selectOneMenu>
+                        <h:outputLabel for="druckerauswahl" value="Kartendrucker auswählen:" />
+                        <p:selectOneMenu id="druckerauswahl" value="#{applicationControlBean.kartendrucker}"  dynamic="true" style="width:250px">
+                            <p:ajax event="change" global="false" />
+                            <f:selectItem itemLabel="PDF-Ausgabe" itemValue="PDF" />
+                            <f:selectItems value="#{applicationControlBean.printers}" />
+                        </p:selectOneMenu>
 
-                <h:outputLabel for="exportDB" value="Datenexport" />
-                <p:commandButton id="exportDB" process="@this" value="Datenbank exportieren" action="#{applicationControlBean.exportTables()}" icon="pi pi-cloud-upload" update="AppControlMessage" disabled="#{!controlBean.userRightSewobe}"/>
+                        <h:outputLabel for="exportDB" value="Datenexport" />
+                        <p:commandButton id="exportDB" 
+                                         process="@this" 
+                                         value="Datenbank exportieren" 
+                                         action="#{applicationControlBean.exportTables()}" 
+                                         icon="pi pi-cloud-upload" 
+                                         update="AllgemeinMessage" 
+                                         disabled="#{!controlBean.userRightSewobe}"/>
 
-                <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
-                <p:commandButton id="autoimport" process="@this" value="#{applicationControlBean.lastBackup}" action="#{applicationControlBean.uploadLastBackup()}" icon="pi pi-cloud-download" update="AppControlMessage" disabled="#{!applicationControlBean.backupAvailable}"/>
 
-                <h:outputLabel for="importfile" value="Datenimport" />
-                <p:fileUpload id="importfile" fileUploadListener="#{fileUploadView.handleFileUpload}" label="Sicherungsdatei [*.IDC] auswählen" uploadLabel="hochladen" cancelLabel="Abbrechen" mode="advanced" dragDropSupport="true" update="AppControlMessage" sizeLimit="100000000" allowTypes="/(\.|\/)(IDC)$/" disabled="#{!controlBean.userRightSewobe}"/>
+                        <h:outputLabel for="autoimport" value="Automatischer Datenimport" />
+                        <p:commandButton id="autoimport" 
+                                         process="@this" 
+                                         value="#{applicationControlBean.lastBackup}" 
+                                         action="#{applicationControlBean.uploadLastBackup()}" 
+                                         icon="pi pi-cloud-download" 
+                                         update="AllgemeinMessage" 
+                                         disabled="#{!applicationControlBean.backupAvailable}"/>
 
-                <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
-                <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary" disabled="#{!controlBean.userRightSewobe}"/>
+                        <h:outputLabel for="importfile" value="Datenimport" />
+                        <p:fileUpload id="importfile" 
+                                      fileUploadListener="#{fileUploadView.handleFileUpload}" 
+                                      label="Sicherungsdatei [*.IDC] auswählen" 
+                                      uploadLabel="hochladen" 
+                                      cancelLabel="Abbrechen" 
+                                      mode="advanced" 
+                                      dragDropSupport="true" 
+                                      update="AllgemeinMessage" 
+                                      sizeLimit="100000000" 
+                                      allowTypes="/(\.|\/)(IDC)$/" 
+                                      disabled="#{!controlBean.userRightSewobe}"/>
 
-                <p:separator/><p:separator/>
+                        <h:outputLabel for="sewobe2stage" value="SEWOBE2Stage" />
+                        <p:button id="sewobe2stage" outcome="loadwizard"  value="SEWOBE-Daten hochladen" class="secondary" disabled="#{!controlBean.userRightSewobe}"/>
 
-                <h:outputLabel for="WebDav" value="WebDav user/password" />
-                <h:panelGrid id="WebDav" columns="4" cellpadding="2">
-                    <p:inputText immediate="true" value="#{applicationControlBean.webDavUser}" />/<p:password  immediate="true" value="#{applicationControlBean.webDavPassword}"  /> 
-                    <p:commandButton update="WebDav" value="sichern"/>
+                    </h:panelGrid>
+                </h:form>
+            </p:tab>
+
+            <p:tab title="Webservice">
+                <h:form id="Webservice">
+                    <h:outputText escape="false"  value="#{msg['settings.passwordinfo']}" />
+                    <h:panelGrid id="display" columns="2" cellpadding="5">
+                        <h:outputLabel for="hint" value="Wichtiger Hinweis:" />
+                        <h:outputText  escape="false" value="#{msg['settings.passwordhint']}"/>
+
+                        <h:outputLabel for="WebDavInfo" value="Webservice:" />
+                        <h:outputText id="WebDavInfo" value="#{applicationControlBean.webserviceInfo}" />
+
+                        <h:outputLabel for="WebDavUser" value="Webserviceuser:" />
+                        <h:outputText id="WebDavUser" value="#{applicationControlBean.webserviceUser}" />
+
+                        <h:outputLabel for="backup" value="Neuester Datenstand im Webservice:" />
+                        <h:outputText id="backup" value="#{applicationControlBean.backupInfo}" />
+
+                        <h:outputLabel for="WebDav" value="WebDav user/password" />
+                        <h:panelGrid id="WebDav" columns="4" cellpadding="2">
+                            <p:inputText immediate="true" value="#{applicationControlBean.webDavUser}" />/<p:password  immediate="true" value="#{applicationControlBean.webDavPassword}"  /> 
+                            <p:commandButton update="WebDav" value="sichern"/>
+                        </h:panelGrid>
+
+                    </h:panelGrid>
+                </h:form>
+            </p:tab>
+
+            <p:tab title="Entwicklung">
+                <h:form id="Entwicklung">
+                    <p:growl id="growlmessage" for="Entwicklung" showDetail="true" />
+                    <h:panelGrid id="display" columns="2" cellpadding="5">
+                        <h:outputText value="NUR FÜR TESTZWECKE:" />
+                        <h:outputText value="Nur während der Testphase zu sehen. Aufruf kann außerhalb der Entwicklungsumgebung zu Programmfehlern führen." />
+
+                        <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
+                        <p:splitButton id="errorgen" style="color:red;background-color: grey;" value="Error 500" action="#{errorHandler.error500}" ajax="true" disabled="#{!controlBean.userRightAdmin}">
+                            <p:menuitem value="Error 404" url="xx" />
+                        </p:splitButton>  
+
+                        <p:outputLabel for="testdata" value="Entenhausener Schwimmverein: " />
+                        <p:splitButton id="testdata" style="color:red;background-color: grey;" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" disabled="#{!controlBean.userRightAdmin}">
+                            <p:menuitem value="Testdaten entfernen" action="#{applicationControlBean.dropEntenhauusen}" ajax="true" update="growlmessage"/>
+                            <p:menuitem value="reine Testdatenbank erstellen" action="#{applicationControlBean.onlyEntenhauusen}" ajax="true" update="growlmessage"/>
+                        </p:splitButton>  
+
+                        <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
+                        <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{!controlBean.userRightDev}">
+                            <p:ajax event="change" global="false" />
+                        </p:selectBooleanCheckbox>
+                    </h:panelGrid>
+                </h:form>
+            </p:tab>
+
+            <p:tab title="XX" rendered="false">
+                <h:panelGrid id="display" columns="2" cellpadding="5">
+
                 </h:panelGrid>
+            </p:tab>
+        </p:tabView>
 
-                <p:separator/><p:separator/>
-                <h:outputText value="NUR FÜR TESTZWECKE:" />
-                <h:outputText value="Nur während der Testphase zu sehen. Aufruf kann außerhalb der Entwicklungsumgebung zu Programmfehlern führen." />
-
-                <h:outputLabel for="demo" value="#{msg['control.barcodesimulator']}:" />
-                <p:selectBooleanCheckbox id="demo" value="#{applicationControlBean.isDemo}">
-                    <p:ajax event="change" global="false" />
-                </p:selectBooleanCheckbox>
-
-                <p:outputLabel for="errorgen" value="#{msg['control.errorgen']}: " />
-                <p:splitButton id="errorgen" style="color:red;background-color: grey;" value="Error 500" action="#{errorHandler.error500}" ajax="true" disabled="#{!controlBean.userRightAdmin}">
-                    <p:menuitem value="Error 404" url="xx" />
-                </p:splitButton>  
-
-                <p:outputLabel for="testdata" value="Entenhausener Schwimmverein: " />
-                <p:splitButton id="testdata" style="color:red;background-color: grey;" value="Testdaten laden" action="#{applicationControlBean.addEntenhauusen}" ajax="true" update="growlmessage" disabled="#{!controlBean.userRightAdmin}">
-                    <p:menuitem value="Testdaten entfernen" action="#{applicationControlBean.dropEntenhauusen}" ajax="true" update="growlmessage"/>
-                    <p:menuitem value="reine Testdatenbank erstellen" action="#{applicationControlBean.onlyEntenhauusen}" ajax="true" update="growlmessage"/>
-                </p:splitButton>  
-
-                <h:outputLabel for="druckdialog" value="Druckerdialog anzeigen" />
-                <p:selectBooleanCheckbox id="druckdialog" value="#{applicationControlBean.isDruckerdialog}" disabled="#{!controlBean.userRightDev}">
-                    <p:ajax event="change" global="false" />
-                </p:selectBooleanCheckbox>
-            </h:panelGrid>
-        </h:form>
 
     </ui:define>
 

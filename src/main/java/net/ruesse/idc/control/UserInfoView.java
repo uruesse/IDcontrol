@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.control;
 
+import net.ruesse.idc.database.persistence.service.VereinService;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.inject.Named;
@@ -26,9 +27,9 @@ import net.ruesse.idc.database.persistence.service.PersonUser;
  * @author Ulrich Rüße <ulrich@ruesse.net>
  */
 @Named
-public class FooterView implements Serializable {
+public class UserInfoView implements Serializable {
 
-    private static final Logger LOGGER = Logger.getLogger(FooterView.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(UserInfoView.class.getName());
     private static final long serialVersionUID = 1L;
 
     /**

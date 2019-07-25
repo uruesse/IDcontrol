@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.control;
 
+import net.ruesse.idc.application.Constants;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;

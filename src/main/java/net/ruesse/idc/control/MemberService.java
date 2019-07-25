@@ -15,18 +15,18 @@
  */
 package net.ruesse.idc.control;
 
-import java.util.ArrayList;
+import net.ruesse.idc.application.Constants;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
-import net.ruesse.idc.database.persistence.Person;
+import net.ruesse.idc.database.persistence.service.PersonCache;
 
 /**
  *
@@ -38,6 +38,9 @@ public class MemberService {
 
     private final static Logger LOGGER = Logger.getLogger(MemberService.class.getName());
     EntityManager em = Persistence.createEntityManagerFactory(Constants.PERSISTENCE_UNIT_NAME, getPersistenceParameters()).createEntityManager();
+    
+    @Inject
+    PersonCache pc;
 
     private List<Member> members = null;
 
@@ -63,6 +66,9 @@ public class MemberService {
      *
      */
     public void refreshAction() {
+        //PersonCache pc = new PersonCache();
+        members = pc.getMembers();
+        /*
         members = new ArrayList<>();
         int id = 0;
 
@@ -74,6 +80,7 @@ public class MemberService {
         for (Person p : personlist) {
             members.add(new Member(id++, p));
         }
+        */
     }
 
     /**

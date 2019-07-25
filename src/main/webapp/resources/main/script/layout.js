@@ -52,8 +52,8 @@ $(document).ready(function() {
                     $this.activate(item);
                 }
 
-                setTimeout(function() {
-                    $(".nano").nanoScroller();
+               setTimeout(function() {
+                   $(".nano").nanoScroller();
                 }, 500);
                 
                 if (submenu.length) {

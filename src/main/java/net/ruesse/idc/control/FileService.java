@@ -15,6 +15,7 @@
  */
 package net.ruesse.idc.control;
 
+import net.ruesse.idc.database.persistence.service.VereinService;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;

@@ -42,7 +42,7 @@ import javax.print.attribute.standard.PrinterResolution;
 import javax.servlet.http.HttpServletRequest;
 import net.ruesse.idc.control.ApplicationControlBean;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
-import net.ruesse.idc.control.Constants;
+import net.ruesse.idc.application.Constants;
 import static net.ruesse.idc.control.FileService.getLogoDir;
 import static net.ruesse.idc.control.FileService.getReportTemplatesDir;
 import static net.ruesse.idc.control.FileService.getReportsDir;

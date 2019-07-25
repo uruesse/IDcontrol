@@ -30,9 +30,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import static net.ruesse.idc.control.ApplicationControlBean.getLoginMglUserRights;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
-import net.ruesse.idc.control.Constants;
+import net.ruesse.idc.application.Constants;
 import static net.ruesse.idc.control.FileService.getDocumentsDir;
-import net.ruesse.idc.control.VereinService;
+import net.ruesse.idc.database.persistence.service.VereinService;
 import net.ruesse.idc.documentation.DocumentView;
 import net.ruesse.idc.report.PrintSupport;
 import org.primefaces.model.menu.DefaultMenuItem;
@@ -221,7 +221,8 @@ public class MenuView implements Serializable {
      */
     public void logout() throws IOException {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        externalContext.redirect("http://closekiosk");
+        //externalContext.redirect("http://closekiosk");
+        externalContext.redirect("http://exitkiosk");
     }
 
     public void prAn() {

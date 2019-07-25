@@ -50,10 +50,10 @@ public class FileServiceWebDav {
          *
          * @param myURL
          */
-        public DropFile(String myURL) {
+        public DropFile(String myURL, String user, String password) {
             super();
             sardine = SardineFactory.begin();
-            sardine.setCredentials("ulrichru", "mej7oq");
+            sardine.setCredentials(user,password);
 
             this.myUrl = myURL;
         }
@@ -76,6 +76,9 @@ public class FileServiceWebDav {
     Sardine sardine;
     String myUrl = "";
     
+    String user; 
+    String password;
+    
     /**
      * 
      * @param WebserviceURL
@@ -84,6 +87,8 @@ public class FileServiceWebDav {
      */
     public FileServiceWebDav(String WebserviceURL, String user, String password) {
         sardine = SardineFactory.begin();
+        this.user=user;
+        this.password=password;
         sardine.setCredentials(user, password);
         if (!WebserviceURL.isEmpty()) {
             myUrl = WebserviceURL + "Dataupdate/";
@@ -236,7 +241,7 @@ public class FileServiceWebDav {
         try {
             sardine.move(myUrl + file, myUrl + "trash/" + toFile);
             LOG.info("File=" + file + " moved to trash - will be purged by asynchronous Thread");
-            DropFile df = new DropFile(myUrl + "trash/" + toFile);
+            DropFile df = new DropFile(myUrl + "trash/" + toFile, user, password);
             df.start();
             return true;
         } catch (IOException ex) {

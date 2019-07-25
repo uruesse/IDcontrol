@@ -21,7 +21,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import static net.ruesse.idc.control.ApplicationControlBean.getPersistenceParameters;
-import net.ruesse.idc.control.Constants;
+import net.ruesse.idc.application.Constants;
 import net.ruesse.idc.database.persistence.Person;
 import net.ruesse.idc.database.persistence.Userpref;
 
@@ -130,6 +130,7 @@ public class PersonUser {
     public void setWebDavUser(String user) {
         userPref.setWebdavuser(user);
         saveUserPref();
+        new WebDavService().setWebserviceAvailable(false);
     }
 
     /**
@@ -145,8 +146,15 @@ public class PersonUser {
      * @param password
      */
     public void setWebDavPassword(String password) {
-        userPref.setWebdavpwd(password);
-        saveUserPref();
+        if (!password.isEmpty())  {
+            if (password.matches(" *")) {
+                userPref.setWebdavpwd("");
+            } else {
+                userPref.setWebdavpwd(password);
+            }
+            saveUserPref();
+            new WebDavService().setWebserviceAvailable(false);
+        }
     }
 
     /**

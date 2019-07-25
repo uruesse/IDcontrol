@@ -1041,3 +1041,66 @@ filteredValue="#{errorHandler.filteredFileContent}"
                     <catalog>${basedir}/src/jax-ws-catalog.xml</catalog>
                 </configuration>
             </plugin>
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.14</version>
+        </dependency>
+
+                        <!--f:setPropertyActionListener   value="#{mitglied}" target="#{mglDetailView.selectedPerson}" />
+                    </p:commandButton-->
+
+                        <!-- ToDo:
+                             Aktivierung der nachfolgenden Zeile erzeugt einen korrekten Tooltip.
+                             Die Aktivierung hat aber einen unangenehmen Seiteneffekt auf den Spaltentoggler
+                             dieser Zeigt dann nicht mehr nur den Spaltennamen an, stattdessen zusätzlich diesen Tooltip gefolgt von einer Java-Script Funktion
+                             das ist dann eine ziemlich lange Zeile
+                             deshalb bis zur Ursachenklärung abgeschaltet
+                        -->
+                        <!--p:tooltip value="AUSWAHL: Wählen Sie hier die Mitglieder für weitere Optionen aus" for="keyColumnId" /-->
+
+
+                <p:column filterBy="#{mitglied.person.hauptkategorie}" headerText="Typ" style="width:100px;text-align: center" sortBy="#{mitglied.person.hauptkategorie}" filterMatchMode="in">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu label = "Typ" onchange="PF('mglTable').filter()">
+                            <f:selectItems value="#{mglView.allHauptkategorie}" />
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText value="#{mitglied.person.hauptkategorie}" />
+                </p:column>  
+
+                <p:column filterBy="#{mitglied.person.status}" headerText="Status" style="width:100px;text-align: center" sortBy="#{mitglied.person.status}" filterMatchMode="in">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu label = "Status" onchange="PF('mglTable').filter()">
+                            <f:selectItems value="#{mglView.allStatus}" />
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText value="#{mitglied.person.status}" />
+                </p:column>  
+
+                <p:column filterBy="#{mitglied.mitarbeiter}" headerText="Mitarbeiter" style="width:100px;text-align: center" sortBy="#{mitglied.mitarbeiter}" filterMatchMode="in">
+                    <f:facet name="filter" >     
+                        <p:selectManyButton onchange="PF('mglTable').filter()">
+                            <f:converter converterId="javax.faces.Boolean" />
+                            <f:selectItem itemLabel="✔" itemValue="true" />
+                            <f:selectItem itemLabel="✘" itemValue="false" />
+                        </p:selectManyButton>
+                    </f:facet>
+                    <p:outputPanel rendered="#{mitglied.mitarbeiter}"><i class="pi pi-check" /></p:outputPanel>
+                    <p:outputPanel rendered="#{!mitglied.mitarbeiter}"><i class="pi pi-times" /></p:outputPanel>
+                </p:column>  
+
+                <p:column filterBy="#{mitglied.wassergeld}" headerText="Wassergeld" style="width:100px;text-align: center" sortBy="#{mitglied.wassergeld}" filterMatchMode="in">
+                    <f:facet name="filter">
+                        <p:selectManyButton onchange="PF('mglTable').filter()">
+                            <f:converter converterId="javax.faces.Boolean" />
+                            <f:selectItem itemLabel="✔" itemValue="true" />
+                            <f:selectItem itemLabel="✘" itemValue="false" />
+                        </p:selectManyButton>
+                    </f:facet>
+                    <p:outputPanel rendered="#{mitglied.wassergeld}"><i class="pi pi-check" /></p:outputPanel>
+                    <p:outputPanel rendered="#{!mitglied.wassergeld}"><i class="pi pi-times" /></p:outputPanel>
+                </p:column> 
+
+ 

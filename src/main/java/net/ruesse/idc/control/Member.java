@@ -15,7 +15,6 @@
  */
 package net.ruesse.idc.control;
 
-import net.ruesse.idc.database.persistence.Person;
 import net.ruesse.idc.database.persistence.service.PersonMgl;
 
 /**
@@ -30,17 +29,17 @@ public class Member {
     private String name;
 
     /**
-     * 
+     *
      */
     public Member() {
     }
 
     /**
-     * 
+     *
      * @param id
      * @param mglnr
      * @param displayName
-     * @param name 
+     * @param name
      */
     public Member(int id, String mglnr, String displayName, String name) {
         this.id = id;
@@ -49,86 +48,98 @@ public class Member {
         this.name = name;
     }
 
-    /**
-     * 
+    /*
+     *
      * @param id
-     * @param p 
-     */
+     * @param p
+    
     public Member(int id, Person p) {
-        this.id = id;
         PersonMgl pe = new PersonMgl(p);
+        this.id = id;
+        this.mglnr = pe.getStrMglnr();
+        this.displayName = pe.formatMglnr() + " - " + pe.getFullname();
+        this.name = pe.getStrMglnr() + " " + pe.getFullname().toLowerCase();
+    }
+ */
+    /**
+     *
+     * @param id
+     * @param pe
+     */
+    public Member(int id, PersonMgl pe) {
+        this.id = id;
         this.mglnr = pe.getStrMglnr();
         this.displayName = pe.formatMglnr() + " - " + pe.getFullname();
         this.name = pe.getStrMglnr() + " " + pe.getFullname().toLowerCase();
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public long getId() {
         return id;
     }
 
     /**
-    * 
-    * @param id 
-    */
+     *
+     * @param id
+     */
     public void setId(int id) {
         this.id = id;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getMglnr() {
         return mglnr;
     }
 
     /**
-     * 
-     * @param mglnr 
+     *
+     * @param mglnr
      */
     public void setMglnr(String mglnr) {
         this.mglnr = mglnr;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getDisplayName() {
         return displayName;
     }
 
     /**
-     * 
-     * @param displayName 
+     *
+     * @param displayName
      */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name 
+     *
+     * @param name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public String toString() {

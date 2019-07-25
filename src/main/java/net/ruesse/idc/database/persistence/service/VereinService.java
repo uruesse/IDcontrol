@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.ruesse.idc.control;
+package net.ruesse.idc.database.persistence.service;
 
+import net.ruesse.idc.application.Constants;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.time.LocalDateTime;

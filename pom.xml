@@ -4,7 +4,7 @@
 
     <groupId>net.ruesse</groupId>
     <artifactId>IDControl</artifactId>
-    <version>20190718</version>
+    <version>20190814</version>
     <packaging>war</packaging>
 
     <name>IDControl</name>
